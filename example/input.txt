@@ -1,0 +1,67 @@
+step = {0,1,2,3}
+
+boolean = {True, False}
+turkey = {Turkey1}
+
+next(step, step)
+loaded(boolean, step)
+target(turkey,boolean,step)
+alive(turkey,boolean,step)
+
+load(step)
+aim(turkey,step)
+shoot(step)
+
+next(0,1).
+next(1,2).
+next(2,3).
+
+//Initial conditions
+!!loaded(False,0).
+!!alive(x,True,0).
+!!target(x,False,0).
+
+//Final
+!!alive(Turkey1,False,3).
+
+1 load(0)
+1 load(1)
+1 load(2)
+
+//Rules
+load(t1) ^ next(t1,t) => loaded(True,t).
+load(t1) ^ next(t1,t) => loaded(False,t).
+load(t1) ^ next(t1,t) => target(x,False,t).
+aim(x,t1) ^ next(t1,t) => target(x,True,t). 
+shoot(t1) ^ next(t1,t) ^ target(x,True,t1) => alive(x,False,t).
+shoot(t1) ^ next(t1,t) => loaded(False,t).
+
+!shoot(t) v !loaded(False,t).
+!aim(Turkey1,t) v !shoot(t).
+
+//exogenity-fluents
+loaded(x,0) => loaded(x,0).
+target(x,y,0) => target(x,y,0).
+alive(x,y,0) => alive(x,y,0).
+
+//exogenity-actions
+!!load(t) ^ t!=3 => load(t).
+!!aim(x,t) ^ t!=3 => aim(x,t).
+!!shoot(t) ^ t!=3 => shoot(t).
+
+//uec-loaded
+loaded(True,t) v loaded(False,t).
+!loaded(True,t) v !loaded(False,t).
+
+//uec-target valid only for 1 turkey case
+target(x,False,t) v target(x,True,t).
+!target(x,False,t) v !target(x,True,t).
+
+//uec-alive valid only for 1 turkey case
+alive(x,True,t) v alive(x,False,t).
+!alive(x,True,t) v !alive(x,False,t).
+
+//loaded, target, alive is inertial
+loaded(x,t1) ^ loaded(x,t) ^ next(t1,t) => loaded(x,t).
+target(x,y,t1) ^ target(x,y,t) ^ next(t1,t) => target(x,y,t).
+alive(x,y,t1) ^ alive(x,y,t) ^ next(t1,t) => alive(x,y,t).

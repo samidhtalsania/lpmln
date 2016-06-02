@@ -1,0 +1,21 @@
+INCLUDE = $(PROJECT_ROOT)/src/includes
+AM_CPPFLAGS = -I $(INCLUDE)
+AM_CFLAGS = -I $(INCLUDE)
+AM_CXXFLAGS = -I $(INCLUDE)
+bin_PROGRAMS = ../lpmln
+
+___lpmln_SOURCES = \
+			main.cpp \
+			src/Completion.cpp \
+			src/Domain.cpp \
+			src/FactCompletion.cpp \
+			src/Predicate.cpp \
+			src/Token.cpp \
+			src/Tree.cpp \
+			src/parser.cpp \
+			src/lexer.cpp \
+			src/Variable.cpp \
+			src/RuleCompletion.cpp \
+			src/Body.cpp \
+			src/BodyDef.cpp \
+			src/Head.cpp

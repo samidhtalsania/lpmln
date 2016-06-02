@@ -1,0 +1,15 @@
+#define PARSE_TOKEN_EQUAL                            1
+#define PARSE_TOKEN_STRING                           2
+#define PARSE_TOKEN_NUMBER                           3
+#define PARSE_TOKEN_COMMA                            4
+#define PARSE_TOKEN_LPAREN                           5
+#define PARSE_TOKEN_RPAREN                           6
+#define PARSE_TOKEN_DOT                              7
+#define PARSE_TOKEN_WS                               8
+#define PARSE_TOKEN_NEWLINE                          9
+#define PARSE_TOKEN_CONJUNCTION                     10
+#define PARSE_TOKEN_RBRACKET                        11
+#define PARSE_TOKEN_LBRACKET                        12
+#define PARSE_TOKEN_IMPLICATION                     13
+#define PARSE_TOKEN_DISJUNCTION                     14
+#define PARSE_TOKEN_NEGATION                        15

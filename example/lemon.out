@@ -1,0 +1,35 @@
+State 0:
+          program ::= * expr
+          expr ::= * expr MINUS expr
+          expr ::= * INTEGER
+
+                       INTEGER shift-reduce 2      expr ::= INTEGER
+                       program accept
+                          expr shift        2      
+
+State 1:
+          expr ::= * expr MINUS expr
+          expr ::= expr MINUS * expr
+          expr ::= * INTEGER
+
+                       INTEGER shift-reduce 2      expr ::= INTEGER
+                          expr shift-reduce 1      expr ::= expr MINUS expr
+
+State 2:
+      (0) program ::= expr *
+          expr ::= expr * MINUS expr
+
+                             $ reduce       0      program ::= expr
+                         MINUS shift        1      
+
+----------------------------------------------------
+Symbols:
+    0: $:
+    1: PLUS
+    2: MINUS
+    3: DIVIDE
+    4: TIMES
+    5: INTEGER
+    6: error:
+    7: program: INTEGER
+    8: expr: INTEGER
