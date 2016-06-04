@@ -20,6 +20,8 @@
 	#include "Body.h"
 	#include "BodyDef.h"
 
+	#include "exceptions/undefined_predicate.h"
+
 
 	using namespace std;
 
@@ -38,7 +40,7 @@
 
 %parse_accept 
 {
-    // std::cout<<("parsing complete!\n");
+    std::cout<<("//parsing complete!\n");
 }
 
 %parse_failure 
@@ -60,19 +62,19 @@
 
 
 %nonassoc EQUAL.
-%nonassoc STRING.
-%nonassoc NUMBER.
 %nonassoc COMMA.
-%nonassoc LPAREN.
-%nonassoc RPAREN.
+%nonassoc LPAREN RPAREN.
 
-%nonassoc DOT. 
-%nonassoc WS.
-%nonassoc NEWLINE.
-%nonassoc CONJUNCTION.
-%nonassoc RBRACKET.
-%nonassoc LBRACKET.
+
+%right NEWLINE.
+%right CONJUNCTION.
+%right DISJUNCTION.
+
+%nonassoc LBRACKET RBRACKET.
 %nonassoc IMPLICATION.
+%right NEGATION.
+
+%nonassoc WS.
 
 %token_type {Token*}
 // %token_destructor {delete $$;}
@@ -144,15 +146,49 @@ prog ::= rule(R).{
 	delete R;
 }
 
+prog ::= prog NEWLINE ruleU(R). {
+	
+	//random
+	delete R;
+}
+
+prog ::= ruleU(R). {
+	//random
+	delete R;
+}
+
 prog ::= prog NEWLINE.
+
 prog ::= .
 
+
+
 %type body {Body*}
+%destructor body {delete $$;}
+
 %type bodydef {BodyDef*} 
 %type bodydef2 {BodyDef*} 
+
 %type head {Head*}
+%destructor head {delete $$;}
+
 %type headdef {Head*}
 %type rule {RuleCompletion*}
+%type ruleU {RuleCompletion*}
+
+
+//ex !(alive(x,True,t) ^ alive(x,False,t))
+ruleU ::= LBRACKET rule2 RBRACKET DOT.
+
+ruleU ::= NEGATION LBRACKET rule2 RBRACKET DOT.
+
+rule2 ::= body CONJUNCTION bodydef2(B2).{
+	delete B2;
+}
+
+rule2 ::= body DISJUNCTION bodydef2(B2). {
+	delete B2;
+}
 
 //Parse rules with only body(body => T) 
 //These are hard rules.
@@ -160,16 +196,18 @@ prog ::= .
 rule(R) ::= body(B) CONJUNCTION bodydef2(B2) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	delete B;
+	// delete B;
 	delete B2;
 }
 //ex. !alive(x,True,t) v !alive(x,False,t).
 rule(R) ::= body(B) DISJUNCTION bodydef2(B2) DOT. {
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
-	delete B;
+	// delete B;
 	delete B2;
 }
+
+
 
 //Parse hard rules
 rule(R) ::= body(B) IMPLICATION head(H) DOT.{
@@ -179,7 +217,12 @@ rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 	for(auto& p : predList){
 		int tempCount = 0;
 		for(auto& v : p.getTokens()){
-			orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar()));
+			if(tree->variables.find(p.getVar()) == tree->variables.end()){
+				undefined_predicate ex(p.getVar());
+				throw ex;
+			}
+			else
+				orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar()));
 		}
 	}
 
@@ -190,12 +233,17 @@ rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 
 	for(auto& str : H->getPredicate().getTokens()){
 		if(tree->isConstant(str)){
-			varMap[count] = std::pair<int, std::string>(count, str);
+			varMap[count++] = std::pair<int, std::string>(count, str);
 		}
 		else
 			count++;
-			
-		orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar()));
+		
+		if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){
+			undefined_predicate ex(H->getPredicate().getVar());
+			throw ex;
+		}
+		else	
+			orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar()));
 	}
 
 	std::set<std::string> result;
@@ -207,8 +255,8 @@ rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
-	delete B;
-	delete H;
+	// delete B;
+	// delete H;
 }
 
 //Parse soft rules
@@ -248,8 +296,8 @@ rule(R) ::= number body(B) IMPLICATION head(H). {
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
-	delete B;
-	delete H;
+	// delete B;
+	// delete H;
 }
 
 //Parses body of rules
@@ -394,8 +442,6 @@ number(N) ::= NUMBER(N1). { N=N1;}
 //Parses decimals
 number(N) ::= lnumber(L) DOT rnumber(R). { 
 	N = new Token(*(L->token)+"."+*(R->token));
-	delete L;
-	delete R;  
 }
 lnumber(L) ::= NUMBER(N). { L=N; }
 rnumber(R) ::= NUMBER(N). { R=N; }

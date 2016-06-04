@@ -37,12 +37,17 @@ void Tree::completeRules(){
 		//Assign a variable to each of the domain of the key.
 		//Use this variable in constructing strLhs and strRhs 
 		std::set<Variable>::iterator itrV = variables.find(key.first);
-		std::map<std::string, std::pair<int, std::string> > varMap;
+		// std::multimap<std::string, std::pair<int, std::string> > varMap;
+		std::unordered_multimap<int, std::pair<std::string, std::string> > varMap;
 		std::set<std::pair<std::string,std::string>> orphanVarsSet;
 		
 		int count = 0;
 		for(auto &var : itrV->getPosMap()){
-			varMap[var.second.getDomainVar()] = std::pair<int, std::string> (var.first,uniqueVars[count++]);
+			// std::pair<int, std::string> p(var.first,uniqueVars[count++]);
+			std::pair<int, std::pair<std::string, std::string>> pa(var.first, std::pair<std::string, std::string>(var.second.getDomainVar(), uniqueVars[count++]));
+			// varMap.insert(std::pair<std::string, std::pair<int, std::string>>(var.second.getDomainVar(),p));
+			varMap.insert(pa);
+			// varMap[var.second.getDomainVar()] = std::pair<int, std::string> (var.first,uniqueVars[count++]);
 		}
 		
 		RuleCompletion r;
@@ -78,11 +83,9 @@ void Tree::completeRules(){
 				//strRhs.append("=").append(" ^ ");
 				for(auto &constantInner : varMap)
 				{
-					if(constantInner.second.first == constant.first)
-					{
+					if(constantInner.first == constant.first){
 						strRhs.append(constantInner.second.second).append("=").append(constant.second.second).append(" ^ ");
 					}
-					//int x=0;
 				}
 			}
 			
@@ -115,7 +118,7 @@ void Tree::completeRules(){
 						{
 							for(auto &innerVar : varMap)
 							{
-								if(innerVar.second.first == pos)
+								if(innerVar.first == pos)
 								{
 									strRhs.append(innerVar.second.second).append(",");
 								}
@@ -134,8 +137,20 @@ void Tree::completeRules(){
 							//Finds variable with var=next
 							Domain d = (*itrInner).getPosMap().at(pos);
 							std::string varType(d.getDomainVar());
-							std::pair<int,std::string> p(varMap[varType]);
-							strRhs.append(p.second).append(",");
+
+							 // p;
+							if(isConstant(vars)){
+								strRhs.append(vars).append(",");	
+							}
+							else{
+								//find out the domain at position pos of the predicate pred
+								auto pa = variables.find(pred.getVar())->getPosMap()[pos].getDomainVar();
+								for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
+									if(it3->second.first.compare(pa) == 0)
+										strRhs.append(it3->second.second).append(",");	
+								}
+								
+							}
 						}
 					}
 					
@@ -181,7 +196,7 @@ void Tree::completeRules(){
 				
 				for(auto &auxDeclVar : varMap)
 				{
-					auxDecl.append(auxDeclVar.first).append(",");
+					auxDecl.append(auxDeclVar.second.first).append(",");
 					auxLhs.append(auxDeclVar.second.second).append(",");
 				}
 				
@@ -203,25 +218,11 @@ void Tree::completeRules(){
 				
 				ar1 = static_cast<size_t>(auxPos.first);
 				ar2 = static_cast<size_t>(auxPos.second-auxPos.first);
-				// size_t ar3 = static_cast<size_t>(auxLhs);
-				// temp = static_cast<unsigned long int> (auxPos.second-auxPos.first);
 				strRhs.replace(ar1,ar2, auxLhs);
 				
 				
 				std::cout << auxDecl << "\n";
 				std::cout << auxLhs << " <=> " << auxRhs << ".\n";
-				
-				
-				//boost::regex aux_expr_eql("([a-zA-Z0-9_]+)(=){1}([_0-9a-zA-Z]+)");
-				//boost::regex aux_expr_var("([_0-9a-zA-Z])([(])([_0-9a-zA-Z,])([)])");
-								
-				
-				//((([a-zA-Z0-9_]+)(=){1}([_0-9a-zA-Z]+))|(([_0-9a-zA-Z])([(])([_0-9a-zA-Z,])([)])))
-				
-				
-				//Second add equivalence
-				
-				
 			}
 		}
 		
@@ -233,7 +234,7 @@ void Tree::completeRules(){
 		std::vector<std::string> v(varMap.size());
 		long unsigned int ii;
 		for(auto &vm : varMap){
-			ii = static_cast<long unsigned int>(vm.second.first);
+			ii = static_cast<long unsigned int>(vm.first);
 			v[ii] = vm.second.second;
 		}
 			

@@ -50,7 +50,7 @@ alive(x,y,0) => alive(x,y,0).
 !!shoot(t) ^ t!=3 => shoot(t).
 
 //uec-loaded
-!! loaded(True,t) v loaded(False,t).
+loaded(True,t) v loaded(False,t).
 !loaded(True,t) v !loaded(False,t).
 
 //uec-target valid only for 1 turkey case

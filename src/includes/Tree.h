@@ -2,6 +2,8 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <map>
+#include <unordered_map>
 
 #include "Domain.h"
 #include "FactCompletion.h"

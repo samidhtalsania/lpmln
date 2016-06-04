@@ -14,6 +14,7 @@
 #include "parser.h"
 #include "Token.h"
 #include "Tree.h"
+#include "exceptions/undefined_predicate.h"
 
 using namespace std;
 
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
 
   FILE* pFile;
   pFile = fopen ("op.txt" , "w");
-  // ParseTrace(pFile,"D_");
+  ParseTrace(pFile,"D_");
   lexeme_t lexeme;
   
   
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
         if(!str.empty()){
           // str.erase(std::remove(str.begin(),str.end(),' '),str.end());
           
+
           //If its a comment print it and go about doing our stuff
           //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
           if(str.substr(0,2).compare("//") == 0 || str.substr(0,2).compare("!!") == 0){
@@ -88,8 +90,14 @@ int main(int argc, char **argv)
               string substr(lexeme.start, pos);
               Token* tok = new Token(substr);
               v.push_back(tok);
-              // cout<<*(tok->token);
-              Parse(parser, hTokenId, tok, tree);
+              // cout<<*(tok->token)<<endl;
+              try{
+                Parse(parser, hTokenId, tok, tree);
+              }
+              catch(const exception& e){
+                // const char* c = e.what();
+                cout << e.what();
+              }
             }
           }
         }
@@ -98,7 +106,14 @@ int main(int argc, char **argv)
       }
 
       Token* tok = new Token("0");
-      Parse(parser, 0, tok, tree);
+      
+      try{
+        Parse(parser, 0, tok, tree);
+      }
+      catch(const exception& e){
+        // const char* c = e.what();
+        cout << e.what();
+      }
       ParseFree(parser, free);
       delete tok;
     

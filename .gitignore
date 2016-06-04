@@ -16,5 +16,8 @@ stamp-h?
 .libs/
 *.l[ao]
 *~
+*.o
 lpmln
 temp.cpp
+op.txt
+

@@ -18,4 +18,5 @@ ___lpmln_SOURCES = \
 			src/RuleCompletion.cpp \
 			src/Body.cpp \
 			src/BodyDef.cpp \
-			src/Head.cpp
+			src/Head.cpp \
+			src/exceptions/undefined_predicate.cpp
