@@ -279,15 +279,29 @@ void Tree::completeFacts(){
 			count = 0;
 			strRhs.append("(");
 			for(auto &str : v){
-				strRhs.append(uniqueVars[count++]);
-				strRhs.append("=");
-				strRhs.append(str);
-				strRhs.append(" ^ ");
+				if(isConstant(str)){
+					strRhs.append(uniqueVars[count++]);
+					strRhs.append("=");
+					strRhs.append(str);
+					strRhs.append(" ^ ");		
+				}
+				else{
+					count++;
+				}
 			}
 			strRhs = strRhs.substr(0,strRhs.size()-3);
 			strRhs.append(")");
-			strRhs.append(" v ");
+			//if strRhs = "()" it did not find anything
+			if(strRhs.size() == 2){
+				strRhs.clear();
+			}
+			else{
+				strRhs.append(" v ");
+			}
 		}
+		//if there is no strRhs the this rule was not supposed to be completed
+		//Go to next rule.
+		if(strRhs.size() == 0) continue;
 		strRhs = strRhs.substr(0,strRhs.size()-3);
 		strLhs.append(key.first);
 		strLhs.append("(");

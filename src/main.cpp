@@ -52,7 +52,8 @@ int main(int argc, char **argv)
 
   FILE* pFile;
   pFile = fopen ("op.txt" , "w");
-  ParseTrace(pFile,"D_");
+  const char* debug_prefix = "_";
+  ParseTrace(pFile,const_cast<char*>(debug_prefix));
   lexeme_t lexeme;
   
   
@@ -68,7 +69,9 @@ int main(int argc, char **argv)
 
       for(std::string str; std::getline(in, str); ){
         if(!str.empty()){
-          // str.erase(std::remove(str.begin(),str.end(),' '),str.end());
+          //Left trim the input tring
+          auto it2 =  std::find_if( str.begin() , str.end() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
+          str.erase( str.begin() , it2);
           
 
           //If its a comment print it and go about doing our stuff

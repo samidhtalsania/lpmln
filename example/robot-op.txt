@@ -1,0 +1,65 @@
+//Declaration
+//Objects
+step = {0, 1}
+loc = {Hall, R1, R2, R3}
+boolean = {T, F}
+
+
+//Fluents
+Location(loc, step)
+Malfunction(step)
+
+
+//Actions 
+Enter(loc, step)
+//Probabilistic Facts
+PF(loc, loc, step) 
+// ln(0.5) = ­0.6931 
+// ln(0.25) = ­1.3863 ­
+0.6931 PF(R1, R1, s)
+1.3863 PF(R1, R2, s)
+1.3863 PF(R1, R3, s)
+0.6931 PF(R2, R2, s)
+1.3863 PF(R2, R1, s)
+1.3863 PF(R2, R3, s) 
+0.6931 PF(R3, R3, s)
+1.3863 PF(R3, R1, s)
+1.3863 PF(R3, R2, s)
+
+
+Next(step, step)
+Next(0, 1).
+
+
+// Actions and Malfunction are exogenous
+Malfunction(x) => Malfunction(x).
+
+
+Enter(l, x) => Enter(l,x).
+
+
+PF(x, y, z) => PF(x, y, z).
+
+
+// Effect of Actions 
+// ­ Without malfunction
+Enter(l, s1) ^ Next(s1, s2) ^ !Malfunction(s1) => Location(l, s2).
+// ­ With malfunction
+Enter(l0, s1) ^ Next(s1, s2) ^ Malfunction(s1) ^ PF(l0, l, s1) => Location(l, s2). 
+
+
+// Frame axioms
+Location(l, s1) ^ Next(s1, s2) ^ Location(l, s3) => Location(l, s2). 
+//parsing complete!
+Next(_a,_b) => (_a=0 ^ _b=1).
+PF(_a,_b,_c) => (_a=R1 ^ _b=R1) v (_a=R1 ^ _b=R2) v (_a=R1 ^ _b=R3) v (_a=R2 ^ _b=R2) v (_a=R2 ^ _b=R1) v (_a=R2 ^ _b=R3) v (_a=R3 ^ _b=R3) v (_a=R3 ^ _b=R1) v (_a=R3 ^ _b=R2).
+Enter(_a,_b) => (Enter(_a,_b)).
+aux_Location_0(step,loc,step)
+aux_Location_0(_b,_a,s1) <=> Enter(_a,s1) ^ Next(s1,_b) ^ Malfunction(s1).
+aux_Location_1(step,loc,loc,step)
+aux_Location_1(_b,_a,l0,s1) <=> Enter(l0,s1) ^ Next(s1,_b) ^ Malfunction(s1) ^ PF(l0,_a,s1).
+aux_Location_2(step,loc,step,step)
+aux_Location_2(_b,_a,s1,s3) <=> Location(_a,s1) ^ Next(s1,_b) ^ Location(_a,s3).
+Location(_a,_b) => (EXIST s1 (aux_Location_0(_b,_a,s1))) v (EXIST l0,s1 (aux_Location_1(_b,_a,l0,s1))) v (EXIST s1,s3 (aux_Location_2(_b,_a,s1,s3))).
+Malfunction(_a) => (Malfunction(_a)).
+PF(_a,_b,_c) => (PF(_a,_b,_c)).
