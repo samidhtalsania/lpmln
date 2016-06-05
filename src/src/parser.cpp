@@ -24,6 +24,7 @@
 */
 #include <stdio.h>
 /************ Begin %include sections from the grammar ************************/
+#line 2 "parser.y"
 
 	#include <iostream>
 	#include <assert.h> 
@@ -55,6 +56,7 @@
 			return left.first < right.first;
 		}
 	};
+#line 60 "parser.c"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
 ** in a format understandable to "makeheaders".  This section is blank unless
@@ -548,16 +550,6 @@ static void yy_destructor(
     ** inside the C code.
     */
 /********* Begin destructor definitions ***************************************/
-    case 26: /* body */
-{
-delete (yypminor->yy53);
-}
-      break;
-    case 29: /* head */
-{
-delete (yypminor->yy1);
-}
-      break;
 /********* End destructor definitions *****************************************/
     default:  break;   /* If no destructor action specified: do nothing */
   }
@@ -881,6 +873,7 @@ static void yy_reduce(
 /********** Begin reduce actions **********************************************/
       case 1: /* prog ::= prog NEWLINE domain */
       case 2: /* prog ::= domain */ yytestcase(yyruleno==2);
+#line 100 "parser.y"
 { 
 	tree->domains.insert(*yymsp[0].minor.yy51); 
 	tree->domainNamesList.insert(yymsp[0].minor.yy51->getDomainVar());
@@ -889,67 +882,84 @@ static void yy_reduce(
 	}
 	delete yymsp[0].minor.yy51;
 }
+#line 886 "parser.c"
         break;
       case 3: /* prog ::= prog NEWLINE predicate */
       case 4: /* prog ::= predicate */ yytestcase(yyruleno==4);
+#line 117 "parser.y"
 { 
 	FactCompletion f(*yymsp[0].minor.yy26);
 	tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
 	delete yymsp[0].minor.yy26;
 }
+#line 896 "parser.c"
         break;
       case 5: /* prog ::= prog NEWLINE decl */
       case 6: /* prog ::= decl */ yytestcase(yyruleno==6);
+#line 129 "parser.y"
 {
 	tree->variables.insert(*yymsp[0].minor.yy57);
 	delete yymsp[0].minor.yy57;
 }
+#line 905 "parser.c"
         break;
       case 7: /* prog ::= prog NEWLINE rule */
       case 8: /* prog ::= rule */ yytestcase(yyruleno==8);
+#line 138 "parser.y"
 {
 	if(yymsp[0].minor.yy21->isHeadTop == false)
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy21->head.getVar(),*yymsp[0].minor.yy21));
 	delete yymsp[0].minor.yy21;
 }
+#line 915 "parser.c"
         break;
       case 9: /* prog ::= prog NEWLINE ruleU */
+#line 149 "parser.y"
 {
 	
 	//random
 	delete yymsp[0].minor.yy21;
 }
+#line 924 "parser.c"
         break;
       case 10: /* prog ::= ruleU */
+#line 155 "parser.y"
 {
 	//random
 	delete yymsp[0].minor.yy21;
 }
+#line 932 "parser.c"
         break;
       case 15: /* rule2 ::= body CONJUNCTION bodydef2 */
       case 16: /* rule2 ::= body DISJUNCTION bodydef2 */ yytestcase(yyruleno==16);
+#line 185 "parser.y"
 {
 	delete yymsp[0].minor.yy20;
-  yy_destructor(yypParser,26,&yymsp[-2].minor);
 }
+#line 940 "parser.c"
         break;
       case 17: /* rule ::= body CONJUNCTION bodydef2 DOT */
+#line 196 "parser.y"
 {
 	yygotominor.yy21 = new RuleCompletion;
 	yygotominor.yy21->isHeadTop = true;
-	// delete yymsp[-3].minor.yy53;
+	delete yymsp[-3].minor.yy53;
 	delete yymsp[-1].minor.yy20;
 }
+#line 950 "parser.c"
         break;
       case 18: /* rule ::= body DISJUNCTION bodydef2 DOT */
+#line 203 "parser.y"
 {
 	yygotominor.yy21 = new RuleCompletion;
 	yygotominor.yy21->isHeadTop = true;	
-	// delete yymsp[-3].minor.yy53;
+	delete yymsp[-3].minor.yy53;
 	delete yymsp[-1].minor.yy20;
 }
+#line 960 "parser.c"
         break;
       case 19: /* rule ::= body IMPLICATION head DOT */
+#line 213 "parser.y"
 {
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;
 	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
@@ -995,11 +1005,13 @@ static void yy_reduce(
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	yygotominor.yy21 = new RuleCompletion(yymsp[-1].minor.yy1->getPredicate(),predList, resultMap, varMap);
-	// delete yymsp[-3].minor.yy53;
-	// delete yymsp[-1].minor.yy1;
+	delete yymsp[-3].minor.yy53;
+	delete yymsp[-1].minor.yy1;
 }
+#line 1012 "parser.c"
         break;
       case 20: /* rule ::= number body IMPLICATION head */
+#line 263 "parser.y"
 {
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;
 	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
@@ -1036,25 +1048,31 @@ static void yy_reduce(
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	yygotominor.yy21 = new RuleCompletion(yymsp[0].minor.yy1->getPredicate(),predList, resultMap, varMap);
-	// delete yymsp[-2].minor.yy53;
-	// delete yymsp[0].minor.yy1;
+	delete yymsp[-2].minor.yy53;
+	delete yymsp[0].minor.yy1;
 }
+#line 1055 "parser.c"
         break;
       case 21: /* body ::= body CONJUNCTION bodydef */
+#line 304 "parser.y"
 {
 	yygotominor.yy53 = yymsp[-2].minor.yy53;
 	yymsp[-2].minor.yy53->addPredicate(yymsp[0].minor.yy20->getPredicate());
 	delete yymsp[0].minor.yy20;
 }
+#line 1064 "parser.c"
         break;
       case 22: /* body ::= bodydef */
+#line 309 "parser.y"
 {
 	yygotominor.yy53 = new Body;
 	yygotominor.yy53->addPredicate(yymsp[0].minor.yy20->getPredicate());
 	delete yymsp[0].minor.yy20;
 }
+#line 1073 "parser.c"
         break;
       case 23: /* bodydef ::= string LBRACKET variables RBRACKET */
+#line 316 "parser.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy45)
@@ -1065,8 +1083,10 @@ static void yy_reduce(
 	yygotominor.yy20->addPredicate(p);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1087 "parser.c"
         break;
       case 24: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */
+#line 328 "parser.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy45)
@@ -1078,16 +1098,24 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy45;
 
 }
+#line 1102 "parser.c"
         break;
       case 25: /* bodydef2 ::= string LBRACKET variables RBRACKET */
       case 26: /* bodydef2 ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==26);
+#line 341 "parser.y"
 {delete yymsp[-1].minor.yy45;}
+#line 1108 "parser.c"
         break;
       case 27: /* head ::= headdef */
-{ yygotominor.yy1 = yymsp[0].minor.yy1; }
+#line 347 "parser.y"
+{ 
+	yygotominor.yy1 = yymsp[0].minor.yy1;
+}
+#line 1115 "parser.c"
         break;
       case 28: /* headdef ::= string LBRACKET variables RBRACKET */
       case 29: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==29);
+#line 352 "parser.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy45)
@@ -1098,8 +1126,10 @@ static void yy_reduce(
 	yygotominor.yy1->addPredicate(p);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1130 "parser.c"
         break;
       case 30: /* decl ::= string LBRACKET variables RBRACKET */
+#line 376 "parser.y"
 {
 	yygotominor.yy57 = new Variable;
 	std::map<int, Domain> posMap;
@@ -1120,62 +1150,81 @@ static void yy_reduce(
 	yygotominor.yy57->setPosMap(posMap);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1154 "parser.c"
         break;
       case 31: /* predicate ::= string LBRACKET variables RBRACKET DOT */
+#line 398 "parser.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->setVar(yymsp[-4].minor.yy0->token);
 	yygotominor.yy26->setTokens(*yymsp[-2].minor.yy45);
 	delete yymsp[-2].minor.yy45;
 }
+#line 1164 "parser.c"
         break;
       case 32: /* predicate ::= number string LBRACKET variables RBRACKET */
+#line 406 "parser.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->setVar(yymsp[-3].minor.yy0->token);
 	yygotominor.yy26->setTokens(*yymsp[-1].minor.yy45);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1174 "parser.c"
         break;
       case 33: /* domain ::= string EQUAL domains */
+#line 414 "parser.y"
 { 
 	yygotominor.yy51 = yymsp[0].minor.yy51;
 	yymsp[0].minor.yy51->setDomainVar(yymsp[-2].minor.yy0->token);
 }
+#line 1182 "parser.c"
         break;
       case 34: /* domains ::= LPAREN variables RPAREN */
+#line 421 "parser.y"
 {
 	yygotominor.yy51 = new Domain();
 	yygotominor.yy51->setVars(*yymsp[-1].minor.yy45);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1191 "parser.c"
         break;
       case 35: /* variables ::= variable */
+#line 428 "parser.y"
 {
 	yygotominor.yy45 = new std::vector<std::string*>();
 	yygotominor.yy45->push_back(yymsp[0].minor.yy0->token);
 }
+#line 1199 "parser.c"
         break;
       case 36: /* variables ::= variables COMMA variable */
+#line 433 "parser.y"
 {
 	yygotominor.yy45 = yymsp[-2].minor.yy45;
 	yymsp[-2].minor.yy45->push_back(yymsp[0].minor.yy0->token);
 }
+#line 1207 "parser.c"
         break;
       case 37: /* variable ::= string */
       case 38: /* variable ::= number */ yytestcase(yyruleno==38);
       case 39: /* string ::= STRING */ yytestcase(yyruleno==39);
       case 40: /* number ::= NUMBER */ yytestcase(yyruleno==40);
+#line 438 "parser.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
+#line 1215 "parser.c"
         break;
       case 41: /* number ::= lnumber DOT rnumber */
+#line 445 "parser.y"
 { 
 	yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
+#line 1222 "parser.c"
         break;
       case 42: /* lnumber ::= NUMBER */
       case 43: /* rnumber ::= NUMBER */ yytestcase(yyruleno==43);
+#line 448 "parser.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
+#line 1228 "parser.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -1230,8 +1279,10 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
+#line 47 "parser.y"
 
     std::cout<<"Giving up.  Parser is lost...\n";
+#line 1286 "parser.c"
 /************ End %parse_failure code *****************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1248,6 +1299,7 @@ static void yy_syntax_error(
   ParseARG_FETCH;
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
+#line 52 "parser.y"
 
 	 std::cout << "syntax error - ";
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
@@ -1257,6 +1309,7 @@ static void yy_syntax_error(
                     std::cout << "expected " << yyTokenName[i] << std::endl;
             }
     }
+#line 1313 "parser.c"
 /************ End %syntax_error code ******************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1277,8 +1330,10 @@ static void yy_accept(
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
 /*********** Begin %parse_accept code *****************************************/
+#line 42 "parser.y"
 
     std::cout<<("//parsing complete!\n");
+#line 1337 "parser.c"
 /*********** End %parse_accept code *******************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

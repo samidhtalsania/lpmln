@@ -164,15 +164,15 @@ prog ::= .
 
 
 %type body {Body*}
-%destructor body {delete $$;}
 
 %type bodydef {BodyDef*} 
 %type bodydef2 {BodyDef*} 
 
 %type head {Head*}
-%destructor head {delete $$;}
 
 %type headdef {Head*}
+
+
 %type rule {RuleCompletion*}
 %type ruleU {RuleCompletion*}
 
@@ -196,14 +196,14 @@ rule2 ::= body DISJUNCTION bodydef2(B2). {
 rule(R) ::= body(B) CONJUNCTION bodydef2(B2) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	// delete B;
+	delete B;
 	delete B2;
 }
 //ex. !alive(x,True,t) v !alive(x,False,t).
 rule(R) ::= body(B) DISJUNCTION bodydef2(B2) DOT. {
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
-	// delete B;
+	delete B;
 	delete B2;
 }
 
@@ -255,8 +255,8 @@ rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
-	// delete B;
-	// delete H;
+	delete B;
+	delete H;
 }
 
 //Parse soft rules
@@ -296,8 +296,8 @@ rule(R) ::= number body(B) IMPLICATION head(H). {
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
-	// delete B;
-	// delete H;
+	delete B;
+	delete H;
 }
 
 //Parses body of rules
@@ -344,7 +344,9 @@ bodydef2 ::= NEGATION string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
 
 
 //Parses head of rules
-head(H) ::= headdef(H1). { H = H1; }
+head(H) ::= headdef(H1). { 
+	H = H1;
+}
 
 //Head without negation in front
 headdef(H) ::= string(S) LBRACKET variables(Ve) RBRACKET.{

@@ -51,21 +51,15 @@ public:
 			return false;
 	}
 
-	inline void removeConstants(std::set<std::string>& vec){
-		std::set<std::string>::iterator itr; 
-		for(auto &v : vec){
-			itr = domainList.find(v);
-			if(itr != domainList.end())
-				vec.erase(v);
-		}
-	}
-
 	inline void removeConstantsPair(std::set<std::pair<std::string, std::string>>& vec){
 		std::set<std::string>::iterator itr; 
-		for(auto &v : vec){
-			itr = domainList.find(v.first);
-			if(itr != domainList.end())
-				vec.erase(v);
+		for ( auto iter = vec.begin(); iter != vec.end(); /* Empty on purpose*/ ){
+			if(domainList.find(iter->first) != domainList.end()){
+				iter = vec.erase(iter);
+			}
+			else{
+				++iter;
+			}
 		}
 	}
 
