@@ -74,12 +74,26 @@ int main(int argc, char **argv)
           str.erase( str.begin() , it2);
           
 
-          //If its a comment print it and go about doing our stuff
-          //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
-          if(str.substr(0,2).compare("//") == 0 || str.substr(0,2).compare("!!") == 0){
+          //If its a comment print it and go to next statement
+          if(str.substr(0,2).compare("//") == 0){
             cout<<str<<"\n";
             continue;
           }
+
+          //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
+          //Even if this is skipped the grmmar will handle it but then it justs introduces a lot 
+          else if(str.substr(0,2).compare("!!") == 0){
+            cout<<str.substr(2,str.size()-1)<<"\n";
+            continue;
+          }
+
+          //If it is a uniqueness statement print it oout and go to next
+		  else if(str.substr(0,2).compare("!(") == 0){
+            cout<<str<<"\n";
+            continue;
+          }
+
+
           str += "\n";
           cout<<str;
           char* buffer;
@@ -93,12 +107,10 @@ int main(int argc, char **argv)
               string substr(lexeme.start, pos);
               Token* tok = new Token(substr);
               v.push_back(tok);
-              // cout<<*(tok->token)<<endl;
               try{
                 Parse(parser, hTokenId, tok, tree);
               }
               catch(const exception& e){
-                // const char* c = e.what();
                 cout << e.what();
               }
             }
@@ -129,83 +141,15 @@ int main(int argc, char **argv)
     
       for(auto& ve : v)
         delete ve;
-
-      
       delete tree;
     }
     catch(std::exception& e) {
       std::cout << e.what() << '\n';
-      //outfile.close();
       return -1;
     }
   }
   else{
     std::cerr << "File could not be opened!\n";
   }
-
- //  string str1("step = {0,1,2}\n");
- //  string str2("next(step,step)\n");
- // //  char buffer [] = "step = {0,1,2}\nnext(step,step)\n t(step,step)";//next(0,1).\nnext(1,2).\n\nboolean={True,False}";
-	// // int len = strlen(buffer);
-	// int hTokenId;
-	// void *parser = ParseAlloc(malloc);
-
-	// FILE* pFile;
-	// pFile = fopen ("op.txt" , "w");
-	// ParseTrace(pFile,"D_");
-	// lexeme_t lexeme;
-  
-	
-	// Tree* tree = new Tree;
-	// std::vector<Token*> v;
-
-
- //  char* buffer = const_cast<char*>(str1.c_str());
- //  int len = strlen(buffer);
-
- //  lexeme.start = buffer;
- //  lexeme.current = buffer;
-	// while( (hTokenId = lexer::tokenize(buffer, len, &lexeme)) != 0 ){
- //    	if(hTokenId != PARSE_TOKEN_WS)
- //    	{
- //    		string str(lexeme.start, lexeme.current - lexeme.start);
- //    		Token* tok = new Token(str);
- //    		v.push_back(tok);
- //    		cout<<*(tok->token);
- //        Parse(parser, hTokenId, tok, tree);
- //    	}
- //    }
-
- //    buffer = const_cast<char*>(str2.c_str());
- //     len = strlen(buffer);
-
- //  lexeme.start = buffer;
- //  lexeme.current = buffer;
- //    while( (hTokenId = lexer::tokenize(buffer, len, &lexeme)) != 0 ){
- //      if(hTokenId != PARSE_TOKEN_WS)
- //      {
- //        string str(lexeme.start, lexeme.current - lexeme.start);
- //        Token* tok = new Token(str);
- //        v.push_back(tok);
- //        cout<<*(tok->token);
- //        Parse(parser, hTokenId, tok, tree);
- //      }
- //    }
-  
- //    Token* tok = new Token("0");
- //    Parse(parser, 0, tok, tree);
-	// ParseFree(parser, free);
-	// delete tok;
-    
-	// fclose (pFile);
-    
- //    delete tree;
-    
-	// for(auto& ve : v){
-	// 	delete ve;
-	// }
-    	
-	
-
 	return 0;
 }

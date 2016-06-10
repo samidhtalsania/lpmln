@@ -438,6 +438,8 @@ variables(Ve) ::= variables(Ve2) COMMA variable(V).{
 variable(V) ::= string(S). { V=S;}  
 variable(V) ::= number(N). { V=N;} 
 
+variable(V) ::= PLUS string(S). { V=S;}  
+
 string(S) ::= STRING(S1). { S=S1;}
 number(N) ::= NUMBER(N1). { N=N1;}
 

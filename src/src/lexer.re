@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include "parser.h"
+#include <iostream>
 
 
 int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
@@ -17,8 +18,6 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 	#define YYFILL(n)	{}
     #define YYLIMIT		YYCURSOR+len
     #define YYCURSOR 	lexeme->current
-
-
 
 	/*!re2c
 	
@@ -46,8 +45,13 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 								}
 		
 		"!"						{ return PARSE_TOKEN_NEGATION;}
+		"+"						{ return PARSE_TOKEN_PLUS ;}
 		WS						{ return PARSE_TOKEN_WS; }
-		NL						{ return PARSE_TOKEN_NEWLINE; }
+		NL						{ return PARSE_TOKEN_NEWLINE; }	
+		*						{
+									std::cout<<"Error: Unexpected "<<lexeme->current<<"\n";
+									return 0;
+								}
 								
 	*/
 
