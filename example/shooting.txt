@@ -29,7 +29,7 @@ next(2,3).
 1 load(2)
 
 //Rules
-load(t1) ^ next(t1,t) => loaded(True,t).
+load(t1) ^ next(t1,t) ^ t!=t1 => loaded(True,t).
 load(t1) ^ next(t1,t) => loaded(False,t).
 load(t1) ^ next(t1,t) => target(x,False,t).
 aim(x,t1) ^ next(t1,t) => target(x,True,t). 

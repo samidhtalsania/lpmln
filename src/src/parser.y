@@ -324,6 +324,22 @@ bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	delete Ve;
 }
 
+//parses bodydef of the form a=b
+bodydef(B) ::= string(S) EQUAL string(S1).{
+	Predicate p(S->token,S1->token);
+	p.setEquality();
+	B = new BodyDef;
+	B->addPredicate(p);
+}
+
+//parses bodydef of the form a!=b
+bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
+	Predicate p(S->token,S1->token);
+	p.setInEquality();
+	B = new BodyDef;
+	B->addPredicate(p);
+}
+
 //BodyDef with negation in front
 bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
 	std::vector<std::string> vars;
@@ -334,7 +350,6 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	B = new BodyDef;
 	B->addPredicate(p);
 	delete Ve;
-
 }
 
 //BodyDef without negation in front

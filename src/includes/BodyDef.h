@@ -2,6 +2,7 @@
 
 class BodyDef
 {
+	
 public:
 	BodyDef();
 	~BodyDef();
@@ -13,6 +14,7 @@ public:
 	Predicate getPredicate(){
 		return p;
 	}
+
 private:
 	Predicate p;	
 };

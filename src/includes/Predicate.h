@@ -6,7 +6,9 @@ class Predicate
 {
 public:
 	Predicate(std::string* _var, std::vector<std::string> _tokens): var(*_var), tokens(_tokens){};
-	Predicate();
+	Predicate(std::string* _lvar, std::string* _rvar):
+				lVar(*_lvar),rVar(*_rvar){};
+	Predicate();				
 	~Predicate();
 	
 	bool operator< (const Predicate &right) const;
@@ -29,9 +31,29 @@ public:
 
 	std::vector<std::string> getTokens(){ return tokens;}
 
+	int checkEquality() 
+	{ 
+		if(isEquality)
+			return 1;
+		else if(isInEquality)
+			return 2;
+		else
+			return 0;
+	}
+
+	std::string getLvar() const { return lVar;}
+	std::string getRvar() const { return rVar;}
+
+	void setEquality() { isEquality = true;}
+	void setInEquality() { isInEquality = true;}
+
+
 private:
 	std::string var;
+	std::string lVar;
+	std::string rVar;
 	std::vector<std::string> tokens;
-	
+	bool isEquality = false;
+	bool isInEquality = false;
 };
 

@@ -21,6 +21,8 @@ State 0:
           body ::= * body CONJUNCTION bodydef
           body ::= * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           decl ::= * string LBRACKET variables RBRACKET
           predicate ::= * string LBRACKET variables RBRACKET DOT
@@ -32,21 +34,21 @@ State 0:
           lnumber ::= * NUMBER
 
                       LBRACKET shift        15     
-                      NEGATION shift        24     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
+                      NEGATION shift        25     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
                          start accept
-                          prog shift        51     
+                          prog shift        56     
                         domain shift-reduce 2      prog ::= domain
                      predicate shift-reduce 4      prog ::= predicate
                           decl shift-reduce 6      prog ::= decl
                           rule shift-reduce 8      prog ::= rule
                          ruleU shift-reduce 10     prog ::= ruleU
-                          body shift        33     
+                          body shift        37     
                        bodydef shift-reduce 22     body ::= bodydef
                         number shift        17     
-                        string shift        36     
-                       lnumber shift        65     
+                        string shift        35     
+                       lnumber shift        69     
                      {default} reduce       12     prog ::=
 
 State 1:
@@ -65,6 +67,8 @@ State 1:
           body ::= * body CONJUNCTION bodydef
           body ::= * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           decl ::= * string LBRACKET variables RBRACKET
           predicate ::= * string LBRACKET variables RBRACKET DOT
@@ -76,19 +80,19 @@ State 1:
           lnumber ::= * NUMBER
 
                       LBRACKET shift        15     
-                      NEGATION shift        24     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
+                      NEGATION shift        25     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
                         domain shift-reduce 1      prog ::= prog NEWLINE domain
                      predicate shift-reduce 3      prog ::= prog NEWLINE predicate
                           decl shift-reduce 5      prog ::= prog NEWLINE decl
                           rule shift-reduce 7      prog ::= prog NEWLINE rule
                          ruleU shift-reduce 9      prog ::= prog NEWLINE ruleU
-                          body shift        33     
+                          body shift        37     
                        bodydef shift-reduce 22     body ::= bodydef
                         number shift        17     
-                        string shift        36     
-                       lnumber shift        65     
+                        string shift        35     
+                       lnumber shift        69     
                      {default} reduce       11     prog ::= prog NEWLINE
 
 State 2:
@@ -103,14 +107,14 @@ State 2:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        34     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        40     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 3:
           bodydef ::= string LBRACKET * variables RBRACKET
@@ -126,14 +130,14 @@ State 3:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        35     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        41     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 4:
           bodydef ::= string LBRACKET * variables RBRACKET
@@ -148,14 +152,14 @@ State 4:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        38     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        43     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 5:
           headdef ::= NEGATION string LBRACKET * variables RBRACKET
@@ -169,14 +173,14 @@ State 5:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        40     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        45     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 6:
           headdef ::= string LBRACKET * variables RBRACKET
@@ -190,14 +194,14 @@ State 6:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        41     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        46     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 7:
           bodydef ::= NEGATION string LBRACKET * variables RBRACKET
@@ -211,14 +215,14 @@ State 7:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        42     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        47     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 8:
           bodydef ::= string LBRACKET * variables RBRACKET
@@ -232,14 +236,14 @@ State 8:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        43     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        48     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 9:
           bodydef2 ::= NEGATION string LBRACKET * variables RBRACKET
@@ -253,14 +257,14 @@ State 9:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        44     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        49     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 10:
           bodydef2 ::= string LBRACKET * variables RBRACKET
@@ -274,14 +278,14 @@ State 10:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        45     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        50     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 11:
           bodydef ::= NEGATION string LBRACKET * variables RBRACKET
@@ -296,14 +300,14 @@ State 11:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        47     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        52     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 12:
           bodydef ::= string LBRACKET * variables RBRACKET
@@ -318,14 +322,14 @@ State 12:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                     variables shift        49     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 35     variables ::= variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                     variables shift        54     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 37     variables ::= variable
+                       lnumber shift        69     
 
 State 13:
           variables ::= variables COMMA * variable
@@ -337,13 +341,13 @@ State 13:
           number ::= * lnumber DOT rnumber
           lnumber ::= * NUMBER
 
-                          PLUS shift        31     
-                        STRING shift-reduce 40     string ::= STRING
-                        NUMBER shift        66     
-                        number shift-reduce 38     variable ::= number
-                        string shift-reduce 37     variable ::= string
-                      variable shift-reduce 36     variables ::= variables COMMA variable
-                       lnumber shift        65     
+                          PLUS shift        33     
+                        STRING shift-reduce 42     string ::= STRING
+                        NUMBER shift        70     
+                        number shift-reduce 40     variable ::= number
+                        string shift-reduce 39     variable ::= string
+                      variable shift-reduce 38     variables ::= variables COMMA variable
+                       lnumber shift        69     
 
 State 14:
           ruleU ::= NEGATION LBRACKET * rule2 RBRACKET DOT
@@ -352,15 +356,17 @@ State 14:
           body ::= * body CONJUNCTION bodydef
           body ::= * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        27     
-                        STRING shift-reduce 40     string ::= STRING
-                          body shift        50     
+                        STRING shift-reduce 42     string ::= STRING
+                          body shift        55     
                        bodydef shift-reduce 22     body ::= bodydef
-                         rule2 shift        59     
-                        string shift        61     
+                         rule2 shift        63     
+                        string shift        38     
 
 State 15:
           ruleU ::= LBRACKET * rule2 RBRACKET DOT
@@ -369,15 +375,17 @@ State 15:
           body ::= * body CONJUNCTION bodydef
           body ::= * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        27     
-                        STRING shift-reduce 40     string ::= STRING
-                          body shift        50     
+                        STRING shift-reduce 42     string ::= STRING
+                          body shift        55     
                        bodydef shift-reduce 22     body ::= bodydef
-                         rule2 shift        69     
-                        string shift        61     
+                         rule2 shift        72     
+                        string shift        38     
 
 State 16:
           rule ::= number body IMPLICATION * head
@@ -387,25 +395,27 @@ State 16:
           string ::= * STRING
 
                       NEGATION shift        26     
-                        STRING shift-reduce 40     string ::= STRING
+                        STRING shift-reduce 42     string ::= STRING
                           head shift-reduce 20     rule ::= number body IMPLICATION head
-                       headdef shift-reduce 27     head ::= headdef
-                        string shift        54     
+                       headdef shift-reduce 29     head ::= headdef
+                        string shift        58     
 
 State 17:
           rule ::= number * body IMPLICATION head
           body ::= * body CONJUNCTION bodydef
           body ::= * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           predicate ::= number * string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        27     
-                        STRING shift-reduce 40     string ::= STRING
-                          body shift        39     
+                        STRING shift-reduce 42     string ::= STRING
+                          body shift        44     
                        bodydef shift-reduce 22     body ::= bodydef
-                        string shift        52     
+                        string shift        36     
 
 State 18:
           rule ::= body IMPLICATION * head DOT
@@ -415,284 +425,340 @@ State 18:
           string ::= * STRING
 
                       NEGATION shift        26     
-                        STRING shift-reduce 40     string ::= STRING
-                          head shift        55     
-                       headdef shift-reduce 27     head ::= headdef
-                        string shift        54     
+                        STRING shift-reduce 42     string ::= STRING
+                          head shift        59     
+                       headdef shift-reduce 29     head ::= headdef
+                        string shift        58     
 
 State 19:
           rule ::= body CONJUNCTION * bodydef2 DOT
           body ::= body CONJUNCTION * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           bodydef2 ::= * string LBRACKET variables RBRACKET
           bodydef2 ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        29     
-                        STRING shift-reduce 40     string ::= STRING
+                        STRING shift-reduce 42     string ::= STRING
                        bodydef shift-reduce 21     body ::= body CONJUNCTION bodydef
-                      bodydef2 shift        57     
-                        string shift        67     
+                      bodydef2 shift        61     
+                        string shift        39     
 
 State 20:
           rule2 ::= body CONJUNCTION * bodydef2
           body ::= body CONJUNCTION * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           bodydef2 ::= * string LBRACKET variables RBRACKET
           bodydef2 ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        29     
-                        STRING shift-reduce 40     string ::= STRING
+                        STRING shift-reduce 42     string ::= STRING
                        bodydef shift-reduce 21     body ::= body CONJUNCTION bodydef
                       bodydef2 shift-reduce 15     rule2 ::= body CONJUNCTION bodydef2
-                        string shift        67     
+                        string shift        39     
 
 State 21:
+          bodydef ::= string EQUAL * string
+          domain ::= string EQUAL * domains
+          domains ::= * LPAREN variables RPAREN
+          string ::= * STRING
+
+                        LPAREN shift        2      
+                        STRING shift-reduce 42     string ::= STRING
+                       domains shift-reduce 35     domain ::= string EQUAL domains
+                        string shift-reduce 24     bodydef ::= string EQUAL string
+
+State 22:
           body ::= body CONJUNCTION * bodydef
           bodydef ::= * string LBRACKET variables RBRACKET
+          bodydef ::= * string EQUAL string
+          bodydef ::= * string NEGATION EQUAL string
           bodydef ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        27     
-                        STRING shift-reduce 40     string ::= STRING
+                        STRING shift-reduce 42     string ::= STRING
                        bodydef shift-reduce 21     body ::= body CONJUNCTION bodydef
-                        string shift        61     
+                        string shift        38     
 
-State 22:
+State 23:
           rule ::= body DISJUNCTION * bodydef2 DOT
           bodydef2 ::= * string LBRACKET variables RBRACKET
           bodydef2 ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        28     
-                        STRING shift-reduce 40     string ::= STRING
-                      bodydef2 shift        56     
-                        string shift        63     
+                        STRING shift-reduce 42     string ::= STRING
+                      bodydef2 shift        60     
+                        string shift        66     
 
-State 23:
+State 24:
           rule2 ::= body DISJUNCTION * bodydef2
           bodydef2 ::= * string LBRACKET variables RBRACKET
           bodydef2 ::= * NEGATION string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       NEGATION shift        28     
-                        STRING shift-reduce 40     string ::= STRING
+                        STRING shift-reduce 42     string ::= STRING
                       bodydef2 shift-reduce 16     rule2 ::= body DISJUNCTION bodydef2
-                        string shift        63     
+                        string shift        66     
 
-State 24:
+State 25:
           ruleU ::= NEGATION * LBRACKET rule2 RBRACKET DOT
           bodydef ::= NEGATION * string LBRACKET variables RBRACKET
           string ::= * STRING
 
                       LBRACKET shift        14     
-                        STRING shift-reduce 40     string ::= STRING
-                        string shift        60     
-
-State 25:
-          domain ::= string EQUAL * domains
-          domains ::= * LPAREN variables RPAREN
-
-                        LPAREN shift        2      
-                       domains shift-reduce 33     domain ::= string EQUAL domains
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift        64     
 
 State 26:
           headdef ::= NEGATION * string LBRACKET variables RBRACKET
           string ::= * STRING
 
-                        STRING shift-reduce 40     string ::= STRING
-                        string shift        53     
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift        57     
 
 State 27:
           bodydef ::= NEGATION * string LBRACKET variables RBRACKET
           string ::= * STRING
 
-                        STRING shift-reduce 40     string ::= STRING
-                        string shift        60     
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift        64     
 
 State 28:
           bodydef2 ::= NEGATION * string LBRACKET variables RBRACKET
           string ::= * STRING
 
-                        STRING shift-reduce 40     string ::= STRING
-                        string shift        62     
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift        65     
 
 State 29:
           bodydef ::= NEGATION * string LBRACKET variables RBRACKET
           bodydef2 ::= NEGATION * string LBRACKET variables RBRACKET
           string ::= * STRING
 
-                        STRING shift-reduce 40     string ::= STRING
-                        string shift        64     
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift        67     
 
 State 30:
+          bodydef ::= string NEGATION EQUAL * string
+          string ::= * STRING
+
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift-reduce 25     bodydef ::= string NEGATION EQUAL string
+
+State 31:
+          bodydef ::= string EQUAL * string
+          string ::= * STRING
+
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift-reduce 24     bodydef ::= string EQUAL string
+
+State 32:
           number ::= lnumber DOT * rnumber
           rnumber ::= * NUMBER
 
-                        NUMBER shift-reduce 44     rnumber ::= NUMBER
-                       rnumber shift-reduce 42     number ::= lnumber DOT rnumber
+                        NUMBER shift-reduce 46     rnumber ::= NUMBER
+                       rnumber shift-reduce 44     number ::= lnumber DOT rnumber
 
-State 31:
+State 33:
           variable ::= PLUS * string
           string ::= * STRING
 
-                        STRING shift-reduce 40     string ::= STRING
-                        string shift-reduce 39     variable ::= PLUS string
+                        STRING shift-reduce 42     string ::= STRING
+                        string shift-reduce 41     variable ::= PLUS string
 
-State 32:
+State 34:
      (23) bodydef ::= string LBRACKET variables RBRACKET *
-     (30) decl ::= string LBRACKET variables RBRACKET *
+     (32) decl ::= string LBRACKET variables RBRACKET *
           predicate ::= string LBRACKET variables RBRACKET * DOT
 
-                             $ reduce       30     decl ::= string LBRACKET variables RBRACKET
-                       NEWLINE reduce       30     decl ::= string LBRACKET variables RBRACKET
-                           DOT shift-reduce 31     predicate ::= string LBRACKET variables RBRACKET DOT
+                             $ reduce       32     decl ::= string LBRACKET variables RBRACKET
+                       NEWLINE reduce       32     decl ::= string LBRACKET variables RBRACKET
+                           DOT shift-reduce 33     predicate ::= string LBRACKET variables RBRACKET DOT
                      {default} reduce       23     bodydef ::= string LBRACKET variables RBRACKET
 
-State 33:
+State 35:
+          bodydef ::= string * LBRACKET variables RBRACKET
+          bodydef ::= string * EQUAL string
+          bodydef ::= string * NEGATION EQUAL string
+          decl ::= string * LBRACKET variables RBRACKET
+          predicate ::= string * LBRACKET variables RBRACKET DOT
+          domain ::= string * EQUAL domains
+
+                         EQUAL shift        21     
+                      LBRACKET shift        3      
+                      NEGATION shift        68     
+
+State 36:
+          bodydef ::= string * LBRACKET variables RBRACKET
+          bodydef ::= string * EQUAL string
+          bodydef ::= string * NEGATION EQUAL string
+          predicate ::= number string * LBRACKET variables RBRACKET
+
+                         EQUAL shift        31     
+                      LBRACKET shift        4      
+                      NEGATION shift        68     
+
+State 37:
           rule ::= body * CONJUNCTION bodydef2 DOT
           rule ::= body * DISJUNCTION bodydef2 DOT
           rule ::= body * IMPLICATION head DOT
           body ::= body * CONJUNCTION bodydef
 
                    CONJUNCTION shift        19     
-                   DISJUNCTION shift        22     
+                   DISJUNCTION shift        23     
                    IMPLICATION shift        18     
 
-State 34:
+State 38:
+          bodydef ::= string * LBRACKET variables RBRACKET
+          bodydef ::= string * EQUAL string
+          bodydef ::= string * NEGATION EQUAL string
+
+                         EQUAL shift        31     
+                      LBRACKET shift        8      
+                      NEGATION shift        68     
+
+State 39:
+          bodydef ::= string * LBRACKET variables RBRACKET
+          bodydef ::= string * EQUAL string
+          bodydef ::= string * NEGATION EQUAL string
+          bodydef2 ::= string * LBRACKET variables RBRACKET
+
+                         EQUAL shift        31     
+                      LBRACKET shift        12     
+                      NEGATION shift        68     
+
+State 40:
           domains ::= LPAREN variables * RPAREN
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                        RPAREN shift-reduce 34     domains ::= LPAREN variables RPAREN
+                        RPAREN shift-reduce 36     domains ::= LPAREN variables RPAREN
 
-State 35:
+State 41:
           bodydef ::= string LBRACKET variables * RBRACKET
           decl ::= string LBRACKET variables * RBRACKET
           predicate ::= string LBRACKET variables * RBRACKET DOT
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift        32     
+                      RBRACKET shift        34     
 
-State 36:
-          bodydef ::= string * LBRACKET variables RBRACKET
-          decl ::= string * LBRACKET variables RBRACKET
-          predicate ::= string * LBRACKET variables RBRACKET DOT
-          domain ::= string * EQUAL domains
-
-                         EQUAL shift        25     
-                      LBRACKET shift        3      
-
-State 37:
+State 42:
      (23) bodydef ::= string LBRACKET variables RBRACKET *
-     (32) predicate ::= number string LBRACKET variables RBRACKET *
+     (34) predicate ::= number string LBRACKET variables RBRACKET *
 
                    CONJUNCTION reduce       23     bodydef ::= string LBRACKET variables RBRACKET
                    IMPLICATION reduce       23     bodydef ::= string LBRACKET variables RBRACKET
-                     {default} reduce       32     predicate ::= number string LBRACKET variables RBRACKET
+                     {default} reduce       34     predicate ::= number string LBRACKET variables RBRACKET
 
-State 38:
+State 43:
           bodydef ::= string LBRACKET variables * RBRACKET
           predicate ::= number string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift        37     
+                      RBRACKET shift        42     
 
-State 39:
+State 44:
           rule ::= number body * IMPLICATION head
           body ::= body * CONJUNCTION bodydef
 
-                   CONJUNCTION shift        21     
+                   CONJUNCTION shift        22     
                    IMPLICATION shift        16     
 
-State 40:
+State 45:
           headdef ::= NEGATION string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift-reduce 29     headdef ::= NEGATION string LBRACKET variables RBRACKET
+                      RBRACKET shift-reduce 31     headdef ::= NEGATION string LBRACKET variables RBRACKET
 
-State 41:
+State 46:
           headdef ::= string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift-reduce 28     headdef ::= string LBRACKET variables RBRACKET
+                      RBRACKET shift-reduce 30     headdef ::= string LBRACKET variables RBRACKET
 
-State 42:
+State 47:
           bodydef ::= NEGATION string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift-reduce 24     bodydef ::= NEGATION string LBRACKET variables RBRACKET
+                      RBRACKET shift-reduce 26     bodydef ::= NEGATION string LBRACKET variables RBRACKET
 
-State 43:
+State 48:
           bodydef ::= string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
                       RBRACKET shift-reduce 23     bodydef ::= string LBRACKET variables RBRACKET
 
-State 44:
+State 49:
           bodydef2 ::= NEGATION string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift-reduce 26     bodydef2 ::= NEGATION string LBRACKET variables RBRACKET
+                      RBRACKET shift-reduce 28     bodydef2 ::= NEGATION string LBRACKET variables RBRACKET
 
-State 45:
+State 50:
           bodydef2 ::= string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift-reduce 25     bodydef2 ::= string LBRACKET variables RBRACKET
+                      RBRACKET shift-reduce 27     bodydef2 ::= string LBRACKET variables RBRACKET
 
-State 46:
-     (24) bodydef ::= NEGATION string LBRACKET variables RBRACKET *
-     (26) bodydef2 ::= NEGATION string LBRACKET variables RBRACKET *
+State 51:
+     (26) bodydef ::= NEGATION string LBRACKET variables RBRACKET *
+     (28) bodydef2 ::= NEGATION string LBRACKET variables RBRACKET *
 
-                      RBRACKET reduce       26     bodydef2 ::= NEGATION string LBRACKET variables RBRACKET
-                           DOT reduce       26     bodydef2 ::= NEGATION string LBRACKET variables RBRACKET
-                     {default} reduce       24     bodydef ::= NEGATION string LBRACKET variables RBRACKET
+                      RBRACKET reduce       28     bodydef2 ::= NEGATION string LBRACKET variables RBRACKET
+                           DOT reduce       28     bodydef2 ::= NEGATION string LBRACKET variables RBRACKET
+                     {default} reduce       26     bodydef ::= NEGATION string LBRACKET variables RBRACKET
 
-State 47:
+State 52:
           bodydef ::= NEGATION string LBRACKET variables * RBRACKET
           bodydef2 ::= NEGATION string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift        46     
+                      RBRACKET shift        51     
 
-State 48:
+State 53:
      (23) bodydef ::= string LBRACKET variables RBRACKET *
-     (25) bodydef2 ::= string LBRACKET variables RBRACKET *
+     (27) bodydef2 ::= string LBRACKET variables RBRACKET *
 
-                      RBRACKET reduce       25     bodydef2 ::= string LBRACKET variables RBRACKET
-                           DOT reduce       25     bodydef2 ::= string LBRACKET variables RBRACKET
+                      RBRACKET reduce       27     bodydef2 ::= string LBRACKET variables RBRACKET
+                           DOT reduce       27     bodydef2 ::= string LBRACKET variables RBRACKET
                      {default} reduce       23     bodydef ::= string LBRACKET variables RBRACKET
 
-State 49:
+State 54:
           bodydef ::= string LBRACKET variables * RBRACKET
           bodydef2 ::= string LBRACKET variables * RBRACKET
           variables ::= variables * COMMA variable
 
                          COMMA shift        13     
-                      RBRACKET shift        48     
+                      RBRACKET shift        53     
 
-State 50:
+State 55:
           rule2 ::= body * CONJUNCTION bodydef2
           rule2 ::= body * DISJUNCTION bodydef2
           body ::= body * CONJUNCTION bodydef
 
                    CONJUNCTION shift        20     
-                   DISJUNCTION shift        23     
+                   DISJUNCTION shift        24     
 
-State 51:
+State 56:
       (0) start ::= prog *
           prog ::= prog * NEWLINE domain
           prog ::= prog * NEWLINE predicate
@@ -704,100 +770,88 @@ State 51:
                              $ reduce       0      start ::= prog
                        NEWLINE shift        1      
 
-State 52:
-          bodydef ::= string * LBRACKET variables RBRACKET
-          predicate ::= number string * LBRACKET variables RBRACKET
-
-                      LBRACKET shift        4      
-
-State 53:
+State 57:
           headdef ::= NEGATION string * LBRACKET variables RBRACKET
 
                       LBRACKET shift        5      
 
-State 54:
+State 58:
           headdef ::= string * LBRACKET variables RBRACKET
 
                       LBRACKET shift        6      
 
-State 55:
+State 59:
           rule ::= body IMPLICATION head * DOT
 
                            DOT shift-reduce 19     rule ::= body IMPLICATION head DOT
 
-State 56:
+State 60:
           rule ::= body DISJUNCTION bodydef2 * DOT
 
                            DOT shift-reduce 18     rule ::= body DISJUNCTION bodydef2 DOT
 
-State 57:
+State 61:
           rule ::= body CONJUNCTION bodydef2 * DOT
 
                            DOT shift-reduce 17     rule ::= body CONJUNCTION bodydef2 DOT
 
-State 58:
+State 62:
           ruleU ::= NEGATION LBRACKET rule2 RBRACKET * DOT
 
                            DOT shift-reduce 14     ruleU ::= NEGATION LBRACKET rule2 RBRACKET DOT
 
-State 59:
+State 63:
           ruleU ::= NEGATION LBRACKET rule2 * RBRACKET DOT
 
-                      RBRACKET shift        58     
+                      RBRACKET shift        62     
 
-State 60:
+State 64:
           bodydef ::= NEGATION string * LBRACKET variables RBRACKET
 
                       LBRACKET shift        7      
 
-State 61:
-          bodydef ::= string * LBRACKET variables RBRACKET
-
-                      LBRACKET shift        8      
-
-State 62:
+State 65:
           bodydef2 ::= NEGATION string * LBRACKET variables RBRACKET
 
                       LBRACKET shift        9      
 
-State 63:
+State 66:
           bodydef2 ::= string * LBRACKET variables RBRACKET
 
                       LBRACKET shift        10     
 
-State 64:
+State 67:
           bodydef ::= NEGATION string * LBRACKET variables RBRACKET
           bodydef2 ::= NEGATION string * LBRACKET variables RBRACKET
 
                       LBRACKET shift        11     
 
-State 65:
+State 68:
+          bodydef ::= string NEGATION * EQUAL string
+
+                         EQUAL shift        30     
+
+State 69:
           number ::= lnumber * DOT rnumber
 
-                           DOT shift        30     
+                           DOT shift        32     
 
-State 66:
-     (41) number ::= NUMBER *
-     (43) lnumber ::= NUMBER *
+State 70:
+     (43) number ::= NUMBER *
+     (45) lnumber ::= NUMBER *
 
-                           DOT reduce       43     lnumber ::= NUMBER
-                     {default} reduce       41     number ::= NUMBER
+                           DOT reduce       45     lnumber ::= NUMBER
+                     {default} reduce       43     number ::= NUMBER
 
-State 67:
-          bodydef ::= string * LBRACKET variables RBRACKET
-          bodydef2 ::= string * LBRACKET variables RBRACKET
-
-                      LBRACKET shift        12     
-
-State 68:
+State 71:
           ruleU ::= LBRACKET rule2 RBRACKET * DOT
 
                            DOT shift-reduce 13     ruleU ::= LBRACKET rule2 RBRACKET DOT
 
-State 69:
+State 72:
           ruleU ::= LBRACKET rule2 * RBRACKET DOT
 
-                      RBRACKET shift        68     
+                      RBRACKET shift        71     
 
 ----------------------------------------------------
 Symbols:

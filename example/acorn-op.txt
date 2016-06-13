@@ -80,16 +80,16 @@ LookRightPatch(x, y) ^ FoundPf(y) => Found(x, y).
 // UEC
 
 
-//EXIST x HiddenIn(x).
+(EXIST x HiddenIn(x)).
 
 
-//!EXIST x,y (HiddenIn(x) ^ HiddenIn(y) ^ x != y).
+!(EXIST x,y (HiddenIn(x) ^ HiddenIn(y) ^ x != y)).
 
 
-//EXIST x Look(x, y).
+(EXIST x Look(x, y)).
 
 
-//!EXIST x1, x2 (Look(x1, y) ^ Look(x2, y) ^ x1 != x2).
+!(EXIST x1, x2 (Look(x1, y) ^ Look(x2, y) ^ x1 != x2)).
 //parsing complete!
 Found(_a,_b) => (_b=1).
 HiddenIn(_a) => (_a=P1) v (_a=P2).

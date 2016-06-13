@@ -91,6 +91,122 @@ void Tree::completeRules(){
 			
 			for(auto &pred : r.body)
 			{
+				/*		
+					if(isEquality)
+						return 1;
+					else if(isInEquality)
+						return 2;
+					else
+						return 0;
+				*/
+				int e = pred.checkEquality();
+				if(e != 0)
+				{
+					auto itr = std::find_if(orphanVarsSet.begin(), orphanVarsSet.end(), [&](const std::pair<std::string, std::string>& val) -> bool{
+						return val.first == pred.getLvar();
+					});
+
+					if(itr != orphanVarsSet.end())
+					{
+						strRhs.append(pred.getLvar());
+					}
+					else
+					{
+						Predicate* predicateWeWant;
+						//search all predicates innerVariables to find out its domain
+						int pos = 0; 
+						for(auto &innerPred: r.body){
+							int found = 0;
+
+							if(innerPred.checkEquality()==0){
+								std::vector<std::string> tok = innerPred.getTokens();
+								pos = 0;
+								for(auto &tokenStr:tok){
+									if(tokenStr == pred.getLvar()){
+										predicateWeWant = &innerPred;
+										found = 1;
+										break;
+									}
+									pos++;
+								}
+							}
+							if(found == 1) break;
+						}
+
+						if(predicateWeWant == NULL){
+							std::cout<<"Error: Cannot find predicate containing "<<pred.getLvar();
+						}
+						else{
+							std::set<Variable>::iterator itrInner = variables.find(Variable(predicateWeWant->getVar()));
+							//Finds variable with var=next
+							Domain d = (*itrInner).getPosMap().at(pos);
+							std::string varType(d.getDomainVar());
+
+							auto pa = variables.find(predicateWeWant->getVar())->getPosMap()[pos].getDomainVar();
+							for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
+								if(it3->second.first.compare(pa) == 0)
+									strRhs.append(it3->second.second);	
+
+							}
+						}
+
+					}
+
+					if(e == 1) strRhs.append("=");
+					else if(e == 2) strRhs.append("!=");
+
+					itr = std::find_if(orphanVarsSet.begin(), orphanVarsSet.end(), [&](const std::pair<std::string, std::string>& val) -> bool{
+						return val.first == pred.getRvar();
+					});
+
+					if(itr != orphanVarsSet.end())
+					{
+						strRhs.append(pred.getRvar());
+					}
+					else
+					{
+						//search all predicates innerVariables to find out its domain
+						Predicate* predicateWeWant;
+						//search all predicates innerVariables to find out its domain
+						int pos = 0; 
+						for(auto &innerPred: r.body){
+							int found = 0;
+
+							if(innerPred.checkEquality()==0){
+								std::vector<std::string> tok = innerPred.getTokens();
+								pos = 0;
+								for(auto &tokenStr:tok){
+									if(tokenStr == pred.getRvar()){
+										predicateWeWant = &innerPred;
+										found = 1;
+										break;
+									}
+									pos++;
+								}
+							}
+							if(found == 1) break;
+						}
+
+						if(predicateWeWant == NULL){
+							std::cout<<"Error: Cannot find predicate containing "<<pred.getRvar();
+						}
+						else{
+							std::set<Variable>::iterator itrInner = variables.find(Variable(predicateWeWant->getVar()));
+							//Finds variable with var=next
+							Domain d = (*itrInner).getPosMap().at(pos);
+							std::string varType(d.getDomainVar());
+
+							auto pa = variables.find(predicateWeWant->getVar())->getPosMap()[pos].getDomainVar();
+							for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
+								if(it3->second.first.compare(pa) == 0)
+									strRhs.append(it3->second.second);	
+
+							}
+						}
+					}
+					strRhs.append(" ^ ");
+					continue;
+				}
 				strRhs.append(pred.getVar());
 				strRhs.append("(");
 				//If pred.getVar is the same as that of our key

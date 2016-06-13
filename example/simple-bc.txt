@@ -1,0 +1,67 @@
+step = {0,1,2,3}
+astep = {0,1,2}
+boolean = {True, False}
+
+p(boolean,step)
+a(boolean,step)
+
+next(step,step)
+
+next(0,1).
+next(1,2).
+next(2,3).
+
+PF(step)
+
+0.8473 PF(x)
+
+
+a(True,t) ^ next(t,t1) ^ PF(t) => p(True,t1).
+a(False,t) ^ next(t,t1) ^ PF(t) ^ p(True,t) => p(False,t1).
+
+//exogenity fluents
+p(b,0) => p(b,0).
+
+//exogenity actions
+!!a(b,t) => a(b,t).
+
+//uec - p
+p(True,t) v p(False,t).
+!(p(True,t) ^ p(False,t)).
+
+a(True,t) v a(False,t).
+!(a(True,t) ^ a(False,t)).
+
+// 0.8473 a(True,t)
+
+// p(False,2).
+// 0.8473 a(True,2)
+
+// p is inertial
+p(b,t1) ^ p(b,t) ^ next(t1,t) => p(b,t).
+
+//case 1 p(P1/-P0,-A0) = 4.9995e-05
+//case 2 p(P1/-P0,-A0) = 0.681982
+//case 3 p(P1/P0,-A0) = 0.280022
+//case 4 p(P1/P0,A0) = 0.99995
+
+
+//case 1 p(P2/-P1,-A1) = 4.9995e-05
+//case 2 p(P2/-P1,-A1) = 0.69998
+//case 3 p(P2/P1,-A1) = 0.341016
+//case 4 p(P2/P1,A1) = 0.99995
+
+//Cases after correction
+
+//case 1 p(P1/-P0,-A0) = 4.9995e-05
+//case 2 p(P1/-P0,-A0) = 0.681982
+//case 3 p(P1/P0,-A0) = 0.280022
+//case 4 p(P1/P0,A0) = 0.99995
+
+
+//case 1 p(P2/-P1,-A1) = 4.9995e-05
+//case 2 p(P2/-P1,-A1) = 0.69998
+//case 3 p(P2/P1,-A1) = 0.341016
+//case 4 p(P2/P1,A1) = 0.99995
+!!p(False,1).
+!!a(True,1).
