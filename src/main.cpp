@@ -106,6 +106,7 @@ int main(int argc, char **argv)
               unsigned long int pos = static_cast<unsigned long int>(lexeme.current - lexeme.start);
               string substr(lexeme.start, pos);
               Token* tok = new Token(substr);
+              // std::cout<<hTokenId<<":"<<*(tok->token)<<std::endl;
               v.push_back(tok);
               try{
                 Parse(parser, hTokenId, tok, tree);

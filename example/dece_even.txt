@@ -1,0 +1,64 @@
+// Domain: Dice
+
+// ************ Declaration ************
+
+dice = {D1}
+
+number = {1, 2, 3}
+
+boolean = {T, F}
+
+cl = {CL2, CL3}
+
+Roll(dice, number)
+
+InterveneRoll(dice,boolean)
+
+DoRoll(dice, number)
+
+DefaultRoll(dice, number)
+
+AssignedRoll(dice, number, boolean)
+
+CLinvokeRoll(dice)
+
+CLRoll(dice, cl)
+
+CE1(dice, number, number)
+
+CE2(dice, number, number, number)
+
+CE3(dice, number)
+
+
+// Even Part
+
+Even(dice, boolean)
+
+Roll(d, 2) => Even(d, T).
+
+Even(d, F) => Even(d, F).
+
+!(Even(d, T) ^ Even(d, F)).
+
+!Roll(d, n1) v !Roll(d, n2) v n1 = n2.
+
+// ************ Random Selection ************
+
+DoRoll(d, n) => InterveneRoll(d,T).
+
+InterveneRoll(d,F) => Roll(d, 1).
+InterveneRoll(d,F) => Roll(d, 2).
+InterveneRoll(d,F) => Roll(d, 3).
+
+AssignedRoll(d, n, F) ^ InterveneRoll(d,F) => DefaultRoll(d, n).
+
+Roll(d, n) ^ DefaultRoll(d, n) => CLinvokeRoll(d).
+
+CLinvokeRoll(d) ^ DefaultRoll(d, n1) ^ DefaultRoll(d, n2) ^ n1 != n2 => CLRoll(d, CL2).
+
+CLinvokeRoll(d) ^ DefaultRoll(d, n1) ^ DefaultRoll(d, n2) ^ DefaultRoll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3 => CLRoll(d, CL3).
+
+-0.6931 CLRoll(d, CL2)
+
+-0.4055 CLRoll(d, CL3)

@@ -178,36 +178,49 @@ prog ::= .
 
 
 //ex !(alive(x,True,t) ^ alive(x,False,t))
-ruleU ::= LBRACKET rule2 RBRACKET DOT.
+ruleU ::= LBRACKET ruleI RBRACKET DOT.
 
-ruleU ::= NEGATION LBRACKET rule2 RBRACKET DOT.
+ruleU ::= NEGATION LBRACKET ruleI RBRACKET DOT.
 
-rule2 ::= body CONJUNCTION bodydef2(B2).{
+ruleI ::= body CONJUNCTION bodydef2(B2).{
 	delete B2;
 }
 
-rule2 ::= body DISJUNCTION bodydef2(B2). {
+ruleI ::= body DISJUNCTION bodydef2(B2). {
 	delete B2;
 }
 
 //Parse rules with only body(body => T) 
 //These are hard rules.
-//ex.alive(x,True,t) v alive(x,False,t).
-rule(R) ::= body(B) CONJUNCTION bodydef2(B2) DOT.{
-	R = new RuleCompletion;
-	R->isHeadTop = true;
-	delete B;
-	delete B2;
-}
+//ex.alive(x,True,t) ^ alive(x,False,t).
+// rule(R) ::= body(B) CONJUNCTION bodydef2(B2) DOT.{
+// 	R = new RuleCompletion;
+// 	R->isHeadTop = true;
+// 	delete B;
+// 	delete B2;
+// }
 //ex. !alive(x,True,t) v !alive(x,False,t).
-rule(R) ::= body(B) DISJUNCTION bodydef2(B2) DOT. {
+// rule(R) ::= body(B) DISJUNCTION bodydef2(B2) DOT. {
+// 	R = new RuleCompletion;
+// 	R->isHeadTop = true;	
+// 	delete B;
+// 	delete B2;
+// }
+
+rule(R) ::= body(B) CONJUNCTION bodydef(B1) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
 	delete B;
-	delete B2;
+	delete B1;
 }
 
 
+rule(R) ::= body(B) DISJUNCTION bodydef(B1) DOT.{
+	R = new RuleCompletion;
+	R->isHeadTop = true;	
+	delete B;
+	delete B1;
+}
 
 //Parse hard rules
 rule(R) ::= body(B) IMPLICATION head(H) DOT.{
@@ -306,6 +319,11 @@ body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B1->addPredicate(Bd->getPredicate());
 	delete Bd;
 }
+
+body(B) ::= body(B1) DISJUNCTION bodydef(Bd).{
+	B = B1;
+	delete Bd;
+}
 body(B) ::= bodydef(Bd).{
 	B = new Body;
 	B->addPredicate(Bd->getPredicate());
@@ -314,6 +332,18 @@ body(B) ::= bodydef(Bd).{
 
 //BodyDef without negation in front
 bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{	
+	std::vector<std::string> vars;
+	for(auto& v : *Ve)
+		vars.push_back(*v);
+	
+	Predicate p(S->token, vars);
+	B = new BodyDef;
+	B->addPredicate(p);
+	delete Ve;
+}
+
+//BodyDef with negation in front
+bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
 	std::vector<std::string> vars;
 	for(auto& v : *Ve)
 		vars.push_back(*v);
@@ -340,23 +370,16 @@ bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
 	B->addPredicate(p);
 }
 
-//BodyDef with negation in front
-bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
-	
-	Predicate p(S->token, vars);
-	B = new BodyDef;
-	B->addPredicate(p);
-	delete Ve;
-}
 
-//BodyDef without negation in front
+
+//BodyDef2 without negation in front
 bodydef2 ::= string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
-//BodyDef with negation in front
+//BodyDef2 with negation in front
 bodydef2 ::= NEGATION string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
 
+bodydef2 ::= string EQUAL string.
+
+bodydef2 ::= string NEGATION EQUAL string.
 
 //Parses head of rules
 head(H) ::= headdef(H1). { 
@@ -461,6 +484,11 @@ number(N) ::= NUMBER(N1). { N=N1;}
 //Parses decimals
 number(N) ::= lnumber(L) DOT rnumber(R). { 
 	N = new Token(*(L->token)+"."+*(R->token));
+}
+
+//Parses negative decimals
+number(N) ::= MINUS lnumber(L) DOT rnumber(R). { 
+	N = new Token("-"+*(L->token)+"."+*(R->token));
 }
 lnumber(L) ::= NUMBER(N). { L=N; }
 rnumber(R) ::= NUMBER(N). { R=N; }

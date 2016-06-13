@@ -43,6 +43,8 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 									lexeme->current++; 
 									return PARSE_TOKEN_DISJUNCTION;
 								}
+
+		"-"						{ return PARSE_TOKEN_MINUS;}
 		
 		"!"						{ return PARSE_TOKEN_NEGATION;}
 		"+"						{ return PARSE_TOKEN_PLUS ;}

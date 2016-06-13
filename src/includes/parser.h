@@ -14,3 +14,4 @@
 #define PARSE_TOKEN_PLUS                            14
 #define PARSE_TOKEN_STRING                          15
 #define PARSE_TOKEN_NUMBER                          16
+#define PARSE_TOKEN_MINUS                           17
