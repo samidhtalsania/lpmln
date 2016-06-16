@@ -1,0 +1,9 @@
+dice = {D1}
+
+number = {1, 2, 3}
+
+Roll(dice, number)
+
+
+0.8536 (Roll(d,k) ^ Roll(d,k2) ^ k=k2 => Roll(d,k))
+//parsing complete!

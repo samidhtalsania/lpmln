@@ -17,6 +17,8 @@ public:
 	Tree();
 	~Tree();
 
+	bool statHasDblNeg = false;
+
 	std::set<Domain> domains;
 	std::multimap<std::string, FactCompletion> facts;
 

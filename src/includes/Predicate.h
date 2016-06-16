@@ -47,6 +47,9 @@ public:
 	void setEquality() { isEquality = true;}
 	void setInEquality() { isInEquality = true;}
 
+	bool needsToBeCompleted() { return toBeCompleted; }
+
+	void notToBeCompleted() { toBeCompleted = true;} 
 
 private:
 	std::string var;
@@ -55,5 +58,6 @@ private:
 	std::vector<std::string> tokens;
 	bool isEquality = false;
 	bool isInEquality = false;
+	bool toBeCompleted = true;
 };
 

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <memory>
 #include <fstream>
+#include <algorithm>
 
 
 #include <boost/iostreams/filtering_stream.hpp>
@@ -81,21 +82,21 @@ int main(int argc, char **argv)
           }
 
           //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
-          //Even if this is skipped the grmmar will handle it but then it justs introduces a lot 
+          // The user possibly wants to pass this statement directly to alchemy.
           else if(str.substr(0,2).compare("!!") == 0){
             cout<<str.substr(2,str.size()-1)<<"\n";
             continue;
           }
 
           //If it is a uniqueness statement print it oout and go to next
-		  else if(str.substr(0,2).compare("!(") == 0){
+		      else if(str.substr(0,2).compare("!(") == 0){
             cout<<str<<"\n";
             continue;
           }
 
 
           str += "\n";
-          cout<<str;
+          
           char* buffer;
           buffer = const_cast<char*>(str.c_str());
           int len = str.size();
@@ -116,6 +117,17 @@ int main(int argc, char **argv)
               }
             }
           }
+
+          if(tree->statHasDblNeg){
+            tree->statHasDblNeg = false;
+            // Remove double neg from program
+            remove_copy(str.begin(), str.end(),
+                 ostream_iterator<char>(std::cout), '!');
+          }
+          else{
+            cout<<str;
+          }
+
         }
         else
           std::cout << "\n";        

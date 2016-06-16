@@ -4,6 +4,6 @@ number = {1, 2, 3}
 
 Roll(dice, number)
 
-//!Roll(d,d) ^ !Roll(n1,n2) ^ n1=n2.
+0.8536  Roll(D1,2)
 
-!Roll(d,d) v !Roll(n1,n2) v n1=n2.
+0.8536 !!(!Roll(d,k) ^ !Roll(d,k2) ^ k=k2 => Roll(d,k))

@@ -115,14 +115,18 @@ prog ::= domain(D). {
 }
 
 prog ::= prog NEWLINE predicate(P). { 
-	FactCompletion f(*P);
-	tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+	if(P->needsToBeCompleted()){	
+		FactCompletion f(*P);
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+	}	
 	delete P;
 }
 
 prog ::= predicate(P). { 
-	FactCompletion f(*P);
-	tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+	if(P->needsToBeCompleted()){
+		FactCompletion f(*P);
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 	
+	}
 	delete P;
 }
 
@@ -189,23 +193,6 @@ ruleI ::= body CONJUNCTION bodydef2(B2).{
 ruleI ::= body DISJUNCTION bodydef2(B2). {
 	delete B2;
 }
-
-//Parse rules with only body(body => T) 
-//These are hard rules.
-//ex.alive(x,True,t) ^ alive(x,False,t).
-// rule(R) ::= body(B) CONJUNCTION bodydef2(B2) DOT.{
-// 	R = new RuleCompletion;
-// 	R->isHeadTop = true;
-// 	delete B;
-// 	delete B2;
-// }
-//ex. !alive(x,True,t) v !alive(x,False,t).
-// rule(R) ::= body(B) DISJUNCTION bodydef2(B2) DOT. {
-// 	R = new RuleCompletion;
-// 	R->isHeadTop = true;	
-// 	delete B;
-// 	delete B2;
-// }
 
 rule(R) ::= body(B) CONJUNCTION bodydef(B1) DOT.{
 	R = new RuleCompletion;
@@ -309,6 +296,24 @@ rule(R) ::= number body(B) IMPLICATION head(H). {
 	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
 
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+	delete B;
+	delete H;
+}
+
+//Parse soft exogenity rules (not to be completed)
+//Ex. 0.8536 !!<body> => head.
+rule(R) ::= number NEGATION NEGATION body(B) IMPLICATION head(H). {
+	tree->statHasDblNeg = true;
+	R = new RuleCompletion;
+	R->isHeadTop = true;	
+	delete B;
+	delete H;
+}
+
+rule(R) ::= number NEGATION NEGATION LBRACKET body(B) IMPLICATION head(H) RBRACKET. {
+	R = new RuleCompletion;
+	R->isHeadTop = true;	
+	tree->statHasDblNeg = true;
 	delete B;
 	delete H;
 }
@@ -447,6 +452,15 @@ predicate(P) ::= number string(S) LBRACKET variables(Ve) RBRACKET. {
 	P->setTokens(*Ve);
 	delete Ve;
 }
+
+//Parses weighted/soft constraints ex. 0.4536 !!next(0,1)
+predicate(P) ::= number NEGATION NEGATION string LBRACKET variables(Ve) RBRACKET. {
+	P = new Predicate;
+	P->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	delete Ve;
+}
+
 
 //Parses domains ex. step={1,2,3}
 domain(D) ::= string(S) EQUAL domains(Ds).{ 

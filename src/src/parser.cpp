@@ -137,16 +137,16 @@ typedef union {
 #define ParseARG_PDECL , Tree* tree
 #define ParseARG_FETCH  Tree* tree = yypParser->tree
 #define ParseARG_STORE yypParser->tree = tree
-#define YYNSTATE             75
-#define YYNRULE              51
-#define YY_MAX_SHIFT         74
-#define YY_MIN_SHIFTREDUCE   116
-#define YY_MAX_SHIFTREDUCE   166
-#define YY_MIN_REDUCE        167
-#define YY_MAX_REDUCE        217
-#define YY_ERROR_ACTION      218
-#define YY_ACCEPT_ACTION     219
-#define YY_NO_ACTION         220
+#define YYNSTATE             87
+#define YYNRULE              54
+#define YY_MAX_SHIFT         86
+#define YY_MIN_SHIFTREDUCE   130
+#define YY_MAX_SHIFTREDUCE   183
+#define YY_MIN_REDUCE        184
+#define YY_MAX_REDUCE        237
+#define YY_ERROR_ACTION      238
+#define YY_ACCEPT_ACTION     239
+#define YY_NO_ACTION         240
 /************* End control #defines *******************************************/
 
 /* The yyzerominor constant is used to initialize instances of
@@ -218,29 +218,33 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (205)
+#define YY_ACTTAB_COUNT (247)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */   219,   54,  118,   62,  120,  122,  161,  124,  126,   40,
- /*    10 */   139,   35,  161,   71,   33,   15,   37,  117,   70,  119,
- /*    20 */   121,  138,  123,  125,   40,  139,  166,   41,    2,   13,
- /*    30 */    15,   37,   24,   70,   43,   26,  161,   71,   33,  161,
- /*    40 */   161,   44,   12,  159,  158,  156,   70,   55,   46,  161,
- /*    50 */   159,  158,  156,   70,   11,   47,  155,  159,  158,  156,
- /*    60 */    70,   11,   48,   11,  159,  158,  156,   70,   36,   49,
- /*    70 */    45,  159,  158,  156,   70,  143,   50,  204,  159,  158,
- /*    80 */   156,   70,  204,   51,   11,  159,  158,  156,   70,  142,
- /*    90 */    52,  150,  159,  158,  156,   70,   39,  139,   65,  159,
- /*   100 */   158,  156,   70,   38,  159,  158,  157,   70,   53,  139,
- /*   110 */   136,  148,  164,   61,   56,   41,   53,  139,   57,  148,
- /*   120 */    66,   74,   56,   41,  138,  132,  137,  131,  202,   11,
- /*   130 */    42,   68,   42,  202,   25,   19,  149,   28,  161,   21,
- /*   140 */    20,  152,    3,   14,    4,   63,   28,   63,   23,   22,
- /*   150 */    31,   29,   16,    8,   69,  161,   63,   10,  137,   11,
- /*   160 */    67,  154,   11,  165,   41,   11,  141,   58,   11,  140,
- /*   170 */    59,  135,   64,   41,  142,   72,   41,   18,   17,  167,
- /*   180 */   134,  163,    5,  160,    1,    6,  133,   60,  130,    7,
- /*   190 */    27,  196,    9,   30,  198,  197,   32,  169,  169,  195,
- /*   200 */    34,  216,   73,  169,  129,
+ /*     0 */   239,   65,  132,   74,  134,  136,  178,  138,  140,   49,
+ /*    10 */   155,   41,  178,   83,   39,   20,   43,  131,   82,  133,
+ /*    20 */   135,  154,  137,  139,   49,  155,  183,   50,    2,   14,
+ /*    30 */    20,   43,   30,   82,   52,   32,  178,   83,   39,  178,
+ /*    40 */   178,   53,   13,  176,  175,  173,   82,   67,   55,  178,
+ /*    50 */   176,  175,  173,   82,   12,   57,  172,  176,  175,  173,
+ /*    60 */    82,   12,   58,  159,  176,  175,  173,   82,   42,   59,
+ /*    70 */   223,  176,  175,  173,   82,  223,   60,  158,  176,  175,
+ /*    80 */   173,   82,   12,   61,   77,  176,  175,  173,   82,   54,
+ /*    90 */    62,  224,  176,  175,  173,   82,  224,   63,   12,  176,
+ /*   100 */   175,  173,   82,   47,  155,   56,  176,  175,  173,   82,
+ /*   110 */    45,  176,  175,  174,   82,   64,  155,   78,   17,   80,
+ /*   120 */    73,   32,   50,   64,  155,  178,   46,  155,   86,  182,
+ /*   130 */    50,   66,  164,   50,  171,   68,  151,  164,  150,  164,
+ /*   140 */    68,   12,   68,   48,  155,   69,  164,  158,  166,   68,
+ /*   150 */    44,  154,  146,  153,  145,  221,  181,   51,   81,   51,
+ /*   160 */   221,   31,   24,   29,   34,  178,   34,  178,  168,    3,
+ /*   170 */   184,    4,   75,    5,   75,    1,   75,  177,   26,   25,
+ /*   180 */    26,   25,   16,   34,   18,   26,   25,   28,   27,   19,
+ /*   190 */     9,   21,   37,   75,   35,  153,   15,   70,  178,   11,
+ /*   200 */   178,   50,   79,   50,   71,   12,   12,   12,   12,   12,
+ /*   210 */    50,  180,  165,  157,  156,   76,   84,   23,   22,  152,
+ /*   220 */     6,    7,  149,  186,   33,  186,   72,  148,  147,  144,
+ /*   230 */     8,   36,   38,   40,  215,   10,  186,  217,  216,  186,
+ /*   240 */   186,  214,  186,   85,  236,  186,  143,
 };
 static const YYCODETYPE yy_lookahead[] = {
  /*     0 */    19,   20,   21,   35,   23,   24,   15,   26,   27,   28,
@@ -249,55 +253,62 @@ static const YYCODETYPE yy_lookahead[] = {
  /*    30 */    34,   35,   11,   37,   25,   11,   15,   16,   17,   15,
  /*    40 */    15,   25,    8,   34,   35,   36,   37,   35,   25,   15,
  /*    50 */    34,   35,   36,   37,    2,   25,    4,   34,   35,   36,
- /*    60 */    37,    2,   25,    2,   34,   35,   36,   37,    9,   25,
- /*    70 */     9,   34,   35,   36,   37,   35,   25,    0,   34,   35,
- /*    80 */    36,   37,    5,   25,    2,   34,   35,   36,   37,   35,
- /*    90 */    25,    9,   34,   35,   36,   37,   28,   29,   35,   34,
- /*   100 */    35,   36,   37,   35,   34,   35,   36,   37,   28,   29,
- /*   110 */    31,   32,   38,   33,   35,   35,   28,   29,   31,   32,
- /*   120 */    35,   33,   35,   35,   29,   30,   29,   30,    0,    2,
- /*   130 */    35,   35,   35,    5,   11,    1,    9,    1,   15,    6,
- /*   140 */     7,   13,    8,   10,    8,   11,    1,   11,    6,    7,
- /*   150 */     1,   11,   10,    8,   37,   15,   11,    8,   29,    2,
- /*   160 */    11,   22,    2,   16,   35,    2,    9,   29,    2,    9,
- /*   170 */    29,   13,    9,   35,   35,    9,   35,    6,    7,    0,
- /*   180 */    13,   38,    8,   35,    5,    8,   13,    9,   13,    8,
- /*   190 */     1,    9,    8,    1,    9,    9,   13,   39,   39,    9,
- /*   200 */    13,   13,    9,   39,   13,
+ /*    60 */    37,    2,   25,   35,   34,   35,   36,   37,    9,   25,
+ /*    70 */     0,   34,   35,   36,   37,    5,   25,   35,   34,   35,
+ /*    80 */    36,   37,    2,   25,   35,   34,   35,   36,   37,    9,
+ /*    90 */    25,    0,   34,   35,   36,   37,    5,   25,    2,   34,
+ /*   100 */    35,   36,   37,   28,   29,    9,   34,   35,   36,   37,
+ /*   110 */    35,   34,   35,   36,   37,   28,   29,   35,    8,   35,
+ /*   120 */    33,   11,   35,   28,   29,   15,   28,   29,   33,   16,
+ /*   130 */    35,   31,   32,   35,   22,   35,   31,   32,   31,   32,
+ /*   140 */    35,    2,   35,   28,   29,   31,   32,   35,    9,   35,
+ /*   150 */    35,   29,   30,   29,   30,    0,   38,   35,   37,   35,
+ /*   160 */     5,   11,    1,   11,    1,   15,    1,   15,   13,    8,
+ /*   170 */     0,    8,   11,    8,   11,    5,   11,   35,    6,    7,
+ /*   180 */     6,    7,   10,    1,   10,    6,    7,    6,    7,   10,
+ /*   190 */     8,   10,    1,   11,   11,   29,   11,   29,   15,    8,
+ /*   200 */    15,   35,   11,   35,   29,    2,    2,    2,    2,    2,
+ /*   210 */    35,   38,    9,    9,    9,    9,    9,    6,    7,    9,
+ /*   220 */     8,    8,   13,   39,    1,   39,    9,   13,   13,   13,
+ /*   230 */     8,    1,   13,   13,    9,    8,   39,    9,    9,   39,
+ /*   240 */    39,    9,   39,    9,   13,   39,   13,
 };
 #define YY_SHIFT_USE_DFLT (-10)
-#define YY_SHIFT_COUNT (74)
+#define YY_SHIFT_COUNT (86)
 #define YY_SHIFT_MIN   (-9)
-#define YY_SHIFT_MAX   (193)
+#define YY_SHIFT_MAX   (234)
 static const short yy_shift_ofst[] = {
  /*     0 */    21,   21,   -3,   -3,   -3,   -3,   -3,   -3,   -3,   -3,
- /*    10 */    -3,   -3,   24,   24,  123,   24,  123,  140,  140,   25,
- /*    20 */    24,   24,   24,   24,   34,   -9,   -9,   -9,   -9,   -9,
- /*    30 */    -9,   -9,   10,  147,   10,   -9,  128,  134,  136,  133,
- /*    40 */   142,  145,  149,   52,   59,   77,   61,   82,  127,  157,
- /*    50 */   160,  163,  166,  171,  179,  174,  177,  158,  167,  173,
- /*    60 */   175,  178,  181,  189,  182,  184,  185,  192,  186,  183,
- /*    70 */   187,  188,  190,  191,  193,
+ /*    10 */    -3,   -3,   -3,   24,   24,  110,  150,   24,  150,  150,
+ /*    20 */   152,  150,  183,  183,   25,   24,   24,   24,   24,  185,
+ /*    30 */    34,   -9,   -9,   -9,   -9,   -9,   -9,   -9,   10,  113,
+ /*    40 */    10,   -9,  155,  161,  163,  165,  172,  174,  179,  181,
+ /*    50 */   182,  191,   52,   59,   70,   80,   91,   96,  139,  203,
+ /*    60 */   204,  205,  206,  207,  211,  170,  210,  212,  213,  209,
+ /*    70 */   214,  215,  216,  217,  222,  223,  225,  227,  228,  230,
+ /*    80 */   229,  219,  220,  231,  232,  233,  234,
 };
 #define YY_REDUCE_USE_DFLT (-33)
-#define YY_REDUCE_COUNT (35)
+#define YY_REDUCE_COUNT (41)
 #define YY_REDUCE_MIN   (-32)
-#define YY_REDUCE_MAX   (148)
+#define YY_REDUCE_MAX   (175)
 static const short yy_reduce_ofst[] = {
  /*     0 */   -19,   -4,    9,   16,   23,   30,   37,   44,   51,   58,
- /*    10 */    65,   70,   80,   88,   79,   68,   87,   95,   97,  139,
- /*    20 */    -8,  129,  138,  141,  -32,   12,  -32,   40,   54,   63,
- /*    30 */    85,   96,   74,  117,  143,  148,
+ /*    10 */    65,   72,   77,   87,   95,   75,  100,   98,  105,  107,
+ /*    20 */   115,  114,  122,  124,  112,   -8,  166,  168,  175,  -32,
+ /*    30 */   -32,   12,  -32,   28,   42,   49,   82,   84,  118,  121,
+ /*    40 */   173,  142,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */   179,  178,  218,  218,  218,  218,  218,  218,  218,  218,
- /*    10 */   218,  218,  218,  218,  218,  218,  218,  218,  218,  218,
- /*    20 */   218,  218,  218,  218,  218,  218,  218,  218,  218,  218,
- /*    30 */   218,  218,  218,  218,  218,  218,  191,  218,  218,  218,
- /*    40 */   218,  218,  218,  218,  218,  191,  218,  218,  218,  218,
- /*    50 */   218,  218,  218,  218,  218,  218,  218,  218,  189,  188,
- /*    60 */   218,  218,  218,  218,  192,  218,  194,  218,  193,  218,
- /*    70 */   218,  213,  191,  218,  218,
+ /*     0 */   196,  195,  238,  238,  238,  238,  238,  238,  238,  238,
+ /*    10 */   238,  238,  238,  238,  238,  238,  238,  238,  238,  238,
+ /*    20 */   238,  238,  238,  238,  238,  238,  238,  238,  238,  238,
+ /*    30 */   238,  238,  238,  238,  238,  238,  238,  238,  238,  238,
+ /*    40 */   238,  238,  210,  238,  238,  238,  238,  238,  238,  238,
+ /*    50 */   238,  238,  238,  238,  210,  238,  210,  238,  238,  238,
+ /*    60 */   238,  238,  238,  238,  238,  238,  238,  238,  238,  238,
+ /*    70 */   208,  207,  238,  238,  238,  238,  211,  238,  213,  238,
+ /*    80 */   212,  238,  238,  233,  210,  238,  238,
 };
 /********** End of lemon-generated parsing tables *****************************/
 
@@ -437,36 +448,39 @@ static const char *const yyRuleName[] = {
  /*  18 */ "rule ::= body DISJUNCTION bodydef DOT",
  /*  19 */ "rule ::= body IMPLICATION head DOT",
  /*  20 */ "rule ::= number body IMPLICATION head",
- /*  21 */ "body ::= body CONJUNCTION bodydef",
- /*  22 */ "body ::= body DISJUNCTION bodydef",
- /*  23 */ "body ::= bodydef",
- /*  24 */ "bodydef ::= string LBRACKET variables RBRACKET",
- /*  25 */ "bodydef ::= NEGATION string LBRACKET variables RBRACKET",
- /*  26 */ "bodydef ::= string EQUAL string",
- /*  27 */ "bodydef ::= string NEGATION EQUAL string",
- /*  28 */ "bodydef2 ::= string LBRACKET variables RBRACKET",
- /*  29 */ "bodydef2 ::= NEGATION string LBRACKET variables RBRACKET",
- /*  30 */ "bodydef2 ::= string EQUAL string",
- /*  31 */ "bodydef2 ::= string NEGATION EQUAL string",
- /*  32 */ "head ::= headdef",
- /*  33 */ "headdef ::= string LBRACKET variables RBRACKET",
- /*  34 */ "headdef ::= NEGATION string LBRACKET variables RBRACKET",
- /*  35 */ "decl ::= string LBRACKET variables RBRACKET",
- /*  36 */ "predicate ::= string LBRACKET variables RBRACKET DOT",
- /*  37 */ "predicate ::= number string LBRACKET variables RBRACKET",
- /*  38 */ "domain ::= string EQUAL domains",
- /*  39 */ "domains ::= LPAREN variables RPAREN",
- /*  40 */ "variables ::= variable",
- /*  41 */ "variables ::= variables COMMA variable",
- /*  42 */ "variable ::= string",
- /*  43 */ "variable ::= number",
- /*  44 */ "variable ::= PLUS string",
- /*  45 */ "string ::= STRING",
- /*  46 */ "number ::= NUMBER",
- /*  47 */ "number ::= lnumber DOT rnumber",
- /*  48 */ "number ::= MINUS lnumber DOT rnumber",
- /*  49 */ "lnumber ::= NUMBER",
- /*  50 */ "rnumber ::= NUMBER",
+ /*  21 */ "rule ::= number NEGATION NEGATION body IMPLICATION head",
+ /*  22 */ "rule ::= number NEGATION NEGATION LBRACKET body IMPLICATION head RBRACKET",
+ /*  23 */ "body ::= body CONJUNCTION bodydef",
+ /*  24 */ "body ::= body DISJUNCTION bodydef",
+ /*  25 */ "body ::= bodydef",
+ /*  26 */ "bodydef ::= string LBRACKET variables RBRACKET",
+ /*  27 */ "bodydef ::= NEGATION string LBRACKET variables RBRACKET",
+ /*  28 */ "bodydef ::= string EQUAL string",
+ /*  29 */ "bodydef ::= string NEGATION EQUAL string",
+ /*  30 */ "bodydef2 ::= string LBRACKET variables RBRACKET",
+ /*  31 */ "bodydef2 ::= NEGATION string LBRACKET variables RBRACKET",
+ /*  32 */ "bodydef2 ::= string EQUAL string",
+ /*  33 */ "bodydef2 ::= string NEGATION EQUAL string",
+ /*  34 */ "head ::= headdef",
+ /*  35 */ "headdef ::= string LBRACKET variables RBRACKET",
+ /*  36 */ "headdef ::= NEGATION string LBRACKET variables RBRACKET",
+ /*  37 */ "decl ::= string LBRACKET variables RBRACKET",
+ /*  38 */ "predicate ::= string LBRACKET variables RBRACKET DOT",
+ /*  39 */ "predicate ::= number string LBRACKET variables RBRACKET",
+ /*  40 */ "predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET",
+ /*  41 */ "domain ::= string EQUAL domains",
+ /*  42 */ "domains ::= LPAREN variables RPAREN",
+ /*  43 */ "variables ::= variable",
+ /*  44 */ "variables ::= variables COMMA variable",
+ /*  45 */ "variable ::= string",
+ /*  46 */ "variable ::= number",
+ /*  47 */ "variable ::= PLUS string",
+ /*  48 */ "string ::= STRING",
+ /*  49 */ "number ::= NUMBER",
+ /*  50 */ "number ::= lnumber DOT rnumber",
+ /*  51 */ "number ::= MINUS lnumber DOT rnumber",
+ /*  52 */ "lnumber ::= NUMBER",
+ /*  53 */ "rnumber ::= NUMBER",
 };
 #endif /* NDEBUG */
 
@@ -816,6 +830,8 @@ static const struct {
   { 26, 4 },
   { 26, 4 },
   { 26, 4 },
+  { 26, 6 },
+  { 26, 8 },
   { 28, 3 },
   { 28, 3 },
   { 28, 1 },
@@ -833,6 +849,7 @@ static const struct {
   { 24, 4 },
   { 23, 5 },
   { 23, 5 },
+  { 23, 7 },
   { 21, 3 },
   { 22, 3 },
   { 25, 1 },
@@ -897,10 +914,20 @@ static void yy_reduce(
 }
         break;
       case 3: /* prog ::= prog NEWLINE predicate */
-      case 4: /* prog ::= predicate */ yytestcase(yyruleno==4);
 { 
-	FactCompletion f(*yymsp[0].minor.yy6);
-	tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+	if(yymsp[0].minor.yy6->needsToBeCompleted()){	
+		FactCompletion f(*yymsp[0].minor.yy6);
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+	}	
+	delete yymsp[0].minor.yy6;
+}
+        break;
+      case 4: /* prog ::= predicate */
+{ 
+	if(yymsp[0].minor.yy6->needsToBeCompleted()){
+		FactCompletion f(*yymsp[0].minor.yy6);
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 	
+	}
 	delete yymsp[0].minor.yy6;
 }
         break;
@@ -1038,28 +1065,46 @@ static void yy_reduce(
 	delete yymsp[0].minor.yy23;
 }
         break;
-      case 21: /* body ::= body CONJUNCTION bodydef */
+      case 21: /* rule ::= number NEGATION NEGATION body IMPLICATION head */
+{
+	tree->statHasDblNeg = true;
+	yygotominor.yy75 = new RuleCompletion;
+	yygotominor.yy75->isHeadTop = true;	
+	delete yymsp[-2].minor.yy25;
+	delete yymsp[0].minor.yy23;
+}
+        break;
+      case 22: /* rule ::= number NEGATION NEGATION LBRACKET body IMPLICATION head RBRACKET */
+{
+	yygotominor.yy75 = new RuleCompletion;
+	yygotominor.yy75->isHeadTop = true;	
+	tree->statHasDblNeg = true;
+	delete yymsp[-3].minor.yy25;
+	delete yymsp[-1].minor.yy23;
+}
+        break;
+      case 23: /* body ::= body CONJUNCTION bodydef */
 {
 	yygotominor.yy25 = yymsp[-2].minor.yy25;
 	yymsp[-2].minor.yy25->addPredicate(yymsp[0].minor.yy30->getPredicate());
 	delete yymsp[0].minor.yy30;
 }
         break;
-      case 22: /* body ::= body DISJUNCTION bodydef */
+      case 24: /* body ::= body DISJUNCTION bodydef */
 {
 	yygotominor.yy25 = yymsp[-2].minor.yy25;
 	delete yymsp[0].minor.yy30;
 }
         break;
-      case 23: /* body ::= bodydef */
+      case 25: /* body ::= bodydef */
 {
 	yygotominor.yy25 = new Body;
 	yygotominor.yy25->addPredicate(yymsp[0].minor.yy30->getPredicate());
 	delete yymsp[0].minor.yy30;
 }
         break;
-      case 24: /* bodydef ::= string LBRACKET variables RBRACKET */
-      case 25: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==25);
+      case 26: /* bodydef ::= string LBRACKET variables RBRACKET */
+      case 27: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==27);
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy31)
@@ -1071,7 +1116,7 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy31;
 }
         break;
-      case 26: /* bodydef ::= string EQUAL string */
+      case 28: /* bodydef ::= string EQUAL string */
 {
 	Predicate p(yymsp[-2].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setEquality();
@@ -1079,7 +1124,7 @@ static void yy_reduce(
 	yygotominor.yy30->addPredicate(p);
 }
         break;
-      case 27: /* bodydef ::= string NEGATION EQUAL string */
+      case 29: /* bodydef ::= string NEGATION EQUAL string */
 {
 	Predicate p(yymsp[-3].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setInEquality();
@@ -1087,17 +1132,17 @@ static void yy_reduce(
 	yygotominor.yy30->addPredicate(p);
 }
         break;
-      case 28: /* bodydef2 ::= string LBRACKET variables RBRACKET */
-      case 29: /* bodydef2 ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==29);
+      case 30: /* bodydef2 ::= string LBRACKET variables RBRACKET */
+      case 31: /* bodydef2 ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==31);
 {delete yymsp[-1].minor.yy31;}
         break;
-      case 32: /* head ::= headdef */
+      case 34: /* head ::= headdef */
 { 
 	yygotominor.yy23 = yymsp[0].minor.yy23;
 }
         break;
-      case 33: /* headdef ::= string LBRACKET variables RBRACKET */
-      case 34: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==34);
+      case 35: /* headdef ::= string LBRACKET variables RBRACKET */
+      case 36: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==36);
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy31)
@@ -1109,7 +1154,7 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy31;
 }
         break;
-      case 35: /* decl ::= string LBRACKET variables RBRACKET */
+      case 37: /* decl ::= string LBRACKET variables RBRACKET */
 {
 	yygotominor.yy2 = new Variable;
 	std::map<int, Domain> posMap;
@@ -1131,7 +1176,7 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy31;
 }
         break;
-      case 36: /* predicate ::= string LBRACKET variables RBRACKET DOT */
+      case 38: /* predicate ::= string LBRACKET variables RBRACKET DOT */
 {
 	yygotominor.yy6 = new Predicate;
 	yygotominor.yy6->setVar(yymsp[-4].minor.yy0->token);
@@ -1139,7 +1184,7 @@ static void yy_reduce(
 	delete yymsp[-2].minor.yy31;
 }
         break;
-      case 37: /* predicate ::= number string LBRACKET variables RBRACKET */
+      case 39: /* predicate ::= number string LBRACKET variables RBRACKET */
 {
 	yygotominor.yy6 = new Predicate;
 	yygotominor.yy6->setVar(yymsp[-3].minor.yy0->token);
@@ -1147,50 +1192,58 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy31;
 }
         break;
-      case 38: /* domain ::= string EQUAL domains */
+      case 40: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
+{
+	yygotominor.yy6 = new Predicate;
+	yygotominor.yy6->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	delete yymsp[-1].minor.yy31;
+}
+        break;
+      case 41: /* domain ::= string EQUAL domains */
 { 
 	yygotominor.yy61 = yymsp[0].minor.yy61;
 	yymsp[0].minor.yy61->setDomainVar(yymsp[-2].minor.yy0->token);
 }
         break;
-      case 39: /* domains ::= LPAREN variables RPAREN */
+      case 42: /* domains ::= LPAREN variables RPAREN */
 {
 	yygotominor.yy61 = new Domain();
 	yygotominor.yy61->setVars(*yymsp[-1].minor.yy31);
 	delete yymsp[-1].minor.yy31;
 }
         break;
-      case 40: /* variables ::= variable */
+      case 43: /* variables ::= variable */
 {
 	yygotominor.yy31 = new std::vector<std::string*>();
 	yygotominor.yy31->push_back(yymsp[0].minor.yy0->token);
 }
         break;
-      case 41: /* variables ::= variables COMMA variable */
+      case 44: /* variables ::= variables COMMA variable */
 {
 	yygotominor.yy31 = yymsp[-2].minor.yy31;
 	yymsp[-2].minor.yy31->push_back(yymsp[0].minor.yy0->token);
 }
         break;
-      case 42: /* variable ::= string */
-      case 43: /* variable ::= number */ yytestcase(yyruleno==43);
-      case 44: /* variable ::= PLUS string */ yytestcase(yyruleno==44);
-      case 45: /* string ::= STRING */ yytestcase(yyruleno==45);
-      case 46: /* number ::= NUMBER */ yytestcase(yyruleno==46);
+      case 45: /* variable ::= string */
+      case 46: /* variable ::= number */ yytestcase(yyruleno==46);
+      case 47: /* variable ::= PLUS string */ yytestcase(yyruleno==47);
+      case 48: /* string ::= STRING */ yytestcase(yyruleno==48);
+      case 49: /* number ::= NUMBER */ yytestcase(yyruleno==49);
 { yygotominor.yy0=yymsp[0].minor.yy0;}
         break;
-      case 47: /* number ::= lnumber DOT rnumber */
+      case 50: /* number ::= lnumber DOT rnumber */
 { 
 	yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
         break;
-      case 48: /* number ::= MINUS lnumber DOT rnumber */
+      case 51: /* number ::= MINUS lnumber DOT rnumber */
 { 
 	yygotominor.yy0 = new Token("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
         break;
-      case 49: /* lnumber ::= NUMBER */
-      case 50: /* rnumber ::= NUMBER */ yytestcase(yyruleno==50);
+      case 52: /* lnumber ::= NUMBER */
+      case 53: /* rnumber ::= NUMBER */ yytestcase(yyruleno==53);
 { yygotominor.yy0=yymsp[0].minor.yy0; }
         break;
       default:
@@ -1199,8 +1252,8 @@ static void yy_reduce(
       /* (12) prog ::= */ yytestcase(yyruleno==12);
       /* (13) ruleU ::= LBRACKET ruleI RBRACKET DOT */ yytestcase(yyruleno==13);
       /* (14) ruleU ::= NEGATION LBRACKET ruleI RBRACKET DOT */ yytestcase(yyruleno==14);
-      /* (30) bodydef2 ::= string EQUAL string */ yytestcase(yyruleno==30);
-      /* (31) bodydef2 ::= string NEGATION EQUAL string */ yytestcase(yyruleno==31);
+      /* (32) bodydef2 ::= string EQUAL string */ yytestcase(yyruleno==32);
+      /* (33) bodydef2 ::= string NEGATION EQUAL string */ yytestcase(yyruleno==33);
         break;
 /********** End reduce actions ************************************************/
   };
