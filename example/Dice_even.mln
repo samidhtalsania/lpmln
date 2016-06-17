@@ -1,0 +1,115 @@
+// Domain: Dice
+
+// ************ Declaration ************
+
+dice = {D1}
+
+number = {1, 2, 3}
+
+boolean = {T, F}
+
+cl = {CL2, CL3}
+
+Roll(dice, number)
+
+Intervene_Roll(dice)
+
+Do_Roll(dice, number)
+
+Default_Roll(dice, number)
+
+Assigned_Roll(dice, number)
+
+CL_invoke_Roll(dice)
+
+CL_Roll(dice, cl)
+
+CE1(dice, number, number)
+
+CE2(dice, number, number, number)
+
+CE3(dice, number)
+
+
+// **** Rules **** 
+
+
+// Even Part
+
+Even(dice, boolean)
+
+Roll(d, 2) => Even(d, T).
+
+!Even(d, T) => Even(d, F).
+
+!Even(d, T) v !Even(d, F).
+
+// ************ Regular part ************
+
+!Roll(d, n1) v !Roll(d, n2) v n1 = n2.
+
+// ************ Random Selection ************
+
+Do_Roll(d, n) => Intervene_Roll(d).
+
+!Intervene_Roll(d) => Roll(d, 1) v Roll(d, 2) v Roll(d, 3).
+
+!Assigned_Roll(d, n) ^ !Intervene_Roll(d) => Default_Roll(d, n).
+
+Roll(d, n) ^ Default_Roll(d, n) => CL_invoke_Roll(d).
+
+CL_invoke_Roll(d) ^ Default_Roll(d, n1) ^ Default_Roll(d, n2) ^ n1 != n2 => CL_Roll(d, CL2).
+
+CL_invoke_Roll(d) ^ Default_Roll(d, n1) ^ Default_Roll(d, n2) ^ Default_Roll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3 => CL_Roll(d, CL3).
+
+-0.6931 CL_Roll(d, CL2)
+
+-0.4055 CL_Roll(d, CL3)
+
+
+// ************ Probabilistic Information ************
+
+
+// **** Completion **** 
+
+// **** Roll(dice, number)
+Roll(d, n) => !Intervene_Roll(d).
+
+// **** Even(dice, boolean)
+// Even(d, T) => ( EXIST n Roll(d, n) ^ (n % 2)=0 ).
+
+Even(d, T) => Roll(d, 2).
+
+Even(d, F) => !Even(d, T).
+
+// **** Intervene_Roll(dice)
+// Intervene_Roll(d) => ( EXIST n Do_Roll(d, n) ).
+
+EXIST n Intervene_Roll(d) => Do_Roll(d, n).
+
+// **** Do_Roll(dice, number)
+!Do_Roll(d, n).
+
+// **** Default_Roll(dice, number)
+Default_Roll(d, n) => !Assigned_Roll(d, n) ^ !Intervene_Roll(d).
+
+// **** Assigned_Roll(dice, number)
+
+!Assigned_Roll(d, n).
+
+// **** CL_invoke_Roll(dice)
+// CL_invoke_Roll(d) => ( EXIST n Roll(d, n) ^ Default_Roll(d, n) ).
+
+EXIST n CL_invoke_Roll(d) => Roll(d, n) ^ Default_Roll(d, n).
+
+// **** CL_Roll(dice, cl)
+// CL_Roll(d, CL2) => ( EXIST n1,n2 CL_invoke_Roll(d) ^ Default_Roll(d, n1) ^ Default_Roll(d, n2) ^ n1 != n2 ).
+
+EXIST n1,n2 CL_Roll(d, CL2) => CE1(d, n1, n2).
+CE1(d, n1, n2) <=> CL_invoke_Roll(d) ^ Default_Roll(d, n1) ^ Default_Roll(d, n2) ^ n1 != n2.
+
+// CL_Roll(d, CL3) => ( EXIST n1,n2,n3 CL_invoke_Roll(d) ^ Default_Roll(d, n1) ^ Default_Roll(d, n2) ^ Default_Roll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3 ).
+
+EXIST n1,n2,n3 CL_Roll(d, CL3) => CE2(d, n1, n2, n3).
+CE2(d, n1, n2, n3) <=> CL_invoke_Roll(d) ^ Default_Roll(d, n1) ^ Default_Roll(d, n2) ^ Default_Roll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3.
+

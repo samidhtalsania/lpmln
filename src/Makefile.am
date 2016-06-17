@@ -19,4 +19,6 @@ ___lpmln_SOURCES = \
 			src/Body.cpp \
 			src/BodyDef.cpp \
 			src/Head.cpp \
-			src/exceptions/undefined_predicate.cpp
+			src/exceptions/undefined_predicate.cpp \
+			src/Config.cpp \
+			src/ParserWrapper.cpp
