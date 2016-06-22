@@ -5,9 +5,10 @@ Token::Token(std::string _c){
 	*token = _c; 
 }
 
-Token::Token(){
-	
+void Token::modifyToken(std::string _c){
+	*token = _c;
 }
+
 
 Token::~Token(){
 	delete token;

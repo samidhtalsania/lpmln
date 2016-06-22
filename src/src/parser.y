@@ -354,6 +354,36 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
+	p.setSingleNegation();
+	B = new BodyDef;
+	B->addPredicate(p);
+	delete Ve;
+}
+
+// //BodyDef with double negation in front
+// bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
+// 	std::vector<std::string> vars;
+// 	for(auto& v : *Ve)
+// 		vars.push_back(*v);
+	
+// 	Predicate p(S->token, vars);
+// 	p.setDoubleNegation();
+// 	B = new BodyDef;
+// 	B->addPredicate(p);
+// 	delete Ve;
+// }
+
+
+//BodyDef with double negation in front
+//Bodydefs of the form (!!Load(A,B)) => Load(A,B). which needs to be completed. 
+bodydef(B) ::= LBRACKET NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET RBRACKET.{	
+	std::vector<std::string> vars;
+	for(auto& v : *Ve)
+		vars.push_back(*v);
+	
+	Predicate p(S->token, vars);
+	p.setDoubleNegation();
+	tree->statHasDblNeg = true;
 	B = new BodyDef;
 	B->addPredicate(p);
 	delete Ve;
@@ -497,12 +527,16 @@ number(N) ::= NUMBER(N1). { N=N1;}
 
 //Parses decimals
 number(N) ::= lnumber(L) DOT rnumber(R). { 
-	N = new Token(*(L->token)+"."+*(R->token));
+	// N = new Token(*(L->token)+"."+*(R->token));
+	N = L;
+	N->modifyToken(*(L->token)+"."+*(R->token));
 }
 
 //Parses negative decimals
-number(N) ::= MINUS lnumber(L) DOT rnumber(R). { 
-	N = new Token("-"+*(L->token)+"."+*(R->token));
+number(N) ::= MINUS lnumber(L) DOT rnumber(R). {
+	N = L;
+	N->modifyToken("-"+*(L->token)+"."+*(R->token));
+	// N = new Token("-"+*(L->token)+"."+*(R->token));
 }
 lnumber(L) ::= NUMBER(N). { L=N; }
 rnumber(R) ::= NUMBER(N). { R=N; }

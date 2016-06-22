@@ -17,7 +17,7 @@ PF(step)
 
 
 a(True,t) ^ next(t,t1) ^ PF(t) => p(True,t1).
-a(False,t) ^ next(t,t1) ^ PF(t) ^ p(True,t) => p(False,t1).
+a(False,t) ^ next(t,t1) ^ p(True,t) => p(True,t1).
 
 //exogenity fluents
 p(b,0) => p(b,0).

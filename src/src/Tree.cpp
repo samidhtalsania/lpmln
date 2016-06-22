@@ -37,17 +37,15 @@ void Tree::completeRules(){
 		//Assign a variable to each of the domain of the key.
 		//Use this variable in constructing strLhs and strRhs 
 		std::set<Variable>::iterator itrV = variables.find(key.first);
-		// std::multimap<std::string, std::pair<int, std::string> > varMap;
+		std::map<std::string, int> varMapVarCount;
 		std::unordered_multimap<int, std::pair<std::string, std::string> > varMap;
 		std::set<std::pair<std::string,std::string>> orphanVarsSet;
 		
 		int count = 0;
 		for(auto &var : itrV->getPosMap()){
-			// std::pair<int, std::string> p(var.first,uniqueVars[count++]);
 			std::pair<int, std::pair<std::string, std::string>> pa(var.first, std::pair<std::string, std::string>(var.second.getDomainVar(), uniqueVars[count++]));
-			// varMap.insert(std::pair<std::string, std::pair<int, std::string>>(var.second.getDomainVar(),p));
 			varMap.insert(pa);
-			// varMap[var.second.getDomainVar()] = std::pair<int, std::string> (var.first,uniqueVars[count++]);
+			varMapVarCount[pa.second.first] = varMapVarCount[pa.second.first] + 1;
 		}
 		
 		RuleCompletion r;
@@ -207,15 +205,22 @@ void Tree::completeRules(){
 					strRhs.append(" ^ ");
 					continue;
 				}
+
+				if(pred.isSingleNegated()){
+					strRhs.append("!");
+				}
 				strRhs.append(pred.getVar());
 				strRhs.append("(");
 				//If pred.getVar is the same as that of our key
 				//Then in that case we make use of localPos to fill variables.
 				//Otherwise we just use its own variables
+
+				//The above strat caused a bug. Now always we use its own variables.
 				
 				//std::set<std::string>::iterator itr;
 				//auto itr;
 				int pos = 0;
+				//Iterate over all the tokens of the predicate
 				for(auto &vars : pred.getTokens())
 				{
 					//auto itr = orphanVarsSet.find(vars);
@@ -223,53 +228,39 @@ void Tree::completeRules(){
 						return val.first == vars;
 					});
 					
-					if(pred.getVar().compare(key.first) == 0)
+					if(itr != orphanVarsSet.end())
 					{
-						if(itr != orphanVarsSet.end())
-						{
-							strRhs.append(vars).append(",");
-						}
-						
-						else
-						{
-							for(auto &innerVar : varMap)
-							{
-								if(innerVar.first == pos)
-								{
-									strRhs.append(innerVar.second.second).append(",");
-								}
-							}
-						}
+						strRhs.append(vars).append(",");
 					}
 					else
 					{
-						if(itr != orphanVarsSet.end())
-						{
-							strRhs.append(vars).append(",");
-						}
-						else
-						{
-							std::set<Variable>::iterator itrInner = variables.find(Variable(pred.getVar()));
-							//Finds variable with var=next
-							Domain d = (*itrInner).getPosMap().at(pos);
-							std::string varType(d.getDomainVar());
+						std::set<Variable>::iterator itrInner = variables.find(Variable(pred.getVar()));
+						//Finds domain of the predicate at position pos
+						Domain d = (*itrInner).getPosMap().at(pos);
+						std::string varType(d.getDomainVar());
 
-							 // p;
-							if(isConstant(vars)){
-								strRhs.append(vars).append(",");	
-							}
-							else{
-								//find out the domain at position pos of the predicate pred
-								auto pa = variables.find(pred.getVar())->getPosMap()[pos].getDomainVar();
-								for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
-									if(it3->second.first.compare(pa) == 0)
-										strRhs.append(it3->second.second).append(",");	
+						//Check if the value is a constant
+						if(isConstant(vars)){
+							strRhs.append(vars).append(",");	
+						}
+						else{
+							//find out the domain at position pos of the predicate pred
+							auto pa = variables.find(pred.getVar())->getPosMap()[pos].getDomainVar();
+							for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
+								if(it3->second.first.compare(pa) == 0){
+									if(varMapVarCount[pa] > 1){
+										varMapVarCount[pa] = varMapVarCount[pa] - 1;
+										continue;
+									}
+									varMapVarCount[pa] = varMapVarCount[pa] - 1;
+									strRhs.append(it3->second.second).append(",");	
+									break;
+									
 								}
-								
 							}
+							
 						}
 					}
-					
 					pos++;
 				}
 				

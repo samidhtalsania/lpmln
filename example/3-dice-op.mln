@@ -1,0 +1,103 @@
+Dice = {D1, D2}
+Users = {Mike,John}
+Number = {1,2,3,4}
+Boolean = {T,F}
+Constant = {CL1, CL3,CL2, CL4}
+Constants2 = {P1, P2}
+
+Owner(Dice, Users)
+Roll(Dice, Number)
+Even(Dice, Boolean)
+DoRoll(Dice, Number)
+InterveneRoll(Dice)
+PossAssProbRoll(Dice, Number)
+SplitRemProbRoll(Dice)
+NumDefProbRoll(Dice, Constant)
+CLRoll(Dice,Constant)
+AssProbRoll(Dice,Number)
+ApfRoll(Dice,Number)
+PrApplied(Constants2,Boolean)
+UnAssProbRoll(Dice, Boolean, Boolean)
+PossDefProbRoll(Dice,Number)
+
+Owner(D1, Mike).
+Owner(D2, John).
+Roll(d,2) => Even(d,T).
+Roll(d,4) => Even(d,T).
+Even(d, F) => Even(d, F).
+!Roll(d,n1) v !Roll(d,n2) v n1=n2. 
+!Even(d,F) v !Even(d,T).
+!Owner(d,p1) v !Owner(d,p2) v p1=p2.
+// // ∗ ∗ ∗ ∗RandomSelection ∗ ∗ ∗ ∗
+DoRoll(d, n) => InterveneRoll(d).
+// // !InterveneRoll(d) => Roll(d,1) ∨ Roll(d,2) ∨ Roll(d,3) ∨ Roll(d,4).
+!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,1).
+!InterveneRoll(d) ^ !Roll(d,1) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,2).
+!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,1) ^ !Roll(d,4) => Roll(d,3).
+!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,1) => Roll(d,4).
+
+
+// Roll(d,2,F) ^ Roll(d,3,F) ^ Roll(d,4,F) => Temp_InterveneRoll(d,1).
+// Roll(d,1,F) ^ Roll(d,3,F) ^ Roll(d,4,F) => Temp_InterveneRoll(d,2).
+// Roll(d,2,F) ^ Roll(d,1,F) ^ Roll(d,4,F) => Temp_InterveneRoll(d,3).
+// Roll(d,2,F) ^ Roll(d,3,F) ^ Roll(d,1,F) => Temp_InterveneRoll(d,4).
+
+!PossAssProbRoll(d,n) ^ !InterveneRoll(d) => PossDefProbRoll(d, n).
+
+Roll(d, n) ^ PossDefProbRoll(d, n) => SplitRemProbRoll(d).
+SplitRemProbRoll(d) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ n1 != n2 => NumDefProbRoll(d, CL2).
+
+
+SplitRemProbRoll(d) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3 => NumDefProbRoll(d, CL3).
+
+SplitRemProbRoll(d) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ PossDefProbRoll(d, n4) ^ n1 != n2 ^ n1 != n3 ^ n1 != n4 ^ n2 != n3 ^ n2 != n4 ^ n3 != n4 => NumDefProbRoll(d, CL4).
+
+-0.6931 CLRoll(d, CL2)
+-0.4055 CLRoll(d, CL3)
+-0.2877 CLRoll(d, CL4)
+
+// // ∗ ∗ ∗ ∗P robabilisticInformation ∗ ∗ ∗ ∗
+Owner(d, Mike) ^ !InterveneRoll(d) => PossAssProbRoll(d,3).
+PossAssProbRoll(d,3) ^ Roll(d,3) => AssProbRoll(d,3).
+-1.3863 ApfRoll(d,3)
+Owner(d, Mike) ^ !InterveneRoll(d) => PossAssProbRoll(d,4).
+PossAssProbRoll(d,4) ^ Roll(d,4) => AssProbRoll(d,4).
+-1.6094 ApfRoll(d,4)
+Owner(d, Mike) ^ !InterveneRoll(d) => PrApplied(P1,T).
+Owner(d, Mike) ^ !InterveneRoll(d) => PrApplied(P2,T).
+!PrApplied(p,T) => PrApplied(p,F).
+Roll(d, n) ^ PossDefProbRoll(d, n) ^ PrApplied(P1, b1) ^ PrApplied(P2, b2) => UnAssProbRoll(d, b1, b2).
+-0.2231  UnAssProbRoll(d, F,T)
+-0.2877  UnAssProbRoll(d, F,T)
+-0.5978  UnAssProbRoll(d, T,T)
+//parsing complete!
+ApfRoll(_a,_b) => (_b=3) v (_b=4).
+CLRoll(_a,_b) => (_b=CL2) v (_b=CL3) v (_b=CL4).
+Owner(_a,_b) => (_a=D1 ^ _b=Mike) v (_a=D2 ^ _b=John).
+UnAssProbRoll(_a,_b,_c) => (_b=F ^ _c=T) v (_b=F ^ _c=T) v (_b=T ^ _c=T).
+AssProbRoll(_a,_b) => (_b=3 ^ PossAssProbRoll(_a,3) ^ Roll(_a,3)) v (_b=4 ^ PossAssProbRoll(_a,4) ^ Roll(_a,4)).
+Even(_a,_b) => (_b=T ^ Roll(_a,2)) v (_b=T ^ Roll(_a,4)) v (_b=F ^ Even(_a,F)).
+aux_InterveneRoll_0(Dice,Number)
+aux_InterveneRoll_0(_a,n) <=> DoRoll(_a,n).
+InterveneRoll(_a) => (EXIST n (aux_InterveneRoll_0(_a,n))).
+aux_NumDefProbRoll_0(Constant,Dice,Number,Number)
+aux_NumDefProbRoll_0(_b,_a,n1,n2) <=> _b=CL2 ^ SplitRemProbRoll(_a) ^ PossDefProbRoll(_a,n1) ^ PossDefProbRoll(_a,n2) ^ n1!=n2.
+aux_NumDefProbRoll_1(Constant,Dice,Number,Number,Number)
+aux_NumDefProbRoll_1(_b,_a,n1,n2,n3) <=> _b=CL3 ^ SplitRemProbRoll(_a) ^ PossDefProbRoll(_a,n1) ^ PossDefProbRoll(_a,n2) ^ PossDefProbRoll(_a,n3) ^ n1!=n2 ^ n1!=n3 ^ n2!=n3.
+aux_NumDefProbRoll_2(Constant,Dice,Number,Number,Number,Number)
+aux_NumDefProbRoll_2(_b,_a,n1,n2,n3,n4) <=> _b=CL4 ^ SplitRemProbRoll(_a) ^ PossDefProbRoll(_a,n1) ^ PossDefProbRoll(_a,n2) ^ PossDefProbRoll(_a,n3) ^ PossDefProbRoll(_a,n4) ^ n1!=n2 ^ n1!=n3 ^ n1!=n4 ^ n2!=n3 ^ n2!=n4 ^ n3!=n4.
+NumDefProbRoll(_a,_b) => (EXIST n1,n2 (aux_NumDefProbRoll_0(_b,_a,n1,n2))) v (EXIST n1,n2,n3 (aux_NumDefProbRoll_1(_b,_a,n1,n2,n3))) v (EXIST n1,n2,n3,n4 (aux_NumDefProbRoll_2(_b,_a,n1,n2,n3,n4))).
+PossAssProbRoll(_a,_b) => (_b=3 ^ Owner(_a,Mike) ^ !InterveneRoll(_a)) v (_b=4 ^ Owner(_a,Mike) ^ !InterveneRoll(_a)).
+PossDefProbRoll(_a,_b) => (!PossAssProbRoll(_a,_b) ^ !InterveneRoll(_a)).
+aux_PrApplied_0(Boolean,Constants2,Dice)
+aux_PrApplied_0(_b,_a,d) <=> _a=P1 ^ _b=T ^ Owner(d,Mike) ^ !InterveneRoll(d).
+aux_PrApplied_1(Boolean,Constants2,Dice)
+aux_PrApplied_1(_b,_a,d) <=> _a=P2 ^ _b=T ^ Owner(d,Mike) ^ !InterveneRoll(d).
+PrApplied(_a,_b) => (EXIST d (aux_PrApplied_0(_b,_a,d))) v (EXIST d (aux_PrApplied_1(_b,_a,d))) v (_b=F ^ !PrApplied(_a,T)).
+Roll(_a,_b) => (_b=1 ^ !InterveneRoll(_a) ^ !Roll(_a,2) ^ !Roll(_a,3) ^ !Roll(_a,4)) v (_b=2 ^ !InterveneRoll(_a) ^ !Roll(_a,1) ^ !Roll(_a,3) ^ !Roll(_a,4)) v (_b=3 ^ !InterveneRoll(_a) ^ !Roll(_a,2) ^ !Roll(_a,1) ^ !Roll(_a,4)) v (_b=4 ^ !InterveneRoll(_a) ^ !Roll(_a,2) ^ !Roll(_a,3) ^ !Roll(_a,1)).
+aux_SplitRemProbRoll_0(Dice,Number)
+aux_SplitRemProbRoll_0(_a,n) <=> Roll(_a,n) ^ PossDefProbRoll(_a,n).
+SplitRemProbRoll(_a) => (EXIST n (aux_SplitRemProbRoll_0(_a,n))).
+aux_UnAssProbRoll_0(Boolean,Boolean,Dice,Number)
+aux_UnAssProbRoll_0(_c,_b,_a,n) <=> Roll(_a,n) ^ PossDefProbRoll(_a,n) ^ PrApplied(P1,_c,_b) ^ PrApplied(P2,_c,_b).
+UnAssProbRoll(_a,_b,_c) => (EXIST n (aux_UnAssProbRoll_0(_c,_b,_a,n))).

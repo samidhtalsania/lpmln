@@ -59,7 +59,7 @@ int ParserWrapper::parse(){
 	// void *parser = ParseAlloc(malloc);
 
 	if(debug){
-		pFile = fopen (testFile.c_str() , "w");
+		pFile = fopen ("op.txt" , "w");
 		const char* debug_prefix = "_";
 		ParseTrace(pFile,const_cast<char*>(debug_prefix));
 	}

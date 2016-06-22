@@ -4,7 +4,9 @@ class Token
 {
 public:
 	Token(std::string);
-	Token();
+	void modifyToken(std::string);
+	// Token();
 	~Token();
+
 	std::string* token;		
 };

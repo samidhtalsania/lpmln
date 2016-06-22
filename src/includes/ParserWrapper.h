@@ -14,7 +14,7 @@ private:
 
 	void parseComplete();
 
-	bool debug = false;
+	bool debug = true;
 	Translation translation;
 	std::string inputFile;
 	const std::string testFile = "lpmln_test.log";

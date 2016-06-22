@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <map>
+
+
 class Predicate
 {
 public:
@@ -46,6 +48,10 @@ public:
 
 	void setEquality() { isEquality = true;}
 	void setInEquality() { isInEquality = true;}
+	void setSingleNegation() { singleNegation = true;}
+	void setDoubleNegation() { doubleNegation = true;}
+
+	bool isSingleNegated() { return singleNegation; }
 
 	bool needsToBeCompleted() { return toBeCompleted; }
 
@@ -59,5 +65,7 @@ private:
 	bool isEquality = false;
 	bool isInEquality = false;
 	bool toBeCompleted = true;
+	bool singleNegation = false;
+	bool doubleNegation = false; 
 };
 
