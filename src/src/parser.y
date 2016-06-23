@@ -21,6 +21,7 @@
 	#include "BodyDef.h"
 
 	#include "exceptions/undefined_predicate.h"
+	#include "exceptions/syntax_exception.h"
 
 
 	using namespace std;
@@ -45,19 +46,24 @@
 
 %parse_failure 
 {
-    std::cout<<"Giving up.  Parser is lost...\n";
+    // std::cout<<"Giving up.  Parser is lost...\n";
+
 }
 
 %syntax_error
 {
-	 std::cout << "syntax error - ";
+	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
     for (int i = 0; i < n; ++i) {
             int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
             if (a < YYNSTATE + YYNRULE) {
-                    std::cout << "expected " << yyTokenName[i] << std::endl;
+                    // std::cout << "expected " << yyTokenName[i] << std::endl;
+            		yy_parse_failed(yypParser);
+                    throw syntax_exception("Syntax Error - Expected " + std::string(yyTokenName[i]) + " Found " + std::string(yyTokenName[yymajor])
++ "\n");
             }
     }
+    
 }
 
 
@@ -440,6 +446,7 @@ headdef(H) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
+	p.setSingleNegation();
 	H = new Head;
 	H->addPredicate(p);
 	delete Ve;

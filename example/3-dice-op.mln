@@ -24,7 +24,7 @@ Owner(D1, Mike).
 Owner(D2, John).
 Roll(d,2) => Even(d,T).
 Roll(d,4) => Even(d,T).
-Even(d, F) => Even(d, F).
+!Even(d, T) => Even(d, F).
 !Roll(d,n1) v !Roll(d,n2) v n1=n2. 
 !Even(d,F) v !Even(d,T).
 !Owner(d,p1) v !Owner(d,p2) v p1=p2.
@@ -35,12 +35,6 @@ DoRoll(d, n) => InterveneRoll(d).
 !InterveneRoll(d) ^ !Roll(d,1) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,2).
 !InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,1) ^ !Roll(d,4) => Roll(d,3).
 !InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,1) => Roll(d,4).
-
-
-// Roll(d,2,F) ^ Roll(d,3,F) ^ Roll(d,4,F) => Temp_InterveneRoll(d,1).
-// Roll(d,1,F) ^ Roll(d,3,F) ^ Roll(d,4,F) => Temp_InterveneRoll(d,2).
-// Roll(d,2,F) ^ Roll(d,1,F) ^ Roll(d,4,F) => Temp_InterveneRoll(d,3).
-// Roll(d,2,F) ^ Roll(d,3,F) ^ Roll(d,1,F) => Temp_InterveneRoll(d,4).
 
 !PossAssProbRoll(d,n) ^ !InterveneRoll(d) => PossDefProbRoll(d, n).
 
@@ -76,7 +70,7 @@ CLRoll(_a,_b) => (_b=CL2) v (_b=CL3) v (_b=CL4).
 Owner(_a,_b) => (_a=D1 ^ _b=Mike) v (_a=D2 ^ _b=John).
 UnAssProbRoll(_a,_b,_c) => (_b=F ^ _c=T) v (_b=F ^ _c=T) v (_b=T ^ _c=T).
 AssProbRoll(_a,_b) => (_b=3 ^ PossAssProbRoll(_a,3) ^ Roll(_a,3)) v (_b=4 ^ PossAssProbRoll(_a,4) ^ Roll(_a,4)).
-Even(_a,_b) => (_b=T ^ Roll(_a,2)) v (_b=T ^ Roll(_a,4)) v (_b=F ^ Even(_a,F)).
+Even(_a,_b) => (_b=T ^ Roll(_a,2)) v (_b=T ^ Roll(_a,4)) v (_b=F ^ !Even(_a,T)).
 aux_InterveneRoll_0(Dice,Number)
 aux_InterveneRoll_0(_a,n) <=> DoRoll(_a,n).
 InterveneRoll(_a) => (EXIST n (aux_InterveneRoll_0(_a,n))).
@@ -99,5 +93,5 @@ aux_SplitRemProbRoll_0(Dice,Number)
 aux_SplitRemProbRoll_0(_a,n) <=> Roll(_a,n) ^ PossDefProbRoll(_a,n).
 SplitRemProbRoll(_a) => (EXIST n (aux_SplitRemProbRoll_0(_a,n))).
 aux_UnAssProbRoll_0(Boolean,Boolean,Dice,Number)
-aux_UnAssProbRoll_0(_c,_b,_a,n) <=> Roll(_a,n) ^ PossDefProbRoll(_a,n) ^ PrApplied(P1,_c,_b) ^ PrApplied(P2,_c,_b).
+aux_UnAssProbRoll_0(_c,_b,_a,n) <=> Roll(_a,n) ^ PossDefProbRoll(_a,n) ^ PrApplied(P1,_b) ^ PrApplied(P2,_c).
 UnAssProbRoll(_a,_b,_c) => (EXIST n (aux_UnAssProbRoll_0(_c,_b,_a,n))).

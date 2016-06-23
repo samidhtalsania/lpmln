@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "Token.h"
 #include "exceptions/undefined_predicate.h"
+#include "exceptions/syntax_exception.h"
 
 
 #include <iostream>
@@ -69,8 +70,10 @@ int ParserWrapper::parse(){
 
 
 	// Tree* tree = new Tree;
-	std::vector<Token*> v;
-
+	
+  std::string str;
+  int lineCount = 0;
+  int columnCount = 0;
 
 	if(file){
     
@@ -79,7 +82,9 @@ int ParserWrapper::parse(){
 
       in.push(file);
 
-      for(std::string str; std::getline(in, str); ){
+      for(str; std::getline(in, str); ){
+        lineCount++;
+        columnCount = 0;
         if(!str.empty()){
           //Left trim the input tring
           auto it2 =  std::find_if( str.begin() , str.end() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
@@ -113,19 +118,15 @@ int ParserWrapper::parse(){
           int len = str.size();
           lexeme.start = buffer;
           lexeme.current = buffer;
+          lexeme.begin = buffer;
+          // lexeme.col = 0;
           while( (hTokenId = lexer::tokenize(buffer, len, &lexeme)) != 0 ){
             if(hTokenId != PARSE_TOKEN_WS){
               unsigned long int pos = static_cast<unsigned long int>(lexeme.current - lexeme.start);
               string substr(lexeme.start, pos);
               Token* tok = new Token(substr);
-              // std::cout<<hTokenId<<":"<<*(tok->token)<<std::endl;
               v.push_back(tok);
-              try{
-                Parse(parser, hTokenId, tok, tree);
-              }
-              catch(const exception& e){
-                cout << e.what();
-              }
+              Parse(parser, hTokenId, tok, tree);
             }
           }
 
@@ -146,30 +147,25 @@ int ParserWrapper::parse(){
 
       Token* tok = new Token("0");
       
-      try{
-        Parse(parser, 0, tok, tree);
-      }
-      catch(const exception& e){
-        // const char* c = e.what();
-        cout << e.what();
-      }
+      
+      Parse(parser, 0, tok, tree);
  
       // ParseFree(parser, free);
       delete tok;
     
       //Do completion
       ParserWrapper::parseComplete();
-
-
-      // fclose (pFile);
-    
-      for(auto& ve : v)
-        delete ve;
       
     }
-    catch(std::exception& e) {
+    catch(const syntax_exception& e){
+      cout<<str;
+      std::cout << e.what();
+      std::cout<<"Line:"<<lineCount<<" Column:"<<lexeme.current - lexeme.begin<<"\n";
+      throw e;
+    }
+    catch(const std::exception& e) {
       std::cout << e.what() << '\n';
-      return -1;
+      throw e;
     }
   }
   else{
@@ -189,6 +185,8 @@ void ParserWrapper::parseComplete(){
 ParserWrapper::~ParserWrapper(){
 	delete tree;
 	ParseFree(parser, free);
+  for(auto& ve : v)
+    delete ve;
 	if(pFile != NULL && debug)
 		fclose(pFile);
 }

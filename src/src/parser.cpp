@@ -46,6 +46,7 @@
 	#include "BodyDef.h"
 
 	#include "exceptions/undefined_predicate.h"
+	#include "exceptions/syntax_exception.h"
 
 
 	using namespace std;
@@ -1176,13 +1177,25 @@ static void yy_reduce(
 }
         break;
       case 36: /* headdef ::= string LBRACKET variables RBRACKET */
-      case 37: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==37);
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy31)
 		vars.push_back(*v);
 	
 	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	yygotominor.yy23 = new Head;
+	yygotominor.yy23->addPredicate(p);
+	delete yymsp[-1].minor.yy31;
+}
+        break;
+      case 37: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */
+{
+	std::vector<std::string> vars;
+	for(auto& v : *yymsp[-1].minor.yy31)
+		vars.push_back(*v);
+	
+	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	p.setSingleNegation();
 	yygotominor.yy23 = new Head;
 	yygotominor.yy23->addPredicate(p);
 	delete yymsp[-1].minor.yy31;
@@ -1340,7 +1353,8 @@ static void yy_parse_failed(
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
 
-    std::cout<<"Giving up.  Parser is lost...\n";
+    // std::cout<<"Giving up.  Parser is lost...\n";
+
 /************ End %parse_failure code *****************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1358,14 +1372,18 @@ static void yy_syntax_error(
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
 
-	 std::cout << "syntax error - ";
+	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
     for (int i = 0; i < n; ++i) {
             int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
             if (a < YYNSTATE + YYNRULE) {
-                    std::cout << "expected " << yyTokenName[i] << std::endl;
+                    // std::cout << "expected " << yyTokenName[i] << std::endl;
+            		yy_parse_failed(yypParser);
+                    throw syntax_exception("Syntax Error - Expected " + std::string(yyTokenName[i]) + " Found " + std::string(yyTokenName[yymajor])
++ "\n");
             }
     }
+    
 /************ End %syntax_error code ******************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

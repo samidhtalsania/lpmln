@@ -8,5 +8,5 @@ InterveneRoll(Dice)
 
 Roll(d,2) => Even(d,T).
 Even(d, F) => Even(d, F).
-!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,1).
+!InterveneRoll(d) ^ !!Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,1).
 

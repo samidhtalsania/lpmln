@@ -1,6 +1,7 @@
 #include <string>
 #include "Config.h"
 #include "Tree.h"
+#include "Token.h"
 
 class ParserWrapper
 {
@@ -21,5 +22,6 @@ private:
 	FILE* pFile;
 	void *parser;
 	Tree* tree;
+	std::vector<Token*> v;
 	
 };

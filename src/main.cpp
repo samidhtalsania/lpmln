@@ -21,7 +21,13 @@ int main(int argc, char **argv)
 
 
   ParserWrapper pw(config);
-
-  int status = pw.parse();
-  return status;
+  try {
+    pw.parse();
+  }
+  
+  catch(const exception& e){
+    return -1;
+  }
+    
+  return 0;
 }

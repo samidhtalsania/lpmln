@@ -1,6 +1,7 @@
 typedef struct lexeme_struct {
     const char *start;
     const char *current;
+    const char *begin;
 } lexeme_t;
 
 class lexer
