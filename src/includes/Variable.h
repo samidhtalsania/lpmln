@@ -24,8 +24,13 @@ public:
 	{
 		return var < right.getVar();
 	}
+
+	inline int isCompleted() const { return completed;}
+
+	void setCompleted() const { completed = true;}
 	
 private:
 	std::string var;
 	std::map<int,Domain> pos;
+	mutable bool completed = false;
 };

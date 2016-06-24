@@ -36,6 +36,8 @@ public:
 
 	void completeRules();
 
+	void completeDeclarations();
+
 	inline bool hasConstant(Predicate p){
 		for(unsigned int i=0;i<p.getTokens().size();i++){
 			std::set<std::string>::iterator itr = domainList.find(p.getTokens().at(i));

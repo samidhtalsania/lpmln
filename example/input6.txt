@@ -1,0 +1,9 @@
+Dice = {D1, D2}
+Boolean = {T,F}
+Number = {1,2,3,4}
+
+Even(Dice, Boolean)
+Roll(Dice, Number)
+InterveneRoll(Dice)
+
+0.8536 Roll(d,2) => Even(d,T).

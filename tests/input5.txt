@@ -1,0 +1,3 @@
+bool = {T,F}
+load(bool,bool)
+!!load(a,+v).

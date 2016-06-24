@@ -1,0 +1,16 @@
+step = {0,1}
+boolean = {True, False}
+next(step, step)
+loaded(boolean, step)
+load(step)
+t1 = t ^ load(t1) ^ next(t1,t) => loaded(True,t).
+loaded(x,0) => loaded(x,0).
+loaded(x,t1) ^ loaded(x,t) ^ next(t1,t) => loaded(x,t).
+//parsing complete!
+aux_loaded_0(step,boolean,step)
+aux_loaded_0(_b,_a,t1) <=> _a=True ^ t1=_b ^ load(t1) ^ next(t1,_b).
+aux_loaded_1(step,boolean,step)
+aux_loaded_1(_b,_a,t1) <=> loaded(_a,t1) ^ loaded(_a,_b) ^ next(t1,_b).
+loaded(_a,_b) => (EXIST t1 (aux_loaded_0(_b,_a,t1))) v (_b=0 ^ loaded(_a,0)) v (EXIST t1 (aux_loaded_1(_b,_a,t1))).
+!load(_a).
+!next(_a_b).

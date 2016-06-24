@@ -180,6 +180,7 @@ void ParserWrapper::parseComplete(){
 	//Do completion
 	tree->completeFacts();
 	tree->completeRules();
+  tree->completeDeclarations();
 }
 
 ParserWrapper::~ParserWrapper(){

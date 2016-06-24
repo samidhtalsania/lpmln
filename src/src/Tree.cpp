@@ -37,6 +37,9 @@ void Tree::completeRules(){
 		//Assign a variable to each of the domain of the key.
 		//Use this variable in constructing strLhs and strRhs 
 		std::set<Variable>::iterator itrV = variables.find(key.first);
+
+		if(itrV != variables.end()) itrV->setCompleted();
+
 		std::map<std::string, int> varMapVarCount;
 		std::unordered_multimap<int, std::pair<std::string, std::string> > varMap;
 		std::set<std::pair<std::string,std::string>> orphanVarsSet;
@@ -411,6 +414,10 @@ void Tree::completeFacts(){
 		if(strRhs.size() == 0) continue;
 		strRhs = strRhs.substr(0,strRhs.size()-3);
 		strLhs.append(key.first);
+
+		std::set<Variable>::iterator itrV = variables.find(key.first);
+		if(itrV != variables.end()) itrV->setCompleted();
+
 		strLhs.append("(");
 		count=0;
 		for(unsigned int i=0;i<f.head.getTokens().size();i++)
@@ -421,3 +428,21 @@ void Tree::completeFacts(){
 	}
 }
 
+void Tree::completeDeclarations(){
+	for(auto itr = variables.begin(); itr != variables.end(); ++itr){
+
+		if (!itr->isCompleted()){
+			//There is a declaration that is not completed. Complete it
+			std::string str;
+			str += "!";
+			str += itr->getVar();
+			str += "(";
+
+			for(unsigned int i=0;i<itr->getPosMap().size();++i){
+				str += uniqueVars[i];
+			}
+			str += ").\n";
+			std::cout<<str;
+		}
+	}
+}
