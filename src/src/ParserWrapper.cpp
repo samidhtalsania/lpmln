@@ -99,16 +99,16 @@ int ParserWrapper::parse(){
 
           //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
           // The user possibly wants to pass this statement directly to alchemy.
-          else if(str.substr(0,2).compare("!!") == 0){
-            cout<<str.substr(2,str.size()-1)<<"\n";
-            continue;
-          }
+          // else if(str.substr(0,2).compare("!!") == 0){
+          //   cout<<str.substr(2,str.size()-1)<<"\n";
+          //   continue;
+          // }
 
           //If it is a uniqueness statement print it oout and go to next
-		      else if(str.substr(0,2).compare("!(") == 0){
-            cout<<str<<"\n";
-            continue;
-          }
+		      // else if(str.substr(0,2).compare("!(") == 0){
+        //     cout<<str<<"\n";
+        //     continue;
+        //   }
 
 
           str += "\n";

@@ -5,12 +5,18 @@ Boolean = {T,F}
 Constant = {CL2,CL3,CL4}
 Conditions = {1,2}
 
+
 Owner(Dice, Users)
 Roll(Dice, Number)
+//Even(Dice, Number, Boolean)
+// DoRoll(Dice, Number)
 InterveneRoll(Dice)
 PossAssProbRoll(Dice, Number)
+
 NumDefProbRoll(Dice, Constant)
+
 AssProbRoll(Dice,Number)
+
 PrApplied(Dice,Number,Conditions,Boolean)
 UnAssProbRoll(Dice,Boolean, Boolean)
 PossDefProbRoll(Dice,Number)
@@ -20,6 +26,8 @@ Owner(D2, John).
 !Roll(d,n1) v !Roll(d,n2) v n1=n2. 
 !Owner(d,p1) v !Owner(d,p2) v p1=p2.
 
+// // ∗ ∗ ∗ ∗RandomSelection ∗ ∗ ∗ ∗
+// DoRoll(d, n) => InterveneRoll(d).
 
 !InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,1).
 !InterveneRoll(d) ^ !Roll(d,1) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,2).
@@ -29,7 +37,10 @@ Owner(D2, John).
 !PossAssProbRoll(d,n) ^ !InterveneRoll(d) => PossDefProbRoll(d, n).
 
 Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ n1 != n2 => NumDefProbRoll(d, CL2).
+
+
 Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3 => NumDefProbRoll(d, CL3).
+
 Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ PossDefProbRoll(d, n4) ^ n1 != n2 ^ n1 != n3 ^ n1 != n4 ^ n2 != n3 ^ n2 != n4 ^ n3 != n4 => NumDefProbRoll(d, CL4).
 
 -0.6931 !!NumDefProbRoll(d, CL2)

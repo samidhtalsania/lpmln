@@ -1,0 +1,87 @@
+Dice = {D1, D2}
+Users = {Mike,John}
+Number = {1,2,3,4}
+Boolean = {T,F}
+Constant = {CL2,CL3,CL4}
+Conditions = {1,2}
+
+
+Owner(Dice, Users)
+Roll(Dice, Number)
+//Even(Dice, Number, Boolean)
+// DoRoll(Dice, Number)
+InterveneRoll(Dice)
+PossAssProbRoll(Dice, Number)
+
+NumDefProbRoll(Dice, Constant)
+
+AssProbRoll(Dice,Number)
+
+PrApplied(Dice,Number,Conditions,Boolean)
+UnAssProbRoll(Dice,Boolean, Boolean)
+PossDefProbRoll(Dice,Number)
+
+Owner(D1, Mike).
+Owner(D2, John).
+!Roll(d,n1) v !Roll(d,n2) v n1=n2. 
+!Owner(d,p1) v !Owner(d,p2) v p1=p2.
+
+// // ∗ ∗ ∗ ∗RandomSelection ∗ ∗ ∗ ∗
+// DoRoll(d, n) => InterveneRoll(d).
+
+!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,1).
+!InterveneRoll(d) ^ !Roll(d,1) ^ !Roll(d,3) ^ !Roll(d,4) => Roll(d,2).
+!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,1) ^ !Roll(d,4) => Roll(d,3).
+!InterveneRoll(d) ^ !Roll(d,2) ^ !Roll(d,3) ^ !Roll(d,1) => Roll(d,4).
+
+!PossAssProbRoll(d,n) ^ !InterveneRoll(d) => PossDefProbRoll(d, n).
+
+Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ n1 != n2 => NumDefProbRoll(d, CL2).
+
+
+Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3 => NumDefProbRoll(d, CL3).
+
+Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ PossDefProbRoll(d, n4) ^ n1 != n2 ^ n1 != n3 ^ n1 != n4 ^ n2 != n3 ^ n2 != n4 ^ n3 != n4 => NumDefProbRoll(d, CL4).
+
+-0.6931 NumDefProbRoll(d, CL2)
+-0.4055 NumDefProbRoll(d, CL3)
+-0.2877 NumDefProbRoll(d, CL4)
+
+//Translation of probabilistic information
+Owner(d, Mike) ^ !InterveneRoll(d) => PossAssProbRoll(d,3).
+PossAssProbRoll(d,3) ^ Roll(d,3) => AssProbRoll(d,3).
+-1.3863 AssProbRoll(d,3)
+
+Owner(d, Mike) ^ !InterveneRoll(d) => PossAssProbRoll(d,4).
+PossAssProbRoll(d,4) ^ Roll(d,4) => AssProbRoll(d,4).
+-1.6094 AssProbRoll(d,4)
+
+Owner(d,Mike) => PrApplied(d,3,1,T).
+!PrApplied(d,3,1,T) => PrApplied(d,3,1,F).
+
+Owner(d,Mike) => PrApplied(d,4,2,T).
+!PrApplied(d,4,2,T) => PrApplied(d,4,2,F).
+
+Roll(d, n) ^ PossDefProbRoll(d, n) ^ PrApplied(d,3,1,b1) ^ PrApplied(d,4,2,b2) => UnAssProbRoll(d,b1, b2).
+
+-0.2231  UnAssProbRoll(d,F,T)
+-0.2877  UnAssProbRoll(d,T,F)
+-0.5978  UnAssProbRoll(d,T,T)
+//parsing complete!
+Owner(_a,_b) => (_a=D1 ^ _b=Mike) v (_a=D2 ^ _b=John).
+AssProbRoll(_a,_b) => (_b=3 ^ PossAssProbRoll(_a,3) ^ Roll(_a,3)) v (_b=4 ^ PossAssProbRoll(_a,4) ^ Roll(_a,4)).
+aux_NumDefProbRoll_0(Constant,Dice,Number,Number)
+aux_NumDefProbRoll_0(_b,_a,n1,n2) <=> _b=CL2 ^ Roll(_a,n1) ^ PossDefProbRoll(_a,n1) ^ PossDefProbRoll(_a,n2) ^ n1!=n2.
+aux_NumDefProbRoll_1(Constant,Dice,Number,Number,Number)
+aux_NumDefProbRoll_1(_b,_a,n1,n2,n3) <=> _b=CL3 ^ Roll(_a,n1) ^ PossDefProbRoll(_a,n1) ^ PossDefProbRoll(_a,n2) ^ PossDefProbRoll(_a,n3) ^ n1!=n2 ^ n1!=n3 ^ n2!=n3.
+aux_NumDefProbRoll_2(Constant,Dice,Number,Number,Number,Number)
+aux_NumDefProbRoll_2(_b,_a,n1,n2,n3,n4) <=> _b=CL4 ^ Roll(_a,n1) ^ PossDefProbRoll(_a,n1) ^ PossDefProbRoll(_a,n2) ^ PossDefProbRoll(_a,n3) ^ PossDefProbRoll(_a,n4) ^ n1!=n2 ^ n1!=n3 ^ n1!=n4 ^ n2!=n3 ^ n2!=n4 ^ n3!=n4.
+NumDefProbRoll(_a,_b) => (EXIST n1,n2 (aux_NumDefProbRoll_0(_b,_a,n1,n2))) v (EXIST n1,n2,n3 (aux_NumDefProbRoll_1(_b,_a,n1,n2,n3))) v (EXIST n1,n2,n3,n4 (aux_NumDefProbRoll_2(_b,_a,n1,n2,n3,n4))).
+PossAssProbRoll(_a,_b) => (_b=3 ^ Owner(_a,Mike) ^ !InterveneRoll(_a)) v (_b=4 ^ Owner(_a,Mike) ^ !InterveneRoll(_a)).
+PossDefProbRoll(_a,_b) => (!PossAssProbRoll(_a,_b) ^ !InterveneRoll(_a)).
+PrApplied(_a,_b,_c,_d) => (_b=3 ^ _c=1 ^ _d=T ^ Owner(_a,Mike)) v (_b=3 ^ _c=1 ^ _d=F ^ !PrApplied(_a,3,1,T)) v (_b=4 ^ _c=2 ^ _d=T ^ Owner(_a,Mike)) v (_b=4 ^ _c=2 ^ _d=F ^ !PrApplied(_a,4,2,T)).
+Roll(_a,_b) => (_b=1 ^ !InterveneRoll(_a) ^ !Roll(_a,2) ^ !Roll(_a,3) ^ !Roll(_a,4)) v (_b=2 ^ !InterveneRoll(_a) ^ !Roll(_a,1) ^ !Roll(_a,3) ^ !Roll(_a,4)) v (_b=3 ^ !InterveneRoll(_a) ^ !Roll(_a,2) ^ !Roll(_a,1) ^ !Roll(_a,4)) v (_b=4 ^ !InterveneRoll(_a) ^ !Roll(_a,2) ^ !Roll(_a,3) ^ !Roll(_a,1)).
+aux_UnAssProbRoll_0(Boolean,Boolean,Dice,Number)
+aux_UnAssProbRoll_0(_c,_b,_a,n) <=> Roll(_a,n) ^ PossDefProbRoll(_a,n) ^ PrApplied(_a,3,1,_b) ^ PrApplied(_a,4,2,_c).
+UnAssProbRoll(_a,_b,_c) => (EXIST n (aux_UnAssProbRoll_0(_c,_b,_a,n))).
+!InterveneRoll(_a).
