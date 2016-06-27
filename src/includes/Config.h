@@ -45,5 +45,5 @@ private:
 	std::string file;
 	bool errors = false;
 	bool help = false;
-	bool debug = false;
+	bool debug = true;
 };

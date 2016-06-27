@@ -1,0 +1,10 @@
+num={0,1}
+load(num,num)
+step(num,num)
+
+0.8536 !(load(0,0) v load(0,1))
+!(load(0,0) v load(0,1)).
+(load(0,0) v load(0,1)).
+//parsing complete!
+!load(_a,_b).
+!step(_a,_b).

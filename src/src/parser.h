@@ -11,7 +11,6 @@
 #define PARSE_TOKEN_NEGATION                        11
 #define PARSE_TOKEN_WS                              12
 #define PARSE_TOKEN_DOT                             13
-#define PARSE_TOKEN_PLUS                            14
-#define PARSE_TOKEN_STRING                          15
-#define PARSE_TOKEN_NUMBER                          16
-#define PARSE_TOKEN_MINUS                           17
+#define PARSE_TOKEN_STRING                          14
+#define PARSE_TOKEN_NUMBER                          15
+#define PARSE_TOKEN_MINUS                           16

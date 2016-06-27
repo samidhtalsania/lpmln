@@ -1,0 +1,4 @@
+num={0,1}
+load(num,num)
+step(num,num)
+load(0,0) v step(0,1).

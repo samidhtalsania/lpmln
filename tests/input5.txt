@@ -1,3 +1,4 @@
 bool = {T,F}
 load(bool,bool)
-!!load(a,+v).
+0.8536 !load(T,T)
+0.6565 !!load(F,T)

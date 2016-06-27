@@ -146,26 +146,27 @@ prog ::= decl(D). {
 }
 
 prog ::= prog NEWLINE rule(R). {
-	if(R->isHeadTop == false)
+	if((R->isHeadTop == false) && (R->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->head.getVar(),*R));
 	delete R;
 }
 prog ::= rule(R).{
-	if(R->isHeadTop == false)
+	if((R->isHeadTop == false) && (R->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->head.getVar(),*R));
+
 	delete R;
 }
 
-prog ::= prog NEWLINE ruleU(R). {
+// prog ::= prog NEWLINE ruleU(R). {
 	
-	//random
-	delete R;
-}
+// 	//random
+// 	delete R;
+// }
 
-prog ::= ruleU(R). {
-	//random
-	delete R;
-}
+// prog ::= ruleU(R). {
+// 	//random
+// 	delete R;
+// }
 
 prog ::= prog NEWLINE.
 
@@ -184,22 +185,64 @@ prog ::= .
 
 
 %type rule {RuleCompletion*}
+
+//RuleU are rules with head bottom
 %type ruleU {RuleCompletion*}
 
 
 //ex !(alive(x,True,t) ^ alive(x,False,t))
-ruleU ::= LBRACKET ruleI RBRACKET DOT.
+// ruleU ::= LBRACKET ruleI RBRACKET DOT.
 
-ruleU ::= NEGATION LBRACKET ruleI RBRACKET DOT.
+// ruleU ::= NEGATION LBRACKET ruleI RBRACKET DOT.
 
-ruleI ::= body CONJUNCTION bodydef2(B2).{
-	delete B2;
+// ruleI ::= body CONJUNCTION bodydef2(B2).{
+// 	delete B2;
+// }
+
+// ruleI ::= body DISJUNCTION bodydef2(B2). {
+// 	delete B2;
+// }
+
+//ex 0.8536 !(B => Bottom)
+//Test case covered
+rule(R) ::= number NEGATION LBRACKET ruleU(R1) RBRACKET.{
+	R = R1;
+	R1->toBeCompleted = false;
 }
 
-ruleI ::= body DISJUNCTION bodydef2(B2). {
-	delete B2;
+//ex !(B => Bottom).
+//Test case covered
+rule(R) ::= NEGATION LBRACKET ruleU(R1) RBRACKET DOT.{
+	R = R1;
+	R1->toBeCompleted = false;
 }
 
+//ex (B => Bottom).
+//Test case covered
+rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
+	R = R1;
+	R1->toBeCompleted = false;
+	//segfault here
+}
+
+
+//B=>bottom
+ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
+	R = new RuleCompletion;
+	delete B;
+	delete B1;
+}
+
+//B=>bottom
+ruleU(R) ::= body(B) DISJUNCTION bodydef(B1).{
+	R = new RuleCompletion;	
+	delete B;
+	delete B1;
+}
+
+//Parse Hard rule
+//B => bottom.
+//Test case covered
 rule(R) ::= body(B) CONJUNCTION bodydef(B1) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
@@ -207,7 +250,9 @@ rule(R) ::= body(B) CONJUNCTION bodydef(B1) DOT.{
 	delete B1;
 }
 
-
+//Parse Hard rule
+//B => bottom.
+//Test case covered
 rule(R) ::= body(B) DISJUNCTION bodydef(B1) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
@@ -216,6 +261,8 @@ rule(R) ::= body(B) DISJUNCTION bodydef(B1) DOT.{
 }
 
 //Parse hard rules
+//B => H.
+//Test case covered
 rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;
 	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
@@ -266,6 +313,8 @@ rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 }
 
 //Parse soft rules
+//0.8536 B => H
+//Test case covered
 rule(R) ::= number body(B) IMPLICATION head(H). {
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;
 	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
@@ -308,14 +357,16 @@ rule(R) ::= number body(B) IMPLICATION head(H). {
 
 //Parse soft exogenity rules (not to be completed)
 //Ex. 0.8536 !!<body> => head.
-rule(R) ::= number NEGATION NEGATION body(B) IMPLICATION head(H). {
-	tree->statHasDblNeg = true;
-	R = new RuleCompletion;
-	R->isHeadTop = true;	
-	delete B;
-	delete H;
-}
+// rule(R) ::= number NEGATION NEGATION body(B) IMPLICATION head(H). {
+// 	tree->statHasDblNeg = true;
+// 	R = new RuleCompletion;
+// 	R->isHeadTop = true;	
+// 	delete B;
+// 	delete H;
+// }
 
+//Ex. 0.8536 !!(B => H)
+//Test case covered
 rule(R) ::= number NEGATION NEGATION LBRACKET body(B) IMPLICATION head(H) RBRACKET. {
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
@@ -367,17 +418,18 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 }
 
 // //BodyDef with double negation in front
-// bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
-// 	std::vector<std::string> vars;
-// 	for(auto& v : *Ve)
-// 		vars.push_back(*v);
+bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
+	std::vector<std::string> vars;
+	for(auto& v : *Ve)
+		vars.push_back(*v);
 	
-// 	Predicate p(S->token, vars);
-// 	p.setDoubleNegation();
-// 	B = new BodyDef;
-// 	B->addPredicate(p);
-// 	delete Ve;
-// }
+	Predicate p(S->token, vars);
+	p.setDoubleNegation();
+	B = new BodyDef;
+	B->addPredicate(p);
+	tree->statHasDblNeg = true;
+	delete Ve;
+}
 
 
 //BodyDef with double negation in front
@@ -414,13 +466,16 @@ bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
 
 
 //BodyDef2 without negation in front
-bodydef2 ::= string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
-//BodyDef2 with negation in front
-bodydef2 ::= NEGATION string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
+// bodydef2 ::= string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
+// //BodyDef2 with negation in front
+// bodydef2 ::= NEGATION string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
 
-bodydef2 ::= string EQUAL string.
+// //BodyDef2 with double negation in front
+// bodydef2 ::= NEGATION NEGATION string LBRACKET variables(Ve) RBRACKET. {delete Ve;}
 
-bodydef2 ::= string NEGATION EQUAL string.
+// bodydef2 ::= string EQUAL string.
+
+// bodydef2 ::= string NEGATION EQUAL string.
 
 //Parses head of rules
 head(H) ::= headdef(H1). { 
@@ -490,7 +545,8 @@ predicate(P) ::= number string(S) LBRACKET variables(Ve) RBRACKET. {
 	delete Ve;
 }
 
-//Parses weighted/soft constraints ex. 0.4536 !!next(0,1)
+//Parses weighted/soft constraints ex. 
+// 0.4536 !!next(0,1)
 predicate(P) ::= number NEGATION NEGATION string LBRACKET variables(Ve) RBRACKET. {
 	P = new Predicate;
 	P->notToBeCompleted();
@@ -498,6 +554,20 @@ predicate(P) ::= number NEGATION NEGATION string LBRACKET variables(Ve) RBRACKET
 	delete Ve;
 }
 
+//0.8536 !load(T,T)
+predicate(P) ::= number NEGATION string LBRACKET variables(Ve) RBRACKET. {
+	P = new Predicate;
+	P->notToBeCompleted();
+	// tree->statHasDblNeg = true;
+	delete Ve;
+}
+//0.8536 !!load(T,T)
+predicate(P) ::= NEGATION NEGATION string LBRACKET variables(Ve) RBRACKET. {
+	P = new Predicate;
+	P->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	delete Ve;
+}
 
 //Parses domains ex. step={1,2,3}
 domain(D) ::= string(S) EQUAL domains(Ds).{ 
@@ -527,7 +597,7 @@ variables(Ve) ::= variables(Ve2) COMMA variable(V).{
 variable(V) ::= string(S). { V=S;}  
 variable(V) ::= number(N). { V=N;} 
 
-variable(V) ::= PLUS string(S). { V=S;}  
+// variable(V) ::= PLUS string(S). { V=S;}  
 
 string(S) ::= STRING(S1). { S=S1;}
 number(N) ::= NUMBER(N1). { N=N1;}

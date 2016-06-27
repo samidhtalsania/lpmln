@@ -440,7 +440,9 @@ void Tree::completeDeclarations(){
 
 			for(unsigned int i=0;i<itr->getPosMap().size();++i){
 				str += uniqueVars[i];
+				str += ",";
 			}
+			str = str.substr(0, str.size()-1);
 			str += ").\n";
 			std::cout<<str;
 		}

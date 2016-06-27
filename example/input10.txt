@@ -8,4 +8,4 @@ PossDefProbRoll(Dice,Number)
 PrApplied(Constants2,Boolean)
 UnAssProbRoll(Dice, Boolean, Boolean)
 
-Roll(d, n) ^ PossDefProbRoll(d, n) ^ PrApplied(P1, b1) ^ PrApplied(P2, b2) => UnAssProbRoll(d, b1, b2).
+!!(Roll(d, n) ^ PossDefProbRoll(d, n) ^ PrApplied(P1, b1) ^ PrApplied(P2, b2) => UnAssProbRoll(d, b1, b2)(.

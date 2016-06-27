@@ -1,0 +1,8 @@
+step = {0,1}
+boolean = {True, False}
+next(step, step)
+loaded(boolean, step)
+load(step)
+t1 = t ^ load(t1) ^ next(t1,t) => loaded(True,t).
+loaded(x,0) => loaded(x,0).
+loaded(x,t1) ^ loaded(x,t) ^ next(t1,t) => loaded(x,t).

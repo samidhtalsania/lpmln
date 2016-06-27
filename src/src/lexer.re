@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include <iostream>
+#include "exceptions/syntax_exception.h"
 
 
 int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
@@ -47,12 +48,13 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 		"-"						{ return PARSE_TOKEN_MINUS;}
 		
 		"!"						{ return PARSE_TOKEN_NEGATION;}
-		"+"						{ return PARSE_TOKEN_PLUS ;}
+		
 		WS						{ return PARSE_TOKEN_WS; }
 		NL						{ return PARSE_TOKEN_NEWLINE; }	
 		*						{
-									std::cout<<"Error: Unexpected "<<lexeme->current<<"\n";
-									return 0;
+									std::string str(--lexeme->current,0,1);
+
+									throw syntax_exception("Syntax Error - Unexpected "+ str +"\n");
 								}
 								
 	*/

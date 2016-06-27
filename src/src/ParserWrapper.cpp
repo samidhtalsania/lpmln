@@ -86,26 +86,32 @@ int ParserWrapper::parse(){
         lineCount++;
         columnCount = 0;
         if(!str.empty()){
-          //Left trim the input tring
-          auto it2 =  std::find_if( str.begin() , str.end() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
-          str.erase( str.begin() , it2);
+
+        //Right trim the input string  
+        auto it1 =  std::find_if( str.rbegin() , str.rend() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
+        str.erase( it1.base() , str.end() );
+
+        //Left trim the input tring
+        auto it2 =  std::find_if( str.begin() , str.end() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
+        str.erase( str.begin() , it2);
           
 
-          //If its a comment print it and go to next statement
-          if(str.substr(0,2).compare("//") == 0){
-            cout<<str<<"\n";
-            continue;
-          }
+        //If its a comment print it and go to next statement
+        if(str.substr(0,2).compare("//") == 0){
+          cout<<str<<"\n";
+          continue;
+        }
 
-          //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
-          // The user possibly wants to pass this statement directly to alchemy.
-          // else if(str.substr(0,2).compare("!!") == 0){
-          //   cout<<str.substr(2,str.size()-1)<<"\n";
-          //   continue;
-          // }
+        //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
+        // The user possibly wants to pass this statement directly to alchemy.
+        else if(str.substr(0,3).compare("!!(") == 0){
+          int s = str.size();
+          cout<<str.substr(3 ,s-3-1)<<"\n";
+          continue;
+        }
 
-          //If it is a uniqueness statement print it oout and go to next
-		      // else if(str.substr(0,2).compare("!(") == 0){
+        //If it is a uniqueness statement print it oout and go to next
+	      // else if(str.substr(0,2).compare("!(") == 0){
         //     cout<<str<<"\n";
         //     continue;
         //   }

@@ -25,6 +25,8 @@ public:
 	std::set<std::pair<std::string, std::string>> getOrphanVars() {return orphanVars;}
 
 	bool isHeadTop = false;
+
+	bool toBeCompleted = true;
 	
 private:
 	typedef Completion super;
