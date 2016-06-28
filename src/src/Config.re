@@ -36,19 +36,27 @@ Config::Config(int argc, char** argv){
 
 		"\000"					{ continue;}
 		"-t"					{
-									if(translation == Translation::None)
+									if(translation == Translation::Translation_None)
 										translation = Translation::Tuffy;
 									else
 										Config::showError(Error::INVALID_T);
 									continue;  	
 								}
-		"-a"					{
-									if(translation == Translation::None)
+		"-m"					{
+									if(translation == Translation::Translation_None)
 										translation = Translation::Alchemy;
 									else
-										Config::showError(Error::INVALID_A);
+										Config::showError(Error::INVALID_M);
 									continue;
 										
+								}
+
+		"-a"					{
+									if(parserType == ParserType::PARSER_NONE)
+										parserType = ParserType::ASP;
+									else
+										Config::showError(Error::INVALID_A);
+									continue;	
 								}
 
 		"-d"					{
@@ -97,8 +105,11 @@ Config::Config(int argc, char** argv){
 	/*
 	User did not specify any translation. Default to alchemy.
 	*/
-	if(translation == Translation::None)
+	if(translation == Translation::Translation_None)
 		translation = Translation::Alchemy;
+
+	if(parserType == ParserType::PARSER_NONE)
+		parserType = ParserType::FOL;
 		
 }
 
@@ -112,9 +123,9 @@ void Config::showError(Error e){
 						"use either of -a or -t not both \n";
 			break;
 
-		case Error::INVALID_A:
-			std::cerr << "Invalid option -a \n"
-						"use either of -a or -t not both \n";
+		case Error::INVALID_M:
+			std::cerr << "Invalid option -m \n"
+						"use either of -m or -t not both \n";
 			break;
 
 		case Error::INVALID_FILE:
@@ -131,7 +142,11 @@ void Config::showError(Error e){
 			std::cerr << "Expected an Input file.\n";
 			break;
 
-		case Error::NONE:				
+		case Error::INVALID_A:
+			std::cerr << "Invalid option -a \n";
+			break;
+
+		case Error::ERROR_NONE:				
 		default:
 			break;
 	}
@@ -145,8 +160,9 @@ void Config::showHelp(){
 				"\n"
 				"Options:\n"
 				"\n"
-				"\t-a\tCompile for Alchemy\n"
+				"\t-m\tCompile for Alchemy\n"
 				"\t-t\tCompile for Tuffy\n"
+				"\t-a\tCompile with input in ASP like syntax\n"
 				"\t-h\tShow this Message\n"
 				"\t-v\tDisplay Version\n"
 				"\n";

@@ -1,7 +1,8 @@
 #include "lexer.h"
-#include "parser.h"
-#include <iostream>
+#include "Parser.h"
 #include "exceptions/syntax_exception.h"
+
+#include <iostream>
 
 
 int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
@@ -31,6 +32,7 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 		[0-9]+					{ return PARSE_TOKEN_NUMBER; }
 		[a-zA-Z]+[a-zA-Z0-9]*	{ return PARSE_TOKEN_STRING; }
 		"=>"                	{ return PARSE_TOKEN_IMPLICATION; }
+		"<="					{ return PARSE_TOKEN_REVERSE_IMPLICATION; }
 		"}"						{ return PARSE_TOKEN_RPAREN; }
 		"{"						{ return PARSE_TOKEN_LPAREN; }
 		"="						{ return PARSE_TOKEN_EQUAL; }

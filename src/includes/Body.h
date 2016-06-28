@@ -6,6 +6,7 @@ class Body
 public:
 	Body();
 	~Body();
+	Body(std::vector<Predicate> _predList):predList(_predList){}
 
 	void addPredicate(Predicate p){
 		predList.push_back(p);

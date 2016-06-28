@@ -33,11 +33,11 @@
 	};
 }
 
-
+%name FOLParserGrammar
 %start_symbol start
 %token_prefix PARSE_TOKEN_
 
-%extra_argument { Tree* tree}
+%extra_argument {Tree* tree}
 
 %parse_accept 
 {
@@ -78,30 +78,102 @@
 
 %nonassoc LBRACKET RBRACKET.
 %nonassoc IMPLICATION.
+%nonassoc REVERSE_IMPLICATION.
 %right NEGATION.
 
 %nonassoc WS.
 
 %token_type {Token*}
-// %token_destructor {delete $$;}
-
 
 %type start {Tree*}
 
 %type prog {Tree*}
 
 %type domain {Domain*}
-// %destructor domain { delete $$;}
+
 %type domains {Domain*}
-// %destructor domains { delete $$;}
+
 %type predicate {Predicate*}
 
 %type decl {Variable*}
 
 %type variables {std::vector<std::string*>*}
 
-start ::= prog.
+%include{
+#define RULE_COMPLETION_BH(B,H) \
+	std::set<std::pair<std::string,std::string>> orphanVarsMap;  \
+	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap; \
+	std::vector<Predicate> predList = B->getPredicate(); \
+	for(auto& p : predList){ \
+		int tempCount = 0; \
+		for(auto& v : p.getTokens()){ \
+			if(tree->variables.find(p.getVar()) == tree->variables.end()){ \
+				undefined_predicate ex(p.getVar()); \
+				throw ex; \
+			} \
+			else \
+				orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar())); \
+		} \
+	} \
+	int count = 0; \
+	std::map<int,std::pair<int, std::string>> varMap; \
+	int tempCount = 0; \
+	for(auto& str : H->getPredicate().getTokens()){ \
+		if(tree->isConstant(str)){ \
+			varMap[count++] = std::pair<int, std::string>(count, str); \
+		} \
+		else \
+			count++; \
+		 \
+		if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){ \
+			undefined_predicate ex(H->getPredicate().getVar()); \
+			throw ex; \
+		} \
+		else	 \
+			orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar())); \
+	} \
+	std::set<std::string> result; \
+	tree->removeConstantsPair(orphanVarsMap); \
+	tree->removeConstantsPair(orphanVarsHeadMap); \
+	std::set<std::pair<std::string,std::string>> resultMap; \
+	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp())
 
+
+#define RULE_COMPLETION_BODY_TOP(B,B1) \
+	B->addPredicate(B1->getPredicate()); \
+	std::vector<Predicate> pred = B->getPredicate(); \
+	for(unsigned long int i=0;i<pred.size();i++){ \
+		std::unique_ptr<Head> H(new Head(pred.at(i))); \
+		std::vector<Predicate> temp; \
+		for (unsigned long int j = 0; j < pred.size(); j++){ \
+			if(j == i) continue; \
+			bool singleN = pred.at(j).isSingleNegated(); \
+			bool doubleN = pred.at(j).isDoubleNegated(); \
+			if(pred.at(j).isSingleNegated()){ \
+				pred.at(j).setSingleNegation(false); \
+			} \
+			else if(pred.at(j).isDoubleNegated()){ \
+				pred.at(j).setDoubleNegation(false); \
+				pred.at(j).setSingleNegation(true); \
+			} \
+			else{ \
+				pred.at(j).setSingleNegation(true);	 \
+			} \
+			temp.push_back(pred.at(j)); \
+			pred.at(j).setSingleNegation(singleN); \
+			pred.at(j).setDoubleNegation(doubleN); \
+		} \
+		std::unique_ptr<Body> b(new Body(temp)); \
+		RULE_COMPLETION_BH(b,H); \
+		RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); \
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
+		delete R1; \
+	} 
+	
+	 
+}
+
+start ::= prog.
 
 prog ::= prog NEWLINE domain(D). { 
 	tree->domains.insert(*D); 
@@ -157,17 +229,6 @@ prog ::= rule(R).{
 	delete R;
 }
 
-// prog ::= prog NEWLINE ruleU(R). {
-	
-// 	//random
-// 	delete R;
-// }
-
-// prog ::= ruleU(R). {
-// 	//random
-// 	delete R;
-// }
-
 prog ::= prog NEWLINE.
 
 prog ::= .
@@ -189,29 +250,20 @@ prog ::= .
 //RuleU are rules with head bottom
 %type ruleU {RuleCompletion*}
 
-
-//ex !(alive(x,True,t) ^ alive(x,False,t))
-// ruleU ::= LBRACKET ruleI RBRACKET DOT.
-
-// ruleU ::= NEGATION LBRACKET ruleI RBRACKET DOT.
-
-// ruleI ::= body CONJUNCTION bodydef2(B2).{
-// 	delete B2;
-// }
-
-// ruleI ::= body DISJUNCTION bodydef2(B2). {
-// 	delete B2;
-// }
-
 //ex 0.8536 !(B => Bottom)
 //Test case covered
 rule(R) ::= number NEGATION LBRACKET ruleU(R1) RBRACKET.{
 	R = R1;
-	R1->toBeCompleted = false;
+	R->toBeCompleted = false;
+}
+
+rule(R) ::= number LBRACKET ruleU(R1) RBRACKET.{
+	R = R1;
+	R->toBeCompleted = false;
 }
 
 //ex !(B => Bottom).
-//Test case covered
+//Test case wrong
 rule(R) ::= NEGATION LBRACKET ruleU(R1) RBRACKET DOT.{
 	R = R1;
 	R1->toBeCompleted = false;
@@ -221,8 +273,7 @@ rule(R) ::= NEGATION LBRACKET ruleU(R1) RBRACKET DOT.{
 //Test case covered
 rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
 	R = R1;
-	R1->toBeCompleted = false;
-	//segfault here
+	R->toBeCompleted = false;
 }
 
 
@@ -233,16 +284,18 @@ ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 	delete B1;
 }
 
-//B=>bottom
+//Top => H
 ruleU(R) ::= body(B) DISJUNCTION bodydef(B1).{
 	R = new RuleCompletion;	
+	R->isHeadTop = true;
+	RULE_COMPLETION_BODY_TOP(B,B1)
 	delete B;
 	delete B1;
 }
 
 //Parse Hard rule
 //B => bottom.
-//Test case covered
+// Test case covered
 rule(R) ::= body(B) CONJUNCTION bodydef(B1) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
@@ -251,11 +304,25 @@ rule(R) ::= body(B) CONJUNCTION bodydef(B1) DOT.{
 }
 
 //Parse Hard rule
-//B => bottom.
+//Top => H.
 //Test case covered
 rule(R) ::= body(B) DISJUNCTION bodydef(B1) DOT.{
+	//Doing this 
 	R = new RuleCompletion;
-	R->isHeadTop = true;	
+	R->isHeadTop = true;
+	RULE_COMPLETION_BODY_TOP(B,B1)
+	delete B;
+	delete B1;
+}
+
+//Parse Hard rule
+//Top => H.
+//Test case covered
+rule(R) ::= number body(B) DISJUNCTION bodydef(B1).{
+	//Doing this 
+	R = new RuleCompletion;
+	R->isHeadTop = true;
+	RULE_COMPLETION_BODY_TOP(B,B1)
 	delete B;
 	delete B1;
 }
@@ -264,49 +331,8 @@ rule(R) ::= body(B) DISJUNCTION bodydef(B1) DOT.{
 //B => H.
 //Test case covered
 rule(R) ::= body(B) IMPLICATION head(H) DOT.{
-	std::set<std::pair<std::string,std::string>> orphanVarsMap;
-	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
-	std::vector<Predicate> predList = B->getPredicate();
-	for(auto& p : predList){
-		int tempCount = 0;
-		for(auto& v : p.getTokens()){
-			if(tree->variables.find(p.getVar()) == tree->variables.end()){
-				undefined_predicate ex(p.getVar());
-				throw ex;
-			}
-			else
-				orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar()));
-		}
-	}
-
-	int count = 0;
-	std::map<int,std::pair<int, std::string>> varMap;
-	int tempCount = 0;
-
-
-	for(auto& str : H->getPredicate().getTokens()){
-		if(tree->isConstant(str)){
-			varMap[count++] = std::pair<int, std::string>(count, str);
-		}
-		else
-			count++;
-		
-		if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){
-			undefined_predicate ex(H->getPredicate().getVar());
-			throw ex;
-		}
-		else	
-			orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar()));
-	}
-
-	std::set<std::string> result;
-		
-	tree->removeConstantsPair(orphanVarsMap);
-	tree->removeConstantsPair(orphanVarsHeadMap);
 	
-	std::set<std::pair<std::string,std::string>> resultMap;
-	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
-
+	RULE_COMPLETION_BH(B,H);
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
 	delete B;
 	delete H;
@@ -316,40 +342,7 @@ rule(R) ::= body(B) IMPLICATION head(H) DOT.{
 //0.8536 B => H
 //Test case covered
 rule(R) ::= number body(B) IMPLICATION head(H). {
-	std::set<std::pair<std::string,std::string>> orphanVarsMap;
-	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
-	std::vector<Predicate> predList = B->getPredicate();
-	for(auto& p : predList){
-		int tempCount = 0;
-		for(auto& v : p.getTokens()){
-			orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar()));
-		}
-	}
-
-	int count = 0;
-	std::map<int,std::pair<int, std::string>> varMap;
-	int tempCount = 0;
-
-	for(auto& str : H->getPredicate().getTokens()){
-		if(tree->isConstant(str)){
-			varMap[count] = std::pair<int, std::string>(count, str);
-		}
-		else
-			count++;
-			
-		orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar()));
-	}
-
-	
-	
-	std::set<std::string> result;
-		
-	tree->removeConstantsPair(orphanVarsMap);
-	tree->removeConstantsPair(orphanVarsHeadMap);
-	
-	std::set<std::pair<std::string,std::string>> resultMap;
-	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
-
+	RULE_COMPLETION_BH(B,H);
 	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
 	delete B;
 	delete H;
@@ -384,6 +377,7 @@ body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 
 body(B) ::= body(B1) DISJUNCTION bodydef(Bd).{
 	B = B1;
+	B1->addPredicate(Bd->getPredicate());
 	delete Bd;
 }
 body(B) ::= bodydef(Bd).{
@@ -411,7 +405,7 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
-	p.setSingleNegation();
+	p.setSingleNegation(true);
 	B = new BodyDef;
 	B->addPredicate(p);
 	delete Ve;
@@ -424,7 +418,7 @@ bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
-	p.setDoubleNegation();
+	p.setDoubleNegation(true);
 	B = new BodyDef;
 	B->addPredicate(p);
 	tree->statHasDblNeg = true;
@@ -440,7 +434,7 @@ bodydef(B) ::= LBRACKET NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRAC
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
-	p.setDoubleNegation();
+	p.setDoubleNegation(true);
 	tree->statHasDblNeg = true;
 	B = new BodyDef;
 	B->addPredicate(p);
@@ -489,8 +483,8 @@ headdef(H) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
-	H = new Head;
-	H->addPredicate(p);
+	H = new Head(p);
+	// H->addPredicate(p);
 	delete Ve;
 }
 
@@ -501,8 +495,8 @@ headdef(H) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 		vars.push_back(*v);
 	
 	Predicate p(S->token, vars);
-	p.setSingleNegation();
-	H = new Head;
+	p.setSingleNegation(true);
+	H = new Head(p);
 	H->addPredicate(p);
 	delete Ve;
 }

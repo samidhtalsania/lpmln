@@ -48,14 +48,17 @@ public:
 
 	void setEquality() { isEquality = true;}
 	void setInEquality() { isInEquality = true;}
-	void setSingleNegation() { singleNegation = true;}
-	void setDoubleNegation() { doubleNegation = true;}
+	void setSingleNegation(bool val) { singleNegation = val;}
+	void setDoubleNegation(bool val) { doubleNegation = val;}
 
 	bool isSingleNegated() { return singleNegation; }
+	bool isDoubleNegated() { return doubleNegation; }
 
 	bool needsToBeCompleted() { return toBeCompleted; }
 
 	void notToBeCompleted() { toBeCompleted = true;} 
+
+	std::string toString() const;
 
 private:
 	std::string var;

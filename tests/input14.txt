@@ -3,4 +3,4 @@ load(num,num)
 step(num,num)
 temp(num,num)
 
-0.8536 load(0,0) v step(0,1) v temp(1,1)
+0.8536 (load(0,0) v step(0,1) v temp(1,1))

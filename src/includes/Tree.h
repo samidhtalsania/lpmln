@@ -1,3 +1,5 @@
+#pragma once
+
 #include <set>
 #include <string>
 #include <iostream>
@@ -10,6 +12,8 @@
 #include "Predicate.h"
 #include "Variable.h"
 #include "RuleCompletion.h"
+
+#include "exceptions/undefined_key.h"
 
 class Tree
 {

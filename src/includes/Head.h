@@ -3,7 +3,7 @@
 class Head
 {
 public:
-	Head();
+	Head(Predicate _p):p(_p){};
 	~Head();
 
 	Predicate getPredicate() { return p;}

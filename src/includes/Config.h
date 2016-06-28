@@ -4,16 +4,24 @@
 enum Translation{
 	Alchemy,
 	Tuffy,
-	None
+	Translation_None
 };
 
 enum Error{
 	INVALID_T,
 	INVALID_A,
+	INVALID_M,
 	INVALID_FILE,
 	NO_FILE,
 	EXPECTED_FILE,
-	NONE
+	ERROR_NONE
+};
+
+
+enum ParserType{
+	FOL,
+	ASP,
+	PARSER_NONE
 };
 
 class Config
@@ -23,6 +31,8 @@ public:
 	~Config();
 
 	inline Translation getTranslation(){ return translation;}
+	inline ParserType getParser() { return parserType;}
+	
 	inline std::string getExecutablePath() { return path; };
 	inline std::string getFile() { return file;}
 
@@ -40,7 +50,8 @@ public:
 
 
 private:
-	Translation translation = Translation::None;
+	Translation translation = Translation::Translation_None;
+	ParserType parserType = ParserType::PARSER_NONE;
 	std::string path;
 	std::string file;
 	bool errors = false;

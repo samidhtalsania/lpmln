@@ -31,8 +31,16 @@ void Tree::completeRules(){
 		std::pair<int,int> auxPos;
 		
 		std::pair <std::multimap<std::string,RuleCompletion>::iterator, std::multimap<std::string, RuleCompletion>::iterator> ret;
+
+		if(key.first.empty()){
+			//Key is empty. This will throw a segfault.
+			throw undefined_key();
+		}
+
 		ret = rules.equal_range(key.first);
-		
+
+
+			
 		//Based on key, from varaibles set find out its domains.
 		//Assign a variable to each of the domain of the key.
 		//Use this variable in constructing strLhs and strRhs 

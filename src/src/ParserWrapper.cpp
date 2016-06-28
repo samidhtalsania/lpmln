@@ -1,8 +1,8 @@
 #include "ParserWrapper.h"
 #include "lexer.h"
 #include "Domain.h"
-#include "parser.h"
 #include "Token.h"
+#include "ParserFactory.h"
 #include "exceptions/undefined_predicate.h"
 #include "exceptions/syntax_exception.h"
 
@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h> 
 #include <stdio.h>
-#include <memory>
+
 #include <fstream>
 #include <algorithm>
 
@@ -23,25 +23,8 @@ using namespace std;
 
 namespace io = boost::iostreams; 
 
-#define ParseTOKENTYPE Token*
-#define ParseARG_PDECL , Tree* tree
-
-void Parse(
-  void *yyp,                   /* The parser */
-  int yymajor,                 /* The major token code number */
-  ParseTOKENTYPE yyminor       /* The value for the token */
-  ParseARG_PDECL               /* Optional %extra_argument parameter */
-);
 
 
-void *ParseAlloc(void *(*mallocProc)(size_t));
-
-void ParseFree(
-  void *p,                    /* The parser to be deleted */
-  void (*freeProc)(void*)     /* Function used to reclaim memory */
-);
-
-void ParseTrace(FILE *TraceFILE, char *zTracePrompt);
 
 ParserWrapper::ParserWrapper(Config c){
 	translation = c.getTranslation();
@@ -50,19 +33,20 @@ ParserWrapper::ParserWrapper(Config c){
 
 	tree = new Tree;
 
-	parser = ParseAlloc(malloc);
+	// parser = ParseAlloc(malloc);
+  parser = ParserFactory::getParser(c.getParser()); 
+  parser->ParseAlloc();
 }
 
 int ParserWrapper::parse(){
 	
 	std::ifstream file(inputFile, std::ios_base::in | std::ios_base::binary);
 	int hTokenId;
-	// void *parser = ParseAlloc(malloc);
 
 	if(debug){
 		pFile = fopen ("op.txt" , "w");
 		const char* debug_prefix = "_";
-		ParseTrace(pFile,const_cast<char*>(debug_prefix));
+		parser->ParseTrace(pFile,const_cast<char*>(debug_prefix));
 	}
 
 
@@ -109,16 +93,7 @@ int ParserWrapper::parse(){
           cout<<str.substr(3 ,s-3-1)<<"\n";
           continue;
         }
-
-        //If it is a uniqueness statement print it oout and go to next
-	      // else if(str.substr(0,2).compare("!(") == 0){
-        //     cout<<str<<"\n";
-        //     continue;
-        //   }
-
-
           str += "\n";
-          
           char* buffer;
           buffer = const_cast<char*>(str.c_str());
           int len = str.size();
@@ -132,7 +107,7 @@ int ParserWrapper::parse(){
               string substr(lexeme.start, pos);
               Token* tok = new Token(substr);
               v.push_back(tok);
-              Parse(parser, hTokenId, tok, tree);
+              parser->Parse(hTokenId, tok, tree);
             }
           }
 
@@ -152,9 +127,7 @@ int ParserWrapper::parse(){
       }
 
       Token* tok = new Token("0");
-      
-      
-      Parse(parser, 0, tok, tree);
+      parser->Parse(0, tok, tree);
  
       // ParseFree(parser, free);
       delete tok;
@@ -191,7 +164,7 @@ void ParserWrapper::parseComplete(){
 
 ParserWrapper::~ParserWrapper(){
 	delete tree;
-	ParseFree(parser, free);
+	parser->ParseFree();
   for(auto& ve : v)
     delete ve;
 	if(pFile != NULL && debug)

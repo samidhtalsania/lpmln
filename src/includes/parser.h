@@ -8,9 +8,10 @@
 #define PARSE_TOKEN_LBRACKET                         8
 #define PARSE_TOKEN_RBRACKET                         9
 #define PARSE_TOKEN_IMPLICATION                     10
-#define PARSE_TOKEN_NEGATION                        11
-#define PARSE_TOKEN_WS                              12
-#define PARSE_TOKEN_DOT                             13
-#define PARSE_TOKEN_STRING                          14
-#define PARSE_TOKEN_NUMBER                          15
-#define PARSE_TOKEN_MINUS                           16
+#define PARSE_TOKEN_REVERSE_IMPLICATION             11
+#define PARSE_TOKEN_NEGATION                        12
+#define PARSE_TOKEN_WS                              13
+#define PARSE_TOKEN_DOT                             14
+#define PARSE_TOKEN_STRING                          15
+#define PARSE_TOKEN_NUMBER                          16
+#define PARSE_TOKEN_MINUS                           17

@@ -1,6 +1,7 @@
 #include <string>
 #include <exception>
 
+#pragma once
 
 class syntax_exception : public std::exception{
 	public:

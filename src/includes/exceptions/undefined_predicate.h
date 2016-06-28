@@ -1,6 +1,6 @@
 #include <string>
 #include <exception>
-
+#pragma once
 
 class undefined_predicate : public std::exception{
 	public:

@@ -23,8 +23,13 @@ PossDefProbRoll(Dice,Number)
 
 Owner(D1, Mike).
 Owner(D2, John).
+
 !Roll(d,n1) v !Roll(d,n2) v n1=n2. 
 !Owner(d,p1) v !Owner(d,p2) v p1=p2.
+
+//!(Roll(d,n1) ^ Roll(d,n2) ^ n1!=n2). 
+//!(Owner(d,p1) ^ Owner(d,p2) ^ p1!=p2).
+
 
 // // ∗ ∗ ∗ ∗RandomSelection ∗ ∗ ∗ ∗
 // DoRoll(d, n) => InterveneRoll(d).
