@@ -9,5 +9,6 @@ public:
 	// Token();
 	~Token();
 
-	std::string* token;		
+	std::string* token;
+	std::string toString(){ return *token;}		
 };

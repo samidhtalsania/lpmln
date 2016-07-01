@@ -3,6 +3,12 @@
 #include "Predicate.h"
 #include <set>
 
+enum BodyType{
+	DISJUNCTION,
+	CONJUNCTION,
+	NONE
+};
+
 class RuleCompletion : public Completion
 {
 public:
@@ -24,13 +30,36 @@ public:
 	
 	std::set<std::pair<std::string, std::string>> getOrphanVars() {return orphanVars;}
 
+	std::string toString(){
+		return str;
+	}
+
+	void appendStr(std::string _str){ str += _str;}
+
+	void setBodyType(BodyType type){
+		bodyType = type;
+	}
+
+	BodyType getBodyType(){
+		return bodyType;
+	}
+
+
 	bool isHeadTop = false;
 
 	bool toBeCompleted = true;
+
+	bool isWeighted = false;
 	
 private:
 	typedef Completion super;
 	bool isOrphan = false;
+	float num;
+
+	std::string str;
+
+	BodyType bodyType = BodyType::NONE;
+
 	std::set<std::pair<std::string, std::string>> orphanVars; 
 	std::map<int,std::pair<int, std::string>> varMap;
 

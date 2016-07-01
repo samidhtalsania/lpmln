@@ -10,6 +10,7 @@ public:
 
 	void addPredicate(Predicate _p) { p = _p;}
 
+	std::string toString() const { return p.toString();}
 
 private:
 	Predicate p;

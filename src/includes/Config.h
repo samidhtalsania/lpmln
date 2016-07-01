@@ -14,6 +14,7 @@ enum Error{
 	INVALID_FILE,
 	NO_FILE,
 	EXPECTED_FILE,
+	UNREGONIZED_OPTION,
 	ERROR_NONE
 };
 
@@ -38,7 +39,7 @@ public:
 
 	inline bool configFailed() { return errors;}
 
-	inline void showError(Error);
+	inline void showError(Error,int);
 
 	inline void showHelp();
 
@@ -57,4 +58,5 @@ private:
 	bool errors = false;
 	bool help = false;
 	bool debug = true;
+	char** args;
 };

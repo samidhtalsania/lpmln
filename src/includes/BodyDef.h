@@ -15,6 +15,10 @@ public:
 		return p;
 	}
 
+	std::string toString(){
+		return p.toString();
+	}
+
 private:
 	Predicate p;	
 };

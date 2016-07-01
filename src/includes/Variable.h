@@ -28,6 +28,19 @@ public:
 	inline int isCompleted() const { return completed;}
 
 	void setCompleted() const { completed = true;}
+
+	std::string toString() const{
+		std::string str;
+		str += var;
+		str += "(";
+		for(auto it = pos.begin();it!=pos.end();++it){
+			str += it->second.toString(true);
+			str += ",";
+		}
+		str = str.substr(0,str.size()-1);
+		str += ")\n";
+		return str;
+	}
 	
 private:
 	std::string var;

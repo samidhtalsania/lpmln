@@ -5,9 +5,9 @@
 
 
 Config::Config(int argc, char** argv){
-
+	args = argv;
 	if(argc < 2){
-		showError(Error::NO_FILE);
+		showError(Error::NO_FILE,-1);
 		return;
 	}
 
@@ -39,14 +39,14 @@ Config::Config(int argc, char** argv){
 									if(translation == Translation::Translation_None)
 										translation = Translation::Tuffy;
 									else
-										Config::showError(Error::INVALID_T);
+										Config::showError(Error::INVALID_T,i);
 									continue;  	
 								}
 		"-m"					{
 									if(translation == Translation::Translation_None)
 										translation = Translation::Alchemy;
 									else
-										Config::showError(Error::INVALID_M);
+										Config::showError(Error::INVALID_M,i);
 									continue;
 										
 								}
@@ -55,7 +55,7 @@ Config::Config(int argc, char** argv){
 									if(parserType == ParserType::PARSER_NONE)
 										parserType = ParserType::ASP;
 									else
-										Config::showError(Error::INVALID_A);
+										Config::showError(Error::INVALID_A,i);
 									continue;	
 								}
 
@@ -75,7 +75,7 @@ Config::Config(int argc, char** argv){
 									return;
 								}
 
-		[a-zA-Z_0-9/]+			{
+		[a-zA-Z_0-9/-.]+			{
 									if(i == 0){
 										path = argv[i];
 										continue;
@@ -86,11 +86,16 @@ Config::Config(int argc, char** argv){
 											file = argv[i];
 										}
 										else{
-											Config::showError(Error::INVALID_FILE);
+											Config::showError(Error::INVALID_FILE,i);
 										}
 										continue;
 									}
 
+								}
+
+		*						{
+									Config::showError(Error::UNREGONIZED_OPTION,i);
+									continue;
 								}
 		*/
 	}
@@ -99,7 +104,7 @@ Config::Config(int argc, char** argv){
 		Check if user gave a file
 	*/
 	if(file.size() == 0){
-		showError(Error::EXPECTED_FILE);
+		showError(Error::EXPECTED_FILE,-1);
 	}
 
 	/*
@@ -114,7 +119,7 @@ Config::Config(int argc, char** argv){
 }
 
 
-void Config::showError(Error e){
+void Config::showError(Error e, int i){
 	errors = true;
 	switch(e){
 
@@ -144,6 +149,10 @@ void Config::showError(Error e){
 
 		case Error::INVALID_A:
 			std::cerr << "Invalid option -a \n";
+			break;
+
+		case Error::UNREGONIZED_OPTION:
+			std::cerr << "Unrecognized option "<<args[i] <<"\n";
 			break;
 
 		case Error::ERROR_NONE:				

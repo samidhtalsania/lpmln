@@ -255,11 +255,17 @@ prog ::= .
 rule(R) ::= number NEGATION LBRACKET ruleU(R1) RBRACKET.{
 	R = R1;
 	R->toBeCompleted = false;
+	if(R1->getBodyType() == BodyType::DISJUNCTION){
+		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
+	}
 }
 
 rule(R) ::= number LBRACKET ruleU(R1) RBRACKET.{
 	R = R1;
 	R->toBeCompleted = false;
+	if(R1->getBodyType() == BodyType::CONJUNCTION){
+		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
+	}
 }
 
 //ex !(B => Bottom).
@@ -267,6 +273,9 @@ rule(R) ::= number LBRACKET ruleU(R1) RBRACKET.{
 rule(R) ::= NEGATION LBRACKET ruleU(R1) RBRACKET DOT.{
 	R = R1;
 	R1->toBeCompleted = false;
+	if(R1->getBodyType() == BodyType::DISJUNCTION){
+		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
+	}
 }
 
 //ex (B => Bottom).
@@ -274,12 +283,16 @@ rule(R) ::= NEGATION LBRACKET ruleU(R1) RBRACKET DOT.{
 rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
 	R = R1;
 	R->toBeCompleted = false;
+	if(R1->getBodyType() == BodyType::CONJUNCTION){
+		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
+	}
 }
 
 
 //B=>bottom
 ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 	R = new RuleCompletion;
+	R->setBodyType(BodyType::CONJUNCTION);
 	delete B;
 	delete B1;
 }
@@ -288,6 +301,7 @@ ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 ruleU(R) ::= body(B) DISJUNCTION bodydef(B1).{
 	R = new RuleCompletion;	
 	R->isHeadTop = true;
+	R->setBodyType(BodyType::DISJUNCTION);
 	RULE_COMPLETION_BODY_TOP(B,B1)
 	delete B;
 	delete B1;

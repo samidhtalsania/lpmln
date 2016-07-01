@@ -1,0 +1,6 @@
+bool={T,F}
+load(bool,bool)
+0.8536 !load(T,T)
+0.6565 load(F,T)
+//parsing complete!
+!load(_a,_b).

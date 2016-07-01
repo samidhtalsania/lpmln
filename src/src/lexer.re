@@ -1,13 +1,13 @@
 #include "lexer.h"
 #include "Parser.h"
 #include "exceptions/syntax_exception.h"
+#include "Constants.h"
 
 #include <iostream>
 
 
 int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 {
-
 
  	if (lexeme->current >= (YYCURSOR + len)) {
         return 0;

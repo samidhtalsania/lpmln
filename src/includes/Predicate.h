@@ -56,8 +56,28 @@ public:
 
 	bool needsToBeCompleted() { return toBeCompleted; }
 
-	void notToBeCompleted() { toBeCompleted = true;} 
+	void notToBeCompleted() { toBeCompleted = false;} 
 
+	/*Called by parser to print facts*/
+	std::string toString(const std::string& s, bool period) const{
+		std::string str;
+		str += s;
+		str += var;
+		str += "(";
+		for(auto it=tokens.begin();it != tokens.end(); ++it){
+			str += *it;
+			str += ",";
+		}
+		str = str.substr(0, str.size()-1);
+		str += ")";
+		if(period)
+			str += ".\n";
+		else
+			str += "\n";
+		return str;
+	}
+
+	/*Called bu bodyDef to print body*/
 	std::string toString() const;
 
 private:

@@ -1,0 +1,67 @@
+// Domain: MovingRobot
+
+// LP^MLN coding:
+
+// **** Declaration ****
+
+time = {0, 1}
+room = {R1, R2, R3}
+boolean = {T, F}
+constant = {In1}
+number = {2, 3}
+
+in(time, room)
+goin(room, boolean)
+ab(boolean)
+break(boolean)
+open(room, boolean)
+
+Intervene(constant)
+PosswithAssProb(constant, room)
+PosswithDefProb(constant, room)
+NumDefProb(constant, number)
+AssProb(constant, room)
+PrAtomApplied(constant, room)
+UnAssProb(constant, boolean)
+
+// **** RegularPart ****
+goin(r) ^ !ab(T) => in(1, r).
+break(T) => ab(T).
+!open(r, F) => open(r, T).
+goin(R1, T).
+break(T).
+!(in(t,r1) ^ in(t,r2) ^ r1!=r2).
+!(goin(r, T) ^ goin(r, F)).
+!(ab(T) ^ ab(F)).
+!(break(T) ^ break(F)).
+!(open(r, T) ^ open(r, F)).
+
+// **** RandomSelection ****
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R2) ^ !in(1, R3) => in(1, R1).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R1) ^ !in(1, R3) => in(1, R2).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R2) ^ !in(1, R1) => in(1, R3).
+!(in(1,r) ^ !open(r,T) ^ goin(r2, T) ^ break(T) ^ !Intervene(In1)).
+
+!PosswithAssProb(In1, r) ^ open(r,T) ^ goin(r2,T) ^ break(T) ^ !Intervene(In1)=> PosswithDefProb(In1, r).
+
+in(1,r1) ^ PosswithDefProb(In1, r1) ^ PosswithDefProb(In1, r2) ^ r1!=r2 => NumDefProb(In1, 2).
+
+in(1,r1) ^ PosswithDefProb(In1, r1) ^ PosswithDefProb(In1, r2) ^ PosswithDefProb(In1, r3) ^ r1!=r2 ^ r1!=r3 ^ r2!=r3 => NumDefProb(In1, 3).
+
+-0.6931 !!NumDefProb(In1, 2)
+-0.4055 !!NumDefProb(In1, 3)
+
+// **** ProbabilisticInformation ****
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ open(r, T) => PosswithAssProb(In1, r).
+
+PosswithAssProb(In1, r) ^ in(1,r) => AssProb(In1, r).
+
+-0.6931 !!AssProb(In1, r)
+
+goin(r, T) ^ break(T) ^ !Intervene(In1)^ open(r, T) => PrAtomApplied(In1, r).
+
+in(1, r) ^ PosswithDefProb(In1, r) ^ !PrAtomApplied(In1, r) => UnAssProb(In1, F).
+
+in(1, r) ^ PosswithDefProb(In1, r) ^ PrAtomApplied(In1, r) => UnAssProb(In1, T).
+
+-0.6931 !!UnAssProb(In1, T)

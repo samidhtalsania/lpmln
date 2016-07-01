@@ -24,4 +24,5 @@ ___lpmln_SOURCES = \
 			src/Config.cpp \
 			src/ParserWrapper.cpp \
 			src/ParserFactory.cpp \
-			src/FOLParserGrammar.cpp
+			src/FOLParserGrammar.cpp \
+			src/ASPParserGrammar.cpp

@@ -17,12 +17,14 @@ public:
 
 private:
 	void parseComplete();
+	void print(std::string);
+
+
 	bool debug = true;
 	Translation translation;
+	ParserType parserType;
 	std::string inputFile;
-	const std::string testFile = "lpmln_test.log";
 	FILE* pFile;
-	// void *parser;
 	Parser* parser;
 	Tree* tree;
 	std::vector<Token*> v;

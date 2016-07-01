@@ -1,0 +1,97 @@
+// Domain: Monty Hall
+
+// **** Declaration ****
+door = {D1, D2, D3}
+constant = {Prize, Selected, Open}
+number = {2, 3}
+boolean = {T, F}
+
+prize(door)
+selected(door)
+open(door)
+canopen(door, boolean)
+
+Intervene(constant)
+PosswithAssProb(constant, door)
+PosswithDefProb(constant, door)
+NumDefProb(constant, number)
+Do(constant, door)
+Obs(constant, door)
+
+// **** RegularPart ****
+selected(d) => canopen(d, F).
+prize(d) => canopen(d, F).
+!canopen(d, F) => canopen(d, T).
+
+//constrints
+!(canopen(d, T) ^ canopen(d, F)).
+!(prize(d1) ^ prize(d2) ^ d1 != d2).
+!(selected(d1) ^ selected(d2) ^ d1 != d2).
+!(open(d1) ^ open(d2) ^ d1 != d2).
+
+// **** RandomSelection ****
+!Intervene(Prize) ^ !prize(D2) ^ !prize(D3)=> prize(D1).
+!Intervene(Prize) ^ !prize(D1) ^ !prize(D3)=> prize(D2).
+!Intervene(Prize) ^ !prize(D2) ^ !prize(D1)=> prize(D3).
+
+!selected(D2) ^ !selected(D3) ^ !Intervene(Selected) => selected(D1).
+!selected(D3) ^ !selected(D1) ^ !Intervene(Selected) => selected(D2).
+!selected(D2) ^ !selected(D1) ^ !Intervene(Selected) => selected(D3).
+
+!open(D1) ^ !open(D2) ^ !Intervene(Open) => open(D3).
+!open(D1) ^ !open(D3) ^ !Intervene(Open) => open(D2).
+!open(D3) ^ !open(D2) ^ !Intervene(Open) => open(D1).
+
+
+
+!(open(d) ^ !canopen(d, T) ^ !Intervene(Open)).
+
+!PosswithAssProb(Selected, d) ^ !Intervene(Selected) => PosswithDefProb(Selected, d).
+!PosswithAssProb(Prize, d) ^ !Intervene(Prize) => PosswithDefProb(Prize, d).
+!PosswithAssProb(Open, d) ^ canopen(d,T) ^ !Intervene(Open) => PosswithDefProb(Open, d).
+
+prize(d1) ^ PosswithDefProb(Prize, d1)^ PosswithDefProb(Prize, d2)^ d1 != d2 => NumDefProb(Prize, 2).
+prize(d1)^ PosswithDefProb(Prize, d1)^ PosswithDefProb(Prize, d2)^ PosswithDefProb(Prize, d3)^ d1 != d2^ d1 != d3 ^ d2 != d3 => NumDefProb(Prize, 3).
+
+selected(d1) ^ PosswithDefProb(Selected, d1) ^ PosswithDefProb(Selected, d2)^ d1 != d2 => NumDefProb(Selected, 2).
+selected(d1) ^ PosswithDefProb(Selected, d1) ^ PosswithDefProb(Selected, d2)^ PosswithDefProb(Selected, d3) ^ d1 != d2 ^ d1 != d3 ^ d2 != d3 => NumDefProb(Selected, 3).
+
+open(d1) ^ PosswithDefProb(Open, d1) ^ PosswithDefProb(Open, d2) ^ d1 != d2 => NumDefProb(Open, 2).
+open(d1) ^ PosswithDefProb(Open, d1) ^ PosswithDefProb(Open, d2) ^ PosswithDefProb(Open, d3) ^ d1 != d2 ^ d1 != d3 ^ d2 != d3 => NumDefProb(Open, 3).
+
+-0.6931 NumDefProb(c, 2)
+-0.4054 NumDefProb(c, 3)
+
+
+// **** Do ****
+Do(Selected, D1).
+Do(Selected, D1) => selected(D1).
+Do(Selected, D1) => Intervene(Selected).
+
+// **** Obs ****
+Obs(Open, D2).
+!(Obs(Open, D2) ^ !open(D2)).
+//parsing complete!
+Do(_a,_b) => (_a=Selected ^ _b=D1).
+NumDefProb(_a,_b) => (_b=2) v (_b=3).
+Obs(_a,_b) => (_a=Open ^ _b=D2).
+Intervene(_a) => (_a=Selected ^ Do(Selected,D1)).
+aux_NumDefProb_0(number,constant,door,door)
+aux_NumDefProb_0(_b,_a,d1,d2) <=> _a=Prize ^ _b=2 ^ prize(d1) ^ PosswithDefProb(Prize,d1) ^ PosswithDefProb(Prize,d2) ^ d1!=d2.
+aux_NumDefProb_1(number,constant,door,door,door)
+aux_NumDefProb_1(_b,_a,d1,d2,d3) <=> _a=Prize ^ _b=3 ^ prize(d1) ^ PosswithDefProb(Prize,d1) ^ PosswithDefProb(Prize,d2) ^ PosswithDefProb(Prize,d3) ^ d1!=d2 ^ d1!=d3 ^ d2!=d3.
+aux_NumDefProb_2(number,constant,door,door)
+aux_NumDefProb_2(_b,_a,d1,d2) <=> _a=Selected ^ _b=2 ^ selected(d1) ^ PosswithDefProb(Selected,d1) ^ PosswithDefProb(Selected,d2) ^ d1!=d2.
+aux_NumDefProb_3(number,constant,door,door,door)
+aux_NumDefProb_3(_b,_a,d1,d2,d3) <=> _a=Selected ^ _b=3 ^ selected(d1) ^ PosswithDefProb(Selected,d1) ^ PosswithDefProb(Selected,d2) ^ PosswithDefProb(Selected,d3) ^ d1!=d2 ^ d1!=d3 ^ d2!=d3.
+aux_NumDefProb_4(number,constant,door,door)
+aux_NumDefProb_4(_b,_a,d1,d2) <=> _a=Open ^ _b=2 ^ open(d1) ^ PosswithDefProb(Open,d1) ^ PosswithDefProb(Open,d2) ^ d1!=d2.
+aux_NumDefProb_5(number,constant,door,door,door)
+aux_NumDefProb_5(_b,_a,d1,d2,d3) <=> _a=Open ^ _b=3 ^ open(d1) ^ PosswithDefProb(Open,d1) ^ PosswithDefProb(Open,d2) ^ PosswithDefProb(Open,d3) ^ d1!=d2 ^ d1!=d3 ^ d2!=d3.
+NumDefProb(_a,_b) => (EXIST d1,d2 (aux_NumDefProb_0(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_1(_b,_a,d1,d2,d3))) v (EXIST d1,d2 (aux_NumDefProb_2(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_3(_b,_a,d1,d2,d3))) v (EXIST d1,d2 (aux_NumDefProb_4(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_5(_b,_a,d1,d2,d3))).
+PosswithDefProb(_a,_b) => (_a=Selected ^ !PosswithAssProb(Selected,_b) ^ !Intervene(Selected)) v (_a=Prize ^ !PosswithAssProb(Prize,_b) ^ !Intervene(Prize)) v (_a=Open ^ !PosswithAssProb(Open,_b) ^ canopen(_b,T) ^ !Intervene(Open)).
+canopen(_a,_b) => (_b=F ^ selected(_a)) v (_b=F ^ prize(_a)) v (_b=T ^ !canopen(_a,F)).
+open(_a) => (_a=D3 ^ !open(D1) ^ !open(D2) ^ !Intervene(Open)) v (_a=D2 ^ !open(D1) ^ !open(D3) ^ !Intervene(Open)) v (_a=D1 ^ !open(D3) ^ !open(D2) ^ !Intervene(Open)).
+prize(_a) => (_a=D1 ^ !Intervene(Prize) ^ !prize(D2) ^ !prize(D3)) v (_a=D2 ^ !Intervene(Prize) ^ !prize(D1) ^ !prize(D3)) v (_a=D3 ^ !Intervene(Prize) ^ !prize(D2) ^ !prize(D1)).
+selected(_a) => (_a=D1 ^ !selected(D2) ^ !selected(D3) ^ !Intervene(Selected)) v (_a=D2 ^ !selected(D3) ^ !selected(D1) ^ !Intervene(Selected)) v (_a=D3 ^ !selected(D2) ^ !selected(D1) ^ !Intervene(Selected)) v (_a=D1 ^ Do(Selected,D1)).
+!PosswithAssProb(_a,_b).

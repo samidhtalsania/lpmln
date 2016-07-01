@@ -8,7 +8,6 @@ class FOLParser: public Parser
 {
 public:
 	
-	
 	void Parse(int yymajor,Token* yyminor, Tree* tree){
 		FOLParserGrammar(parser, yymajor, yyminor, tree);
 	}

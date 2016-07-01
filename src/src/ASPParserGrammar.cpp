@@ -51,6 +51,8 @@
 
 	using namespace std;
 
+	#define SPACE " "
+
 	struct cmp{
 		bool operator()(const std::pair<std::string, std::string>& left, const std::pair<std::string, std::string>& right) const{
 			return left.first < right.first;
@@ -128,7 +130,7 @@
 	} 
 	
 	 
-#include "FOLParserGrammar.h"
+#include "ASPParserGrammar.h"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
 ** in a format understandable to "makeheaders".  This section is blank unless
@@ -171,7 +173,7 @@
 **    YYACTIONTYPE       is the data type used for "action codes" - numbers
 **                       that indicate what to do in response to the next
 **                       token.
-**    FOLParserGrammarTOKENTYPE     is the data type used for minor type for terminal
+**    ASPParserGrammarTOKENTYPE     is the data type used for minor type for terminal
 **                       symbols.  Background: A "minor type" is a semantic
 **                       value associated with a terminal or non-terminal
 **                       symbols.  For example, for an "ID" terminal symbol,
@@ -182,14 +184,14 @@
 **                       symbols.
 **    YYMINORTYPE        is the data type used for all minor types.
 **                       This is typically a union of many types, one of
-**                       which is FOLParserGrammarTOKENTYPE.  The entry in the union
+**                       which is ASPParserGrammarTOKENTYPE.  The entry in the union
 **                       for terminal symbols is called "yy0".
 **    YYSTACKDEPTH       is the maximum depth of the parser's stack.  If
 **                       zero the stack is dynamically sized using realloc()
-**    FOLParserGrammarARG_SDECL     A static variable declaration for the %extra_argument
-**    FOLParserGrammarARG_PDECL     A parameter declaration for the %extra_argument
-**    FOLParserGrammarARG_STORE     Code to store %extra_argument into yypParser
-**    FOLParserGrammarARG_FETCH     Code to extract %extra_argument from yypParser
+**    ASPParserGrammarARG_SDECL     A static variable declaration for the %extra_argument
+**    ASPParserGrammarARG_PDECL     A parameter declaration for the %extra_argument
+**    ASPParserGrammarARG_STORE     Code to store %extra_argument into yypParser
+**    ASPParserGrammarARG_FETCH     Code to extract %extra_argument from yypParser
 **    YYERRORSYMBOL      is the code number of the error symbol.  If not
 **                       defined, then do no error processing.
 **    YYNSTATE           the combined number of states.
@@ -210,11 +212,11 @@
 #define YYNOCODE 39
 #define YYACTIONTYPE unsigned short int
 #if INTERFACE
-#define FOLParserGrammarTOKENTYPE Token*
+#define ASPParserGrammarTOKENTYPE Token*
 #endif
 typedef union {
   int yyinit;
-  FOLParserGrammarTOKENTYPE yy0;
+  ASPParserGrammarTOKENTYPE yy0;
   Variable* yy1;
   RuleCompletion* yy9;
   BodyDef* yy12;
@@ -229,21 +231,21 @@ typedef union {
 #define YYSTACKDEPTH 100
 #endif
 #if INTERFACE
-#define FOLParserGrammarARG_SDECL Tree* tree;
-#define FOLParserGrammarARG_PDECL ,Tree* tree
-#define FOLParserGrammarARG_FETCH Tree* tree = yypParser->tree
-#define FOLParserGrammarARG_STORE yypParser->tree = tree
+#define ASPParserGrammarARG_SDECL Tree* tree;
+#define ASPParserGrammarARG_PDECL ,Tree* tree
+#define ASPParserGrammarARG_FETCH Tree* tree = yypParser->tree
+#define ASPParserGrammarARG_STORE yypParser->tree = tree
 #endif
-#define YYNSTATE             104
+#define YYNSTATE             114
 #define YYNRULE              53
-#define YY_MAX_SHIFT         103
-#define YY_MIN_SHIFTREDUCE   145
-#define YY_MAX_SHIFTREDUCE   197
-#define YY_MIN_REDUCE        198
-#define YY_MAX_REDUCE        250
-#define YY_ERROR_ACTION      251
-#define YY_ACCEPT_ACTION     252
-#define YY_NO_ACTION         253
+#define YY_MAX_SHIFT         113
+#define YY_MIN_SHIFTREDUCE   154
+#define YY_MAX_SHIFTREDUCE   206
+#define YY_MIN_REDUCE        207
+#define YY_MAX_REDUCE        259
+#define YY_ERROR_ACTION      260
+#define YY_ACCEPT_ACTION     261
+#define YY_NO_ACTION         262
 /************* End control #defines *******************************************/
 
 /* The yyzerominor constant is used to initialize instances of
@@ -315,109 +317,115 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (281)
+#define YY_ACTTAB_COUNT (305)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */   252,   74,  147,   40,  149,  151,  192,  153,   50,  170,
- /*    10 */   191,  190,  189,  100,   21,   49,  146,  100,  148,  150,
- /*    20 */    95,  152,   50,  170,   35,   20,   15,  192,   21,   49,
- /*    30 */    33,  100,  192,  192,  101,   46,   73,  170,   75,  177,
- /*    40 */    55,   79,   89,   54,   56,  192,  101,   46,  191,  190,
- /*    50 */   188,  100,  191,  190,  188,  100,   58,  166,  177,   97,
- /*    60 */    60,   89,   31,   30,  191,  190,  188,  100,  191,  190,
- /*    70 */   188,  100,   73,  170,   62,   76,   86,   82,   64,   54,
- /*    80 */    87,   54,  191,  190,  188,  100,  191,  190,  188,  100,
- /*    90 */    66,   90,  177,  192,   67,   89,   80,  186,  191,  190,
- /*   100 */   188,  100,  191,  190,  188,  100,   73,  170,   68,  175,
- /*   110 */    84,   85,   69,   54,   88,    2,  191,  190,  188,  100,
- /*   120 */   191,  190,  188,  100,   70,   26,   25,  192,   71,   22,
- /*   130 */    93,   96,  191,  190,  188,  100,  191,  190,  188,  100,
- /*   140 */    73,  170,   72,  176,   18,  103,  187,   54,   53,  170,
- /*   150 */   191,  190,  188,  100,   95,   54,   17,  175,   37,  197,
- /*   160 */    34,  192,   16,  192,   52,  170,   38,  233,  195,  192,
- /*   170 */    19,   51,  233,   32,   36,   44,  196,  192,  194,   77,
- /*   180 */     3,  181,    5,   99,   98,   54,   98,   29,   27,   29,
- /*   190 */    28,   23,   44,   24,   61,   78,  169,    4,  168,   14,
- /*   200 */    54,   91,   54,   98,   54,   39,  102,   54,  192,   18,
- /*   210 */   238,   42,   54,   18,  192,  238,   48,  235,   18,  217,
- /*   220 */    57,   81,  235,   18,  217,   59,  237,   18,  236,   18,
- /*   230 */    83,  237,   18,  236,   63,   18,   65,   18,   18,  179,
- /*   240 */    18,   18,  178,  165,   92,  173,  198,  172,  171,   41,
- /*   250 */   200,    1,  200,  174,  163,  162,  159,  158,  157,   94,
- /*   260 */     6,   43,    7,    8,    9,   10,  200,  167,  214,   11,
- /*   270 */   200,   12,   13,  200,  200,  200,   45,  213,  156,   47,
- /*   280 */   249,
+ /*     0 */   261,   80,  156,   83,  158,  160,  104,  162,   63,  179,
+ /*    10 */    38,   84,  186,  201,    2,   51,  155,  109,  157,  159,
+ /*    20 */   104,  161,   63,  179,   39,   84,  186,  201,    2,   51,
+ /*    30 */    17,  109,   41,   23,   35,  201,   92,  201,  110,   48,
+ /*    40 */    73,  179,   59,   96,  186,   95,  186,   54,   60,   94,
+ /*    50 */   200,  199,  197,  109,   61,   85,  200,  199,  197,  109,
+ /*    60 */    62,   57,  200,  199,  197,  109,   65,    5,  200,  199,
+ /*    70 */   197,  109,   91,   66,  200,  199,  197,  109,   68,  201,
+ /*    80 */   195,  200,  199,  197,  109,   69,  200,  199,  197,  109,
+ /*    90 */    70,  106,  184,  200,  199,  197,  109,   74,  200,  199,
+ /*   100 */   197,  109,   75,  235,  235,  200,  199,  197,  109,   76,
+ /*   110 */   200,  199,  197,  109,   77,   30,   27,  200,  199,  197,
+ /*   120 */   109,   78,  200,  199,  197,  109,  201,  110,   48,  200,
+ /*   130 */   199,  197,  109,   19,   79,  179,  113,   37,  201,   87,
+ /*   140 */   201,   57,   79,  179,   18,   79,  179,   90,   39,   57,
+ /*   150 */    99,  201,   57,  200,  199,  198,  109,   79,  179,  206,
+ /*   160 */   233,  233,  112,   40,   57,  240,  201,   81,  190,   52,
+ /*   170 */   179,   64,  179,   56,  179,   88,   57,   20,   57,  196,
+ /*   180 */    57,   57,   71,  179,   34,   30,   29,  233,  233,   57,
+ /*   190 */    46,    6,  240,  174,  178,  107,   93,    7,  234,  234,
+ /*   200 */    57,  107,  177,  241,   30,   29,   46,  176,   57,  204,
+ /*   210 */    72,   98,  100,   16,  111,   26,   57,  107,   57,  102,
+ /*   220 */    57,   36,  201,   42,  201,   44,  201,   20,  201,   20,
+ /*   230 */    20,   20,   28,   29,   58,   20,   82,   50,   53,   20,
+ /*   240 */    20,   20,   55,  203,   20,  172,   67,  188,  187,   30,
+ /*   250 */    29,   97,   20,  231,  231,   30,   31,   20,   20,  101,
+ /*   260 */    20,  207,    3,  241,  182,  181,    1,  180,  105,  185,
+ /*   270 */   184,   33,   32,  205,    4,   22,  108,  168,   86,   89,
+ /*   280 */     8,  171,  167,    9,   10,   11,   43,   47,   12,   24,
+ /*   290 */    25,  183,  166,  223,   13,   14,   45,  103,   15,  209,
+ /*   300 */   222,  165,   49,  258,   21,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    19,   20,   21,   12,   23,   24,   15,   26,   27,   28,
- /*    10 */    33,   34,   35,   36,   33,   34,   21,   36,   23,   24,
- /*    20 */     8,   26,   27,   28,   12,    8,    8,   15,   33,   34,
- /*    30 */    12,   36,   15,   15,   16,   17,   27,   28,   30,   31,
- /*    40 */    25,   32,   34,   34,   25,   15,   16,   17,   33,   34,
- /*    50 */    35,   36,   33,   34,   35,   36,   25,   30,   31,   34,
- /*    60 */    25,   34,    6,    7,   33,   34,   35,   36,   33,   34,
- /*    70 */    35,   36,   27,   28,   25,   28,   34,   32,   25,   34,
- /*    80 */    34,   34,   33,   34,   35,   36,   33,   34,   35,   36,
- /*    90 */    25,   30,   31,   15,   25,   34,   34,   22,   33,   34,
- /*   100 */    35,   36,   33,   34,   35,   36,   27,   28,   25,   34,
- /*   110 */    34,   32,   25,   34,   34,    3,   33,   34,   35,   36,
- /*   120 */    33,   34,   35,   36,   25,    6,    7,   15,   25,   10,
- /*   130 */    34,   34,   33,   34,   35,   36,   33,   34,   35,   36,
- /*   140 */    27,   28,   25,   34,    2,   32,    4,   34,   27,   28,
- /*   150 */    33,   34,   35,   36,    8,   34,    8,   34,   12,   16,
- /*   160 */    12,   15,    8,   15,   27,   28,   12,    0,   37,   15,
- /*   170 */     8,   34,    5,    1,   12,    1,   16,   15,   37,   28,
- /*   180 */     8,   14,    8,   36,   12,   34,   12,    6,    7,    6,
- /*   190 */     7,   10,    1,   10,   28,    9,   28,    8,   28,    8,
- /*   200 */    34,   28,   34,   12,   34,   12,   28,   34,   15,    2,
- /*   210 */     0,   12,   34,    2,   15,    5,    9,    0,    2,    0,
- /*   220 */     9,    9,    5,    2,    5,    9,    0,    2,    0,    2,
- /*   230 */     9,    5,    2,    5,    9,    2,    9,    2,    2,    9,
- /*   240 */     2,    2,    9,   14,    9,    9,    0,    9,    9,   12,
- /*   250 */    38,    5,   38,    9,   14,   14,   14,   14,    9,   12,
- /*   260 */     8,    1,    8,    8,    8,    8,   38,    9,    9,    8,
- /*   270 */    38,    8,    8,   38,   38,   38,   14,    9,    9,   14,
- /*   280 */    14,
+ /*     0 */    19,   20,   21,   34,   23,   24,    8,   26,   27,   28,
+ /*    10 */    12,   30,   31,   15,   33,   34,   21,   36,   23,   24,
+ /*    20 */     8,   26,   27,   28,   12,   30,   31,   15,   33,   34,
+ /*    30 */     8,   36,   12,   11,   12,   15,   34,   15,   16,   17,
+ /*    40 */    27,   28,   25,   30,   31,   30,   31,   34,   25,   34,
+ /*    50 */    33,   34,   35,   36,   25,   28,   33,   34,   35,   36,
+ /*    60 */    25,   34,   33,   34,   35,   36,   25,    3,   33,   34,
+ /*    70 */    35,   36,   34,   25,   33,   34,   35,   36,   25,   15,
+ /*    80 */    22,   33,   34,   35,   36,   25,   33,   34,   35,   36,
+ /*    90 */    25,   34,   34,   33,   34,   35,   36,   25,   33,   34,
+ /*   100 */    35,   36,   25,    6,    7,   33,   34,   35,   36,   25,
+ /*   110 */    33,   34,   35,   36,   25,    6,    7,   33,   34,   35,
+ /*   120 */    36,   25,   33,   34,   35,   36,   15,   16,   17,   33,
+ /*   130 */    34,   35,   36,    8,   27,   28,   11,   12,   15,   32,
+ /*   140 */    15,   34,   27,   28,    8,   27,   28,   32,   12,   34,
+ /*   150 */    32,   15,   34,   33,   34,   35,   36,   27,   28,   16,
+ /*   160 */     6,    7,   32,   12,   34,   11,   15,   34,   14,   27,
+ /*   170 */    28,   27,   28,   27,   28,   28,   34,    2,   34,    4,
+ /*   180 */    34,   34,   27,   28,    1,    6,    7,    6,    7,   34,
+ /*   190 */     1,    8,   11,   14,   28,   12,   34,    8,    6,    7,
+ /*   200 */    34,   12,   28,   11,    6,    7,    1,    9,   34,   37,
+ /*   210 */    28,   34,   28,    8,   28,    8,   34,   12,   34,   34,
+ /*   220 */    34,   12,   15,   12,   15,   12,   15,    2,   15,    2,
+ /*   230 */     2,    2,    6,    7,    9,    2,    9,    9,    9,    2,
+ /*   240 */     2,    2,    9,   37,    2,   14,    9,    9,    9,    6,
+ /*   250 */     7,    9,    2,    6,    7,    6,    7,    2,    2,    9,
+ /*   260 */     2,    0,    8,   11,    9,    9,    5,    9,   34,   34,
+ /*   270 */    34,    6,    7,   16,    8,   11,   36,   14,    9,    9,
+ /*   280 */     8,   14,   14,    8,    8,    8,   12,   14,    8,   11,
+ /*   290 */    11,    9,    9,    9,    8,    8,    1,   12,    8,   38,
+ /*   300 */     9,    9,   14,   14,    8,
 };
-#define YY_SHIFT_USE_DFLT (-10)
-#define YY_SHIFT_COUNT (103)
-#define YY_SHIFT_MIN   (-9)
-#define YY_SHIFT_MAX   (269)
+#define YY_SHIFT_USE_DFLT (-3)
+#define YY_SHIFT_COUNT (113)
+#define YY_SHIFT_MIN   (-2)
+#define YY_SHIFT_MAX   (296)
 static const short yy_shift_ofst[] = {
- /*     0 */    18,   18,   30,   30,   30,   30,   30,   30,   30,   30,
- /*    10 */    30,   30,   30,   30,   30,   12,  146,   12,   30,  146,
- /*    20 */   146,  148,   -9,   -9,   -9,  146,  146,  146,  146,  146,
- /*    30 */   146,  146,  112,  154,  162,  193,   17,  199,   78,   78,
- /*    40 */    78,   78,   78,   78,   78,  143,  160,  143,  167,  172,
- /*    50 */   119,  174,  181,  183,  191,  142,  207,  210,  211,  217,
- /*    60 */   216,  219,  221,  226,  225,  228,  227,  230,  233,  235,
- /*    70 */   236,  238,  239,   56,  246,  229,  240,  241,  242,  186,
- /*    80 */   189,  243,  212,  244,  252,  249,  254,  255,  256,  257,
- /*    90 */   258,  259,  244,  261,  237,  247,  263,  264,  260,  262,
- /*   100 */   265,  266,  268,  269,
+ /*     0 */    22,   22,  125,  111,  111,  111,  111,  111,  111,  111,
+ /*    10 */   111,  111,  111,  111,  111,  111,  111,   -2,   -2,   -2,
+ /*    20 */   111,   12,   12,  136,   12,   12,   20,   12,   12,   12,
+ /*    30 */    12,   12,   12,   12,   64,  151,  207,  209,  211,  213,
+ /*    40 */   123,  123,  123,  123,  123,  123,  123,  143,  257,  143,
+ /*    50 */   154,  183,  179,  181,  189,  192,  198,  205,   97,  225,
+ /*    60 */   227,  175,  228,  109,  226,  229,  233,   97,  237,  238,
+ /*    70 */   239,  243,  247,  249,  242,  250,  255,  256,  258,  265,
+ /*    80 */   261,  254,  252,  266,  264,  231,  263,  269,  267,  268,
+ /*    90 */   270,  272,  275,  276,  277,  278,  279,  282,  280,  283,
+ /*   100 */   284,  282,  286,  274,  285,  287,  290,  295,  273,  288,
+ /*   110 */   289,  291,  292,  296,
 };
-#define YY_REDUCE_USE_DFLT (-24)
-#define YY_REDUCE_COUNT (47)
-#define YY_REDUCE_MIN   (-23)
-#define YY_REDUCE_MAX   (178)
+#define YY_REDUCE_USE_DFLT (-32)
+#define YY_REDUCE_COUNT (49)
+#define YY_REDUCE_MIN   (-31)
+#define YY_REDUCE_MAX   (240)
 static const short yy_reduce_ofst[] = {
- /*     0 */   -19,   -5,   15,   19,   31,   35,   49,   53,   65,   69,
- /*    10 */    83,   87,   99,  103,  117,    9,   45,   79,  -23,  113,
- /*    20 */   121,  137,    8,   27,   61,   47,  151,  166,  168,  170,
- /*    30 */   173,  178,   75,   25,   42,   25,   46,   25,   62,   76,
- /*    40 */    80,   96,   97,  109,  123,  131,  147,  141,
+ /*     0 */   -19,   -5,   13,   17,   23,   29,   35,   41,   48,   53,
+ /*    10 */    60,   65,   72,   77,   84,   89,   96,  107,  115,  118,
+ /*    20 */   120,  130,  142,  144,  146,  155,   15,   27,  147,  166,
+ /*    30 */   174,  182,  184,  186,   58,  -31,    2,   38,   57,   57,
+ /*    40 */   133,  162,  177,  185,  234,  235,  236,  172,  240,  206,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */   208,  207,  251,  251,  251,  251,  251,  251,  251,  251,
- /*    10 */   251,  251,  251,  251,  251,  251,  251,  251,  251,  251,
- /*    20 */   251,  251,  251,  251,  251,  251,  251,  251,  251,  251,
- /*    30 */   251,  251,  251,  251,  251,  251,  251,  251,  251,  251,
- /*    40 */   251,  251,  251,  251,  251,  251,  251,  251,  224,  251,
- /*    50 */   251,  251,  251,  251,  251,  251,  251,  226,  251,  224,
- /*    60 */   251,  222,  251,  225,  251,  226,  251,  251,  251,  251,
- /*    70 */   251,  251,  251,  251,  251,  251,  222,  221,  251,  251,
- /*    80 */   251,  251,  251,  226,  251,  251,  251,  251,  251,  251,
- /*    90 */   251,  222,  251,  251,  251,  251,  251,  251,  251,  251,
- /*   100 */   251,  246,  221,  251,
+ /*     0 */   217,  216,  260,  260,  260,  260,  260,  260,  260,  260,
+ /*    10 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
+ /*    20 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
+ /*    30 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
+ /*    40 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
+ /*    50 */   242,  260,  260,  244,  260,  246,  260,  260,  247,  260,
+ /*    60 */   260,  260,  260,  260,  260,  260,  260,  245,  260,  260,
+ /*    70 */   260,  228,  226,  260,  260,  260,  260,  260,  260,  260,
+ /*    80 */   260,  260,  234,  260,  260,  231,  260,  260,  230,  260,
+ /*    90 */   260,  260,  260,  260,  260,  260,  260,  235,  260,  260,
+ /*   100 */   231,  260,  260,  260,  260,  260,  260,  260,  260,  260,
+ /*   110 */   255,  230,  260,  260,
 };
 /********** End of lemon-generated parsing tables *****************************/
 
@@ -473,7 +481,7 @@ struct yyParser {
   int yyidxMax;                 /* Maximum value of yyidx */
 #endif
   int yyerrcnt;                 /* Shifts left before out of the error */
-  FOLParserGrammarARG_SDECL                /* A place to hold %extra_argument */
+  ASPParserGrammarARG_SDECL                /* A place to hold %extra_argument */
 #if YYSTACKDEPTH<=0
   int yystksz;                  /* Current side of the stack */
   yyStackEntry *yystack;        /* The parser's stack */
@@ -507,7 +515,7 @@ static char *yyTracePrompt = 0;
 ** Outputs:
 ** None.
 */
-void FOLParserGrammarTrace(FILE *TraceFILE, char *zTracePrompt){
+void ASPParserGrammarTrace(FILE *TraceFILE, char *zTracePrompt){
   yyTraceFILE = TraceFILE;
   yyTracePrompt = zTracePrompt;
   if( yyTraceFILE==0 ) yyTracePrompt = 0;
@@ -547,18 +555,18 @@ static const char *const yyRuleName[] = {
  /*   8 */ "prog ::= rule",
  /*   9 */ "prog ::= prog NEWLINE",
  /*  10 */ "prog ::=",
- /*  11 */ "rule ::= number NEGATION LBRACKET ruleU RBRACKET",
+ /*  11 */ "rule ::= number REVERSE_IMPLICATION LBRACKET ruleU RBRACKET",
  /*  12 */ "rule ::= number LBRACKET ruleU RBRACKET",
- /*  13 */ "rule ::= NEGATION LBRACKET ruleU RBRACKET DOT",
+ /*  13 */ "rule ::= REVERSE_IMPLICATION LBRACKET ruleU RBRACKET DOT",
  /*  14 */ "rule ::= LBRACKET ruleU RBRACKET DOT",
  /*  15 */ "ruleU ::= body CONJUNCTION bodydef",
  /*  16 */ "ruleU ::= body DISJUNCTION bodydef",
- /*  17 */ "rule ::= body CONJUNCTION bodydef DOT",
+ /*  17 */ "rule ::= REVERSE_IMPLICATION body CONJUNCTION bodydef DOT",
  /*  18 */ "rule ::= body DISJUNCTION bodydef DOT",
  /*  19 */ "rule ::= number body DISJUNCTION bodydef",
- /*  20 */ "rule ::= body IMPLICATION head DOT",
- /*  21 */ "rule ::= number body IMPLICATION head",
- /*  22 */ "rule ::= number NEGATION NEGATION LBRACKET body IMPLICATION head RBRACKET",
+ /*  20 */ "rule ::= head REVERSE_IMPLICATION body DOT",
+ /*  21 */ "rule ::= number head REVERSE_IMPLICATION body",
+ /*  22 */ "rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET",
  /*  23 */ "body ::= body CONJUNCTION bodydef",
  /*  24 */ "body ::= body DISJUNCTION bodydef",
  /*  25 */ "body ::= bodydef",
@@ -617,7 +625,7 @@ static void yyGrowStack(yyParser *p){
 #endif
 
 /* Datatype of the argument to the memory allocated passed as the
-** second argument to FOLParserGrammarAlloc() below.  This can be changed by
+** second argument to ASPParserGrammarAlloc() below.  This can be changed by
 ** putting an appropriate #define in the %include section of the input
 ** grammar.
 */
@@ -635,9 +643,9 @@ static void yyGrowStack(yyParser *p){
 **
 ** Outputs:
 ** A pointer to a parser.  This pointer is used in subsequent calls
-** to FOLParserGrammar and FOLParserGrammarFree.
+** to ASPParserGrammar and ASPParserGrammarFree.
 */
-void *FOLParserGrammarAlloc(void *(*mallocProc)(YYMALLOCARGTYPE)){
+void *ASPParserGrammarAlloc(void *(*mallocProc)(YYMALLOCARGTYPE)){
   yyParser *pParser;
   pParser = (yyParser*)(*mallocProc)( (YYMALLOCARGTYPE)sizeof(yyParser) );
   if( pParser ){
@@ -666,7 +674,7 @@ static void yy_destructor(
   YYCODETYPE yymajor,     /* Type code for object to destroy */
   YYMINORTYPE *yypminor   /* The object to be destroyed */
 ){
-  FOLParserGrammarARG_FETCH;
+  ASPParserGrammarARG_FETCH;
   switch( yymajor ){
     /* Here is inserted the actions which take place when a
     ** terminal or non-terminal is destroyed.  This can happen
@@ -712,7 +720,7 @@ static void yy_pop_parser_stack(yyParser *pParser){
 ** is defined in a %include section of the input grammar) then it is
 ** assumed that the input pointer is never NULL.
 */
-void FOLParserGrammarFree(
+void ASPParserGrammarFree(
   void *p,                    /* The parser to be deleted */
   void (*freeProc)(void*)     /* Function used to reclaim memory */
 ){
@@ -731,7 +739,7 @@ void FOLParserGrammarFree(
 ** Return the peak depth of the stack for a parser.
 */
 #ifdef YYTRACKMAXSTACKDEPTH
-int FOLParserGrammarStackPeak(void *p){
+int ASPParserGrammarStackPeak(void *p){
   yyParser *pParser = (yyParser*)p;
   return pParser->yyidxMax;
 }
@@ -838,7 +846,7 @@ static int yy_find_reduce_action(
 ** The following routine is called if the stack overflows.
 */
 static void yyStackOverflow(yyParser *yypParser, YYMINORTYPE *yypMinor){
-   FOLParserGrammarARG_FETCH;
+   ASPParserGrammarARG_FETCH;
    yypParser->yyidx--;
 #ifndef NDEBUG
    if( yyTraceFILE ){
@@ -850,7 +858,7 @@ static void yyStackOverflow(yyParser *yypParser, YYMINORTYPE *yypMinor){
    ** stack every overflows */
 /******** Begin %stack_overflow code ******************************************/
 /******** End %stack_overflow code ********************************************/
-   FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument var */
+   ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument var */
 }
 
 /*
@@ -934,7 +942,7 @@ static const struct {
   { 26, 4 },
   { 32, 3 },
   { 32, 3 },
-  { 26, 4 },
+  { 26, 5 },
   { 26, 4 },
   { 26, 4 },
   { 26, 4 },
@@ -987,7 +995,7 @@ static void yy_reduce(
   YYMINORTYPE yygotominor;        /* The LHS of the rule reduced */
   yyStackEntry *yymsp;            /* The top of the parser's stack */
   int yysize;                     /* Amount to pop the stack */
-  FOLParserGrammarARG_FETCH;
+  ASPParserGrammarARG_FETCH;
   yymsp = &yypParser->yystack[yypParser->yyidx];
 #ifndef NDEBUG
   if( yyTraceFILE && yyruleno>=0 
@@ -1017,6 +1025,7 @@ static void yy_reduce(
 	for(auto& v : yymsp[0].minor.yy63->getVars()){
 		tree->domainList.insert(v);	
 	}
+	cout<<yymsp[0].minor.yy63->toString(false);
 	delete yymsp[0].minor.yy63;
 }
         break;
@@ -1042,31 +1051,26 @@ static void yy_reduce(
       case 6: /* prog ::= decl */ yytestcase(yyruleno==6);
 {
 	tree->variables.insert(*yymsp[0].minor.yy1);
+	cout<<yymsp[0].minor.yy1->toString();
 	delete yymsp[0].minor.yy1;
 }
         break;
       case 7: /* prog ::= prog NEWLINE rule */
+      case 8: /* prog ::= rule */ yytestcase(yyruleno==8);
 {
 	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->head.getVar(),*yymsp[0].minor.yy9));
 	delete yymsp[0].minor.yy9;
 }
         break;
-      case 8: /* prog ::= rule */
-{
-	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->head.getVar(),*yymsp[0].minor.yy9));
-
-	delete yymsp[0].minor.yy9;
-}
-        break;
-      case 11: /* rule ::= number NEGATION LBRACKET ruleU RBRACKET */
+      case 11: /* rule ::= number REVERSE_IMPLICATION LBRACKET ruleU RBRACKET */
 {
 	yygotominor.yy9 = yymsp[-1].minor.yy9;
 	yygotominor.yy9->toBeCompleted = false;
 	if(yymsp[-1].minor.yy9->getBodyType() == BodyType::DISJUNCTION){
 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
 	}
+	cout<<yymsp[-4].minor.yy0->toString()<<SPACE<<"!("<<yymsp[-1].minor.yy9->toString()<<")"<<"\n";
 }
         break;
       case 12: /* rule ::= number LBRACKET ruleU RBRACKET */
@@ -1076,15 +1080,17 @@ static void yy_reduce(
 	if(yymsp[-1].minor.yy9->getBodyType() == BodyType::CONJUNCTION){
 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
 	}
+	cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<"("<<yymsp[-1].minor.yy9->toString()<<")"<<"\n";
 }
         break;
-      case 13: /* rule ::= NEGATION LBRACKET ruleU RBRACKET DOT */
+      case 13: /* rule ::= REVERSE_IMPLICATION LBRACKET ruleU RBRACKET DOT */
 {
 	yygotominor.yy9 = yymsp[-2].minor.yy9;
 	yymsp[-2].minor.yy9->toBeCompleted = false;
 	if(yymsp[-2].minor.yy9->getBodyType() == BodyType::DISJUNCTION){
 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
 	}
+	cout<<"!("<<yymsp[-2].minor.yy9->toString()<<")."<<"\n";
 }
         break;
       case 14: /* rule ::= LBRACKET ruleU RBRACKET DOT */
@@ -1094,11 +1100,14 @@ static void yy_reduce(
 	if(yymsp[-2].minor.yy9->getBodyType() == BodyType::CONJUNCTION){
 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
 	}
+	cout<<"("<<yymsp[-2].minor.yy9->toString()<<")."<<"\n";
 }
         break;
       case 15: /* ruleU ::= body CONJUNCTION bodydef */
 {
 	yygotominor.yy9 = new RuleCompletion;
+	yymsp[-2].minor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,false,true);
+	yygotominor.yy9->appendStr(yymsp[-2].minor.yy45->toString());
 	yygotominor.yy9->setBodyType(BodyType::CONJUNCTION);
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy12;
@@ -1108,16 +1117,20 @@ static void yy_reduce(
 {
 	yygotominor.yy9 = new RuleCompletion;	
 	yygotominor.yy9->isHeadTop = true;
-	yygotominor.yy9->setBodyType(BodyType::DISJUNCTION);
 	RULE_COMPLETION_BODY_TOP(yymsp[-2].minor.yy45,yymsp[0].minor.yy12)
+	yymsp[-2].minor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,true,false);
+	yygotominor.yy9->appendStr(yymsp[-2].minor.yy45->toString());
+	yygotominor.yy9->setBodyType(BodyType::DISJUNCTION);
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy12;
 }
         break;
-      case 17: /* rule ::= body CONJUNCTION bodydef DOT */
+      case 17: /* rule ::= REVERSE_IMPLICATION body CONJUNCTION bodydef DOT */
 {
 	yygotominor.yy9 = new RuleCompletion;
-	yygotominor.yy9->isHeadTop = true;	
+	yygotominor.yy9->isHeadTop = true;
+	yymsp[-3].minor.yy45->appendStr(yymsp[-1].minor.yy12->getPredicate().toString(),false,false,true);
+	std::cout<<"!("<<yymsp[-3].minor.yy45->toString()<<")."<<"\n";	
 	delete yymsp[-3].minor.yy45;
 	delete yymsp[-1].minor.yy12;
 }
@@ -1128,6 +1141,8 @@ static void yy_reduce(
 	yygotominor.yy9 = new RuleCompletion;
 	yygotominor.yy9->isHeadTop = true;
 	RULE_COMPLETION_BODY_TOP(yymsp[-3].minor.yy45,yymsp[-1].minor.yy12)
+	yymsp[-3].minor.yy45->appendStr(yymsp[-1].minor.yy12->getPredicate().toString(),false,true,false);
+	std::cout<<yymsp[-3].minor.yy45->toString()<<"."<<"\n";
 	delete yymsp[-3].minor.yy45;
 	delete yymsp[-1].minor.yy12;
 }
@@ -1138,41 +1153,54 @@ static void yy_reduce(
 	yygotominor.yy9 = new RuleCompletion;
 	yygotominor.yy9->isHeadTop = true;
 	RULE_COMPLETION_BODY_TOP(yymsp[-2].minor.yy45,yymsp[0].minor.yy12)
+	yymsp[-2].minor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,true,false);
+	std::cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[-2].minor.yy45->toString()<<"\n";
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy12;
 }
         break;
-      case 20: /* rule ::= body IMPLICATION head DOT */
+      case 20: /* rule ::= head REVERSE_IMPLICATION body DOT */
 {
 	
-	RULE_COMPLETION_BH(yymsp[-3].minor.yy45,yymsp[-1].minor.yy53);
-	yygotominor.yy9 = new RuleCompletion(yymsp[-1].minor.yy53->getPredicate(),predList, resultMap, varMap);
-	delete yymsp[-3].minor.yy45;
-	delete yymsp[-1].minor.yy53;
+	RULE_COMPLETION_BH(yymsp[-1].minor.yy45,yymsp[-3].minor.yy53);
+	yygotominor.yy9 = new RuleCompletion(yymsp[-3].minor.yy53->getPredicate(),predList, resultMap, varMap);
+	std::cout<<yymsp[-1].minor.yy45->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"."<<"\n";
+	delete yymsp[-1].minor.yy45;
+	delete yymsp[-3].minor.yy53;
 }
         break;
-      case 21: /* rule ::= number body IMPLICATION head */
+      case 21: /* rule ::= number head REVERSE_IMPLICATION body */
 {
-	RULE_COMPLETION_BH(yymsp[-2].minor.yy45,yymsp[0].minor.yy53);
-	yygotominor.yy9 = new RuleCompletion(yymsp[0].minor.yy53->getPredicate(),predList, resultMap, varMap);
-	delete yymsp[-2].minor.yy45;
-	delete yymsp[0].minor.yy53;
+	RULE_COMPLETION_BH(yymsp[0].minor.yy45,yymsp[-2].minor.yy53);
+	yygotominor.yy9 = new RuleCompletion(yymsp[-2].minor.yy53->getPredicate(),predList, resultMap, varMap);
+	std::cout<< yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[0].minor.yy45->toString()<<" => "<<yymsp[-2].minor.yy53->toString()<<"\n";
+	delete yymsp[0].minor.yy45;
+	delete yymsp[-2].minor.yy53;
 }
         break;
-      case 22: /* rule ::= number NEGATION NEGATION LBRACKET body IMPLICATION head RBRACKET */
+      case 22: /* rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET */
 {
 	yygotominor.yy9 = new RuleCompletion;
 	yygotominor.yy9->isHeadTop = true;	
 	tree->statHasDblNeg = true;
-	delete yymsp[-3].minor.yy45;
-	delete yymsp[-1].minor.yy53;
+	std::cout<< yymsp[-7].minor.yy0->toString() << SPACE <<"!!("<<yymsp[-1].minor.yy45->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"\n"; 
+	delete yymsp[-1].minor.yy45;
+	delete yymsp[-3].minor.yy53;
 }
         break;
       case 23: /* body ::= body CONJUNCTION bodydef */
-      case 24: /* body ::= body DISJUNCTION bodydef */ yytestcase(yyruleno==24);
 {
 	yygotominor.yy45 = yymsp[-2].minor.yy45;
 	yymsp[-2].minor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
+	yygotominor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,false,true);
+	delete yymsp[0].minor.yy12;
+}
+        break;
+      case 24: /* body ::= body DISJUNCTION bodydef */
+{
+	yygotominor.yy45 = yymsp[-2].minor.yy45;
+	yymsp[-2].minor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
+	yygotominor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,true,false);
 	delete yymsp[0].minor.yy12;
 }
         break;
@@ -1180,6 +1208,7 @@ static void yy_reduce(
 {
 	yygotominor.yy45 = new Body;
 	yygotominor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
+	yygotominor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,false,false);
 	delete yymsp[0].minor.yy12;
 }
         break;
@@ -1309,6 +1338,8 @@ static void yy_reduce(
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->setVar(yymsp[-4].minor.yy0->token);
 	yygotominor.yy52->setTokens(*yymsp[-2].minor.yy36);
+	std::string s1;
+	cout<<yygotominor.yy52->toString(s1,true);
 	delete yymsp[-2].minor.yy36;
 }
         break;
@@ -1317,15 +1348,18 @@ static void yy_reduce(
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
 	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	cout<<yygotominor.yy52->toString(yymsp[-4].minor.yy0->toString()+SPACE, false);
 	delete yymsp[-1].minor.yy36;
 }
         break;
       case 38: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
-      case 40: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==40);
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
 	tree->statHasDblNeg = true;
+	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	cout<<yygotominor.yy52->toString(yymsp[-6].minor.yy0->toString()+SPACE, false);
 	delete yymsp[-1].minor.yy36;
 }
         break;
@@ -1333,7 +1367,21 @@ static void yy_reduce(
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
-	// tree->statHasDblNeg = true;
+	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	cout<<yygotominor.yy52->toString(yymsp[-5].minor.yy0->toString()+SPACE+"!", false);
+	delete yymsp[-1].minor.yy36;
+}
+        break;
+      case 40: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+{
+	yygotominor.yy52 = new Predicate;
+	yygotominor.yy52->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	std::string s1; 
+	cout<<yygotominor.yy52->toString(s1, false);
 	delete yymsp[-1].minor.yy36;
 }
         break;
@@ -1379,7 +1427,6 @@ static void yy_reduce(
 {
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
-	// yygotominor.yy0 = new Token("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
         break;
       case 51: /* lnumber ::= NUMBER */
@@ -1427,7 +1474,7 @@ static void yy_reduce(
 static void yy_parse_failed(
   yyParser *yypParser           /* The parser */
 ){
-  FOLParserGrammarARG_FETCH;
+  ASPParserGrammarARG_FETCH;
 #ifndef NDEBUG
   if( yyTraceFILE ){
     fprintf(yyTraceFILE,"%sFail!\n",yyTracePrompt);
@@ -1441,7 +1488,7 @@ static void yy_parse_failed(
     // std::cout<<"Giving up.  Parser is lost...\n";
 
 /************ End %parse_failure code *****************************************/
-  FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
+  ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 #endif /* YYNOERRORRECOVERY */
 
@@ -1453,7 +1500,7 @@ static void yy_syntax_error(
   int yymajor,                   /* The major type of the error token */
   YYMINORTYPE yyminor            /* The minor type of the error token */
 ){
-  FOLParserGrammarARG_FETCH;
+  ASPParserGrammarARG_FETCH;
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
 
@@ -1470,7 +1517,7 @@ static void yy_syntax_error(
     }
     
 /************ End %syntax_error code ******************************************/
-  FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
+  ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
 /*
@@ -1479,7 +1526,7 @@ static void yy_syntax_error(
 static void yy_accept(
   yyParser *yypParser           /* The parser */
 ){
-  FOLParserGrammarARG_FETCH;
+  ASPParserGrammarARG_FETCH;
 #ifndef NDEBUG
   if( yyTraceFILE ){
     fprintf(yyTraceFILE,"%sAccept!\n",yyTracePrompt);
@@ -1492,12 +1539,12 @@ static void yy_accept(
 
     std::cout<<("//parsing complete!\n");
 /*********** End %parse_accept code *******************************************/
-  FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
+  ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
 /* The main parser program.
 ** The first argument is a pointer to a structure obtained from
-** "FOLParserGrammarAlloc" which describes the current state of the parser.
+** "ASPParserGrammarAlloc" which describes the current state of the parser.
 ** The second argument is the major token number.  The third is
 ** the minor token.  The fourth optional argument is whatever the
 ** user wants (and specified in the grammar) and is available for
@@ -1514,11 +1561,11 @@ static void yy_accept(
 ** Outputs:
 ** None.
 */
-void FOLParserGrammar(
+void ASPParserGrammar(
   void *yyp,                   /* The parser */
   int yymajor,                 /* The major token code number */
-  FOLParserGrammarTOKENTYPE yyminor       /* The value for the token */
-  FOLParserGrammarARG_PDECL               /* Optional %extra_argument parameter */
+  ASPParserGrammarTOKENTYPE yyminor       /* The value for the token */
+  ASPParserGrammarARG_PDECL               /* Optional %extra_argument parameter */
 ){
   YYMINORTYPE yyminorunion;
   int yyact;            /* The parser action. */
@@ -1556,7 +1603,7 @@ void FOLParserGrammar(
 #if !defined(YYERRORSYMBOL) && !defined(YYNOERRORRECOVERY)
   yyendofinput = (yymajor==0);
 #endif
-  FOLParserGrammarARG_STORE;
+  ASPParserGrammarARG_STORE;
 
 #ifndef NDEBUG
   if( yyTraceFILE ){

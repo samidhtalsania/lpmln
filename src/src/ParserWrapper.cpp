@@ -1,14 +1,12 @@
 #include "ParserWrapper.h"
 #include "lexer.h"
 #include "Domain.h"
-#include "Token.h"
 #include "ParserFactory.h"
 #include "exceptions/undefined_predicate.h"
 #include "exceptions/syntax_exception.h"
 
 
 #include <iostream>
-#include <string>
 #include <string.h>
 #include <stdlib.h> 
 #include <stdio.h>
@@ -30,6 +28,7 @@ ParserWrapper::ParserWrapper(Config c){
 	translation = c.getTranslation();
 	inputFile = c.getFile();
 	debug = c.getDebug();
+  parserType = c.getParser();
 
 	tree = new Tree;
 
@@ -51,10 +50,6 @@ int ParserWrapper::parse(){
 
 
 	lexeme_t lexeme;
-
-
-	// Tree* tree = new Tree;
-	
   std::string str;
   int lineCount = 0;
   int columnCount = 0;
@@ -71,28 +66,28 @@ int ParserWrapper::parse(){
         columnCount = 0;
         if(!str.empty()){
 
-        //Right trim the input string  
-        auto it1 =  std::find_if( str.rbegin() , str.rend() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
-        str.erase( it1.base() , str.end() );
+          //Right trim the input string  
+          auto it1 =  std::find_if( str.rbegin() , str.rend() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
+          str.erase( it1.base() , str.end() );
 
-        //Left trim the input tring
-        auto it2 =  std::find_if( str.begin() , str.end() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
-        str.erase( str.begin() , it2);
-          
+          //Left trim the input tring
+          auto it2 =  std::find_if( str.begin() , str.end() , [](char ch){ return !std::isspace<char>(ch , std::locale::classic() ) ; } );
+          str.erase( str.begin() , it2);
+            
 
-        //If its a comment print it and go to next statement
-        if(str.substr(0,2).compare("//") == 0){
-          cout<<str<<"\n";
-          continue;
-        }
+          //If its a comment print it and go to next statement
+          if(str.substr(0,2).compare("//") == 0){
+            cout<<str<<"\n";
+            continue;
+          }
 
-        //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
-        // The user possibly wants to pass this statement directly to alchemy.
-        else if(str.substr(0,3).compare("!!(") == 0){
-          int s = str.size();
-          cout<<str.substr(3 ,s-3-1)<<"\n";
-          continue;
-        }
+          //If its a double negation at start continue doing our stuff since its a constraint and not needed for completion
+          // The user possibly wants to pass this statement directly to alchemy.
+          else if(str.substr(0,3).compare("!!(") == 0){
+            int s = str.size();
+            cout<<str.substr(3 ,s-3-1)<<"\n";
+            continue;
+          }
           str += "\n";
           char* buffer;
           buffer = const_cast<char*>(str.c_str());
@@ -111,25 +106,16 @@ int ParserWrapper::parse(){
             }
           }
 
-          if(tree->statHasDblNeg){
-            tree->statHasDblNeg = false;
-            // Remove double neg from program
-            remove_copy(str.begin(), str.end(),
-                 ostream_iterator<char>(std::cout), '!');
-          }
-          else{
-            cout<<str;
-          }
 
+          print(str);  
         }
+        
         else
           std::cout << "\n";        
       }
 
       Token* tok = new Token("0");
       parser->Parse(0, tok, tree);
- 
-      // ParseFree(parser, free);
       delete tok;
     
       //Do completion
@@ -169,4 +155,20 @@ ParserWrapper::~ParserWrapper(){
     delete ve;
 	if(pFile != NULL && debug)
 		fclose(pFile);
+}
+
+void ParserWrapper::print(std::string str){
+  
+  if(parserType == ParserType::FOL){
+    if(tree->statHasDblNeg){
+        tree->statHasDblNeg = false;
+        // Remove double neg from program
+        remove_copy(str.begin(), str.end(),
+           ostream_iterator<char>(std::cout), '!');
+    }
+    else{
+        cout<<str;
+    }
+  }
+
 }
