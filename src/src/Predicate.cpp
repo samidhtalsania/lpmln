@@ -50,7 +50,7 @@ std::string Predicate::toString() const{
 
 
 	if(singleNegation) str += "!";
-	else if(doubleNegation) str += "!!";
+	// else if(doubleNegation) str += "!!";
 
 	str += var;
 

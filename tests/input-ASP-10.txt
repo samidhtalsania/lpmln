@@ -1,0 +1,5 @@
+num={0,1}
+load(num,num)
+step(num,num)
+
+{load(a,b)} <= step(a,b).

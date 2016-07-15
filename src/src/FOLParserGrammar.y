@@ -169,8 +169,7 @@
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
 		delete R1; \
 	} 
-	
-	 
+
 }
 
 start ::= prog.
@@ -569,11 +568,13 @@ predicate(P) ::= number NEGATION string LBRACKET variables(Ve) RBRACKET. {
 	// tree->statHasDblNeg = true;
 	delete Ve;
 }
-//0.8536 !!load(T,T)
-predicate(P) ::= NEGATION NEGATION string LBRACKET variables(Ve) RBRACKET. {
+//!!load(T,T).
+predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
 	P = new Predicate;
 	P->notToBeCompleted();
 	tree->statHasDblNeg = true;
+	P->setVar(S->token);
+	P->setTokens(*Ve);
 	delete Ve;
 }
 

@@ -30,6 +30,7 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 		"."						{ return PARSE_TOKEN_DOT; }
 		'\000'              	{ return 0; }
 		[0-9]+					{ return PARSE_TOKEN_NUMBER; }
+		"not"|"NOT"				{ return PARSE_TOKEN_NEGATION;}
 		[a-zA-Z]+[a-zA-Z0-9]*	{ return PARSE_TOKEN_STRING; }
 		"=>"                	{ return PARSE_TOKEN_IMPLICATION; }
 		"<="					{ return PARSE_TOKEN_REVERSE_IMPLICATION; }
@@ -39,7 +40,7 @@ int lexer::tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 		"("						{ return PARSE_TOKEN_LBRACKET; }
 		")"						{ return PARSE_TOKEN_RBRACKET; }
 		","						{ return PARSE_TOKEN_COMMA; }
-		"^"						{ return PARSE_TOKEN_CONJUNCTION; }
+		"^"|","					{ return PARSE_TOKEN_CONJUNCTION; }
 		WS+ "v"{1} WS+ 			{
 									while(*(lexeme->start) != 'v') lexeme->start++;
 									while(*(lexeme->current) != 'v') lexeme->current--;

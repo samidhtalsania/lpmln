@@ -88,6 +88,14 @@ int ParserWrapper::parse(){
             cout<<str.substr(3 ,s-3-1)<<"\n";
             continue;
           }
+          //temporary hack to allow passing of hard facts which need not be completed.
+          //!!p(0,1).
+          //TODO add this to grammar. Let the grammar handle this.
+          // else if(str.substr(0,2).compare("!!") == 0){
+          //   int s = str.size();
+          //   cout<<str.substr(2 ,s-2)<<"\n";
+          //   continue;
+          // }
           str += "\n";
           char* buffer;
           buffer = const_cast<char*>(str.c_str());
@@ -162,13 +170,14 @@ void ParserWrapper::print(std::string str){
   if(parserType == ParserType::FOL){
     if(tree->statHasDblNeg){
         tree->statHasDblNeg = false;
+        str.erase(str.find("!!"),2);
         // Remove double neg from program
-        remove_copy(str.begin(), str.end(),
-           ostream_iterator<char>(std::cout), '!');
+        // remove_copy(str.begin(), str.end(),
+        //    ostream_iterator<char>(std::cout), '!');
     }
-    else{
+    // else{
         cout<<str;
-    }
+    // }
   }
 
 }

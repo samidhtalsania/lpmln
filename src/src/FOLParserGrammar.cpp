@@ -126,8 +126,7 @@
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
 		delete R1; \
 	} 
-	
-	 
+
 #include "FOLParserGrammar.h"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
@@ -1321,7 +1320,6 @@ static void yy_reduce(
 }
         break;
       case 38: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
-      case 40: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET */ yytestcase(yyruleno==40);
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
@@ -1334,6 +1332,16 @@ static void yy_reduce(
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
 	// tree->statHasDblNeg = true;
+	delete yymsp[-1].minor.yy36;
+}
+        break;
+      case 40: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+{
+	yygotominor.yy52 = new Predicate;
+	yygotominor.yy52->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
 	delete yymsp[-1].minor.yy36;
 }
         break;

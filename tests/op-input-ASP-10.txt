@@ -1,0 +1,8 @@
+num={0,1}
+load(num,num)
+step(num,num)
+
+//step(a,b) => load(a,b)
+//parsing complete!
+load(_a,_b) => (step(_a,_b)).
+!step(_a,_b).

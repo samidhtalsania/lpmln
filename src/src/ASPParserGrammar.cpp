@@ -44,6 +44,7 @@
 	#include "Head.h"
 	#include "Body.h"
 	#include "BodyDef.h"
+	
 
 	#include "exceptions/undefined_predicate.h"
 	#include "exceptions/syntax_exception.h"
@@ -52,6 +53,7 @@
 	using namespace std;
 
 	#define SPACE " "
+	#define COMMENT "//"
 
 	struct cmp{
 		bool operator()(const std::pair<std::string, std::string>& left, const std::pair<std::string, std::string>& right) const{
@@ -59,77 +61,134 @@
 		}
 	};
 
-#define RULE_COMPLETION_BH(B,H) \
-	std::set<std::pair<std::string,std::string>> orphanVarsMap;  \
-	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap; \
-	std::vector<Predicate> predList = B->getPredicate(); \
-	for(auto& p : predList){ \
-		int tempCount = 0; \
-		for(auto& v : p.getTokens()){ \
-			if(tree->variables.find(p.getVar()) == tree->variables.end()){ \
-				undefined_predicate ex(p.getVar()); \
-				throw ex; \
-			} \
-			else \
-				orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar())); \
-		} \
-	} \
-	int count = 0; \
-	std::map<int,std::pair<int, std::string>> varMap; \
-	int tempCount = 0; \
-	for(auto& str : H->getPredicate().getTokens()){ \
-		if(tree->isConstant(str)){ \
-			varMap[count++] = std::pair<int, std::string>(count, str); \
-		} \
-		else \
-			count++; \
-		 \
-		if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){ \
-			undefined_predicate ex(H->getPredicate().getVar()); \
-			throw ex; \
-		} \
-		else	 \
-			orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar())); \
-	} \
-	std::set<std::string> result; \
-	tree->removeConstantsPair(orphanVarsMap); \
-	tree->removeConstantsPair(orphanVarsHeadMap); \
-	std::set<std::pair<std::string,std::string>> resultMap; \
-	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp())
+	RuleCompletion* RuleCompletion_BH(Body*, Head*, Tree*);
+	void RuleCompletion_HD_BT(Head*, Tree*);
+	void RuleCompletion_HD_BC(Head*, Body*, bool, Tree*);
 
 
-#define RULE_COMPLETION_BODY_TOP(B,B1) \
-	B->addPredicate(B1->getPredicate()); \
-	std::vector<Predicate> pred = B->getPredicate(); \
-	for(unsigned long int i=0;i<pred.size();i++){ \
-		std::unique_ptr<Head> H(new Head(pred.at(i))); \
-		std::vector<Predicate> temp; \
-		for (unsigned long int j = 0; j < pred.size(); j++){ \
-			if(j == i) continue; \
-			bool singleN = pred.at(j).isSingleNegated(); \
-			bool doubleN = pred.at(j).isDoubleNegated(); \
-			if(pred.at(j).isSingleNegated()){ \
-				pred.at(j).setSingleNegation(false); \
-			} \
-			else if(pred.at(j).isDoubleNegated()){ \
-				pred.at(j).setDoubleNegation(false); \
-				pred.at(j).setSingleNegation(true); \
-			} \
-			else{ \
-				pred.at(j).setSingleNegation(true);	 \
-			} \
-			temp.push_back(pred.at(j)); \
-			pred.at(j).setSingleNegation(singleN); \
-			pred.at(j).setDoubleNegation(doubleN); \
-		} \
-		std::unique_ptr<Body> b(new Body(temp)); \
-		RULE_COMPLETION_BH(b,H); \
-		RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); \
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
-		delete R1; \
-	} 
-	
-	 
+
+	RuleCompletion* RuleCompletion_BH(Body* B, Head* H, Tree* tree){
+		std::set<std::pair<std::string,std::string>> orphanVarsMap;  
+		std::set<std::pair<std::string,std::string>> orphanVarsHeadMap; 
+		std::vector<Predicate> predList = B->getPredicate(); 
+		for(auto& p : predList){ 
+			int tempCount = 0; 
+			for(auto& v : p.getTokens()){ 
+				if(tree->variables.find(p.getVar()) == tree->variables.end()){ 
+					undefined_predicate ex(p.getVar()); 
+					throw ex; 
+				} 
+				else 
+					orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar())); 
+			} 
+		} 
+		int count = 0; 
+		std::map<int,std::pair<int, std::string>> varMap; 
+		int tempCount = 0; 
+		for(auto& str : H->getPredicate().getTokens()){ 
+			if(tree->isConstant(str)){ 
+				varMap[count++] = std::pair<int, std::string>(count, str); 
+			} 
+			else 
+				count++; 
+			 
+			if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){ 
+				undefined_predicate ex(H->getPredicate().getVar()); 
+				throw ex; 
+			} 
+			else	 
+				orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar())); 
+		} 
+		std::set<std::string> result; 
+		tree->removeConstantsPair(orphanVarsMap); 
+		tree->removeConstantsPair(orphanVarsHeadMap); 
+		std::set<std::pair<std::string,std::string>> resultMap; 
+		std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
+		RuleCompletion* rule = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+		return rule;
+	}
+		
+	void RuleCompletion_HD_BT(Head* B, Tree* tree){
+		std::vector<Predicate> pred = B->getPredicateList(); 
+		for(unsigned long int i=0;i<pred.size();i++){ 
+			Head* H = new Head(pred.at(i)); 
+			std::vector<Predicate> temp; 
+			for (unsigned long int j = 0; j < pred.size(); j++){ 
+				if(j == i) continue; 
+				bool singleN = pred.at(j).isSingleNegated(); 
+				bool doubleN = pred.at(j).isDoubleNegated(); 
+				if(pred.at(j).isSingleNegated()){ 
+					pred.at(j).setSingleNegation(false); 
+					pred.at(j).setDoubleNegation(true); 
+				} 
+				else if(pred.at(j).isDoubleNegated()){ 
+					pred.at(j).setDoubleNegation(false); 
+					pred.at(j).setSingleNegation(true); 
+				} 
+				else{ 
+					pred.at(j).setSingleNegation(true);	 
+				} 
+				temp.push_back(pred.at(j)); 
+				pred.at(j).setSingleNegation(singleN); 
+				pred.at(j).setDoubleNegation(doubleN); 
+			} 
+			Body* b = new Body(temp); 
+			// RULE_COMPLETION_BH(b,H); 
+			// RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); 
+			RuleCompletion* R1 = RuleCompletion_BH(b,H,tree); 
+			tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); 
+			delete R1; 
+			delete b;
+			delete H;
+		}
+	}
+
+	void RuleCompletion_HD_BC(Head* H, Body* B, bool hard, Tree* tree){
+		std::vector<Predicate> pred = H->getPredicateList(); 
+		std::vector<Predicate> bp = B->getPredicate(); 
+		for(unsigned long int i=0;i<pred.size();i++){ 
+			Head* H = new Head(pred.at(i)); 
+			std::vector<Predicate> temp;
+			for (unsigned long int j = 0; j < pred.size(); j++){ 
+				if(j == i) continue; 
+				bool singleN = pred.at(j).isSingleNegated(); 
+				bool doubleN = pred.at(j).isDoubleNegated(); 
+				if(pred.at(j).isSingleNegated()){ 
+					pred.at(j).setSingleNegation(false); 
+				} 
+				else if(pred.at(j).isDoubleNegated()){ 
+					pred.at(j).setDoubleNegation(false); 
+					pred.at(j).setSingleNegation(true); 
+				} 
+				else{ 
+					pred.at(j).setSingleNegation(true);	 
+				} 
+				temp.push_back(pred.at(j)); 
+				pred.at(j).setSingleNegation(singleN); 
+				pred.at(j).setDoubleNegation(doubleN); 
+			}
+
+			for (unsigned long int j = 0; j < bp.size(); ++j){ 
+				temp.push_back(bp.at(j)); 
+			} 
+			
+			Body* b = new Body(temp); 
+			// RULE_COMPLETION_BH(b,H); 
+			// RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); 
+			RuleCompletion* R1 = RuleCompletion_BH(b,H,tree); 
+			tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); 
+			delete R1; 
+			// std::string op;
+			// op = b->toString() + "=>" + H->toString(); 
+			// if(hard) 
+			// 	op += "."; 
+			// op += "\n";
+			// cout << op; 
+
+			delete b;
+			delete H;
+		}
+	}
 #include "ASPParserGrammar.h"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
@@ -209,23 +268,23 @@
 #endif
 /************* Begin control #defines *****************************************/
 #define YYCODETYPE unsigned char
-#define YYNOCODE 39
-#define YYACTIONTYPE unsigned short int
+#define YYNOCODE 38
+#define YYACTIONTYPE unsigned char
 #if INTERFACE
 #define ASPParserGrammarTOKENTYPE Token*
 #endif
 typedef union {
   int yyinit;
   ASPParserGrammarTOKENTYPE yy0;
-  Variable* yy1;
-  RuleCompletion* yy9;
-  BodyDef* yy12;
-  Tree* yy35;
-  std::vector<std::string*>* yy36;
-  Body* yy45;
-  Predicate* yy52;
-  Head* yy53;
-  Domain* yy63;
+  Head* yy1;
+  Tree* yy7;
+  BodyDef* yy20;
+  RuleCompletion* yy21;
+  Predicate* yy26;
+  std::vector<std::string*>* yy45;
+  Domain* yy51;
+  Body* yy53;
+  Variable* yy57;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
@@ -236,16 +295,16 @@ typedef union {
 #define ASPParserGrammarARG_FETCH Tree* tree = yypParser->tree
 #define ASPParserGrammarARG_STORE yypParser->tree = tree
 #endif
-#define YYNSTATE             114
-#define YYNRULE              53
-#define YY_MAX_SHIFT         113
-#define YY_MIN_SHIFTREDUCE   154
-#define YY_MAX_SHIFTREDUCE   206
-#define YY_MIN_REDUCE        207
-#define YY_MAX_REDUCE        259
-#define YY_ERROR_ACTION      260
-#define YY_ACCEPT_ACTION     261
-#define YY_NO_ACTION         262
+#define YYNSTATE             106
+#define YYNRULE              52
+#define YY_MAX_SHIFT         105
+#define YY_MIN_SHIFTREDUCE   146
+#define YY_MAX_SHIFTREDUCE   197
+#define YY_MIN_REDUCE        198
+#define YY_MAX_REDUCE        249
+#define YY_ERROR_ACTION      250
+#define YY_ACCEPT_ACTION     251
+#define YY_NO_ACTION         252
 /************* End control #defines *******************************************/
 
 /* The yyzerominor constant is used to initialize instances of
@@ -317,115 +376,109 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (305)
+#define YY_ACTTAB_COUNT (281)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */   261,   80,  156,   83,  158,  160,  104,  162,   63,  179,
- /*    10 */    38,   84,  186,  201,    2,   51,  155,  109,  157,  159,
- /*    20 */   104,  161,   63,  179,   39,   84,  186,  201,    2,   51,
- /*    30 */    17,  109,   41,   23,   35,  201,   92,  201,  110,   48,
- /*    40 */    73,  179,   59,   96,  186,   95,  186,   54,   60,   94,
- /*    50 */   200,  199,  197,  109,   61,   85,  200,  199,  197,  109,
- /*    60 */    62,   57,  200,  199,  197,  109,   65,    5,  200,  199,
- /*    70 */   197,  109,   91,   66,  200,  199,  197,  109,   68,  201,
- /*    80 */   195,  200,  199,  197,  109,   69,  200,  199,  197,  109,
- /*    90 */    70,  106,  184,  200,  199,  197,  109,   74,  200,  199,
- /*   100 */   197,  109,   75,  235,  235,  200,  199,  197,  109,   76,
- /*   110 */   200,  199,  197,  109,   77,   30,   27,  200,  199,  197,
- /*   120 */   109,   78,  200,  199,  197,  109,  201,  110,   48,  200,
- /*   130 */   199,  197,  109,   19,   79,  179,  113,   37,  201,   87,
- /*   140 */   201,   57,   79,  179,   18,   79,  179,   90,   39,   57,
- /*   150 */    99,  201,   57,  200,  199,  198,  109,   79,  179,  206,
- /*   160 */   233,  233,  112,   40,   57,  240,  201,   81,  190,   52,
- /*   170 */   179,   64,  179,   56,  179,   88,   57,   20,   57,  196,
- /*   180 */    57,   57,   71,  179,   34,   30,   29,  233,  233,   57,
- /*   190 */    46,    6,  240,  174,  178,  107,   93,    7,  234,  234,
- /*   200 */    57,  107,  177,  241,   30,   29,   46,  176,   57,  204,
- /*   210 */    72,   98,  100,   16,  111,   26,   57,  107,   57,  102,
- /*   220 */    57,   36,  201,   42,  201,   44,  201,   20,  201,   20,
- /*   230 */    20,   20,   28,   29,   58,   20,   82,   50,   53,   20,
- /*   240 */    20,   20,   55,  203,   20,  172,   67,  188,  187,   30,
- /*   250 */    29,   97,   20,  231,  231,   30,   31,   20,   20,  101,
- /*   260 */    20,  207,    3,  241,  182,  181,    1,  180,  105,  185,
- /*   270 */   184,   33,   32,  205,    4,   22,  108,  168,   86,   89,
- /*   280 */     8,  171,  167,    9,   10,   11,   43,   47,   12,   24,
- /*   290 */    25,  183,  166,  223,   13,   14,   45,  103,   15,  209,
- /*   300 */   222,  165,   49,  258,   21,
+ /*     0 */   251,   74,  148,   78,  150,  152,   97,  154,   50,  172,
+ /*    10 */   186,   57,   24,   18,   48,  147,  100,  149,  151,  192,
+ /*    20 */   153,  178,  172,   17,   57,  187,   18,   48,   20,  100,
+ /*    30 */   192,  101,   45,    5,   84,   77,   22,   33,   27,   51,
+ /*    40 */   192,  101,   45,   52,   83,  192,  191,  190,  188,  100,
+ /*    50 */   191,  190,  188,  100,   53,  191,  190,  189,  100,   76,
+ /*    60 */     3,  191,  190,  188,  100,  103,   89,   38,   91,   80,
+ /*    70 */   192,   50,  192,   87,  103,   89,   60,   91,   82,   93,
+ /*    80 */    50,   17,   32,  191,  190,  188,  100,   62,   75,    4,
+ /*    90 */   197,   64,   96,   98,  191,  190,  188,  100,  191,  190,
+ /*   100 */   188,  100,   69,  172,   34,   68,  179,  192,   49,  191,
+ /*   110 */   190,  188,  100,  103,   89,   28,   91,   88,  226,   50,
+ /*   120 */    70,  198,  226,  169,   71,  181,    1,  191,  190,  188,
+ /*   130 */   100,  191,  190,  188,  100,   72,   26,  226,  178,   73,
+ /*   140 */    21,  226,  191,  190,  188,  100,  191,  190,  188,  100,
+ /*   150 */   196,  195,  103,   89,  171,   91,  104,   11,   50,   50,
+ /*   160 */   105,   35,   95,  172,  192,   55,   36,   95,   50,  192,
+ /*   170 */    17,   37,   54,  173,  192,   56,  173,   47,   50,   39,
+ /*   180 */     6,   50,  192,  194,   37,   58,  173,  192,   65,  173,
+ /*   190 */   172,   50,   66,   43,   50,   50,   85,  173,   43,   99,
+ /*   200 */     7,  170,   50,   67,   98,   15,   50,   90,   50,   98,
+ /*   210 */   102,   41,   50,   28,  192,   50,   28,   28,   17,  227,
+ /*   220 */   168,  166,   17,  227,  163,   59,  228,   17,   27,   61,
+ /*   230 */   228,  223,   23,   29,   63,  223,   17,   25,   17,   17,
+ /*   240 */    17,   17,  185,   86,   19,   92,  176,  175,  174,    2,
+ /*   250 */   200,   42,   79,    8,  164,   81,  160,    9,  159,   28,
+ /*   260 */    40,   44,  224,  177,   10,  200,  158,  214,   12,   13,
+ /*   270 */    30,   94,   14,   31,  200,  200,   46,  213,  157,  248,
+ /*   280 */    16,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    19,   20,   21,   34,   23,   24,    8,   26,   27,   28,
- /*    10 */    12,   30,   31,   15,   33,   34,   21,   36,   23,   24,
- /*    20 */     8,   26,   27,   28,   12,   30,   31,   15,   33,   34,
- /*    30 */     8,   36,   12,   11,   12,   15,   34,   15,   16,   17,
- /*    40 */    27,   28,   25,   30,   31,   30,   31,   34,   25,   34,
- /*    50 */    33,   34,   35,   36,   25,   28,   33,   34,   35,   36,
- /*    60 */    25,   34,   33,   34,   35,   36,   25,    3,   33,   34,
- /*    70 */    35,   36,   34,   25,   33,   34,   35,   36,   25,   15,
- /*    80 */    22,   33,   34,   35,   36,   25,   33,   34,   35,   36,
- /*    90 */    25,   34,   34,   33,   34,   35,   36,   25,   33,   34,
- /*   100 */    35,   36,   25,    6,    7,   33,   34,   35,   36,   25,
- /*   110 */    33,   34,   35,   36,   25,    6,    7,   33,   34,   35,
- /*   120 */    36,   25,   33,   34,   35,   36,   15,   16,   17,   33,
- /*   130 */    34,   35,   36,    8,   27,   28,   11,   12,   15,   32,
- /*   140 */    15,   34,   27,   28,    8,   27,   28,   32,   12,   34,
- /*   150 */    32,   15,   34,   33,   34,   35,   36,   27,   28,   16,
- /*   160 */     6,    7,   32,   12,   34,   11,   15,   34,   14,   27,
- /*   170 */    28,   27,   28,   27,   28,   28,   34,    2,   34,    4,
- /*   180 */    34,   34,   27,   28,    1,    6,    7,    6,    7,   34,
- /*   190 */     1,    8,   11,   14,   28,   12,   34,    8,    6,    7,
- /*   200 */    34,   12,   28,   11,    6,    7,    1,    9,   34,   37,
- /*   210 */    28,   34,   28,    8,   28,    8,   34,   12,   34,   34,
- /*   220 */    34,   12,   15,   12,   15,   12,   15,    2,   15,    2,
- /*   230 */     2,    2,    6,    7,    9,    2,    9,    9,    9,    2,
- /*   240 */     2,    2,    9,   37,    2,   14,    9,    9,    9,    6,
- /*   250 */     7,    9,    2,    6,    7,    6,    7,    2,    2,    9,
- /*   260 */     2,    0,    8,   11,    9,    9,    5,    9,   34,   34,
- /*   270 */    34,    6,    7,   16,    8,   11,   36,   14,    9,    9,
- /*   280 */     8,   14,   14,    8,    8,    8,   12,   14,    8,   11,
- /*   290 */    11,    9,    9,    9,    8,    8,    1,   12,    8,   38,
- /*   300 */     9,    9,   14,   14,    8,
+ /*     0 */    19,   20,   21,   28,   23,   24,   33,   26,   33,   28,
+ /*    10 */    22,   30,    8,   32,   33,   21,   35,   23,   24,   15,
+ /*    20 */    26,   33,   28,    2,   30,    4,   32,   33,    3,   35,
+ /*    30 */    15,   16,   17,    8,   33,    4,   11,   12,    7,   25,
+ /*    40 */    15,   16,   17,   25,   33,   15,   32,   33,   34,   35,
+ /*    50 */    32,   33,   34,   35,   25,   32,   33,   34,   35,   33,
+ /*    60 */     3,   32,   33,   34,   35,   27,   28,   12,   30,   31,
+ /*    70 */    15,   33,   15,   33,   27,   28,   25,   30,   31,   33,
+ /*    80 */    33,    2,    1,   32,   33,   34,   35,   25,    9,    8,
+ /*    90 */    16,   25,   33,   12,   32,   33,   34,   35,   32,   33,
+ /*   100 */    34,   35,   25,   28,   12,   30,   33,   15,   33,   32,
+ /*   110 */    33,   34,   35,   27,   28,    6,   30,   31,    7,   33,
+ /*   120 */    25,    0,   11,   14,   25,   14,    5,   32,   33,   34,
+ /*   130 */    35,   32,   33,   34,   35,   25,    7,    7,   33,   25,
+ /*   140 */    11,   11,   32,   33,   34,   35,   32,   33,   34,   35,
+ /*   150 */    16,   36,   27,   28,   28,   30,   31,    8,   33,   33,
+ /*   160 */    11,   12,    8,   28,   15,   30,   12,    8,   33,   15,
+ /*   170 */     2,   12,   27,   28,   15,   27,   28,    9,   33,   12,
+ /*   180 */     8,   33,   15,   36,   12,   27,   28,   15,   27,   28,
+ /*   190 */    28,   33,   30,    1,   33,   33,   27,   28,    1,   35,
+ /*   200 */     8,   28,   33,   28,   12,    8,   33,   28,   33,   12,
+ /*   210 */    28,   12,   33,    6,   15,   33,    6,    6,    2,    7,
+ /*   220 */     9,   14,    2,   11,   14,    9,    7,    2,    7,    9,
+ /*   230 */    11,    7,   11,    7,    9,   11,    2,   11,    2,    2,
+ /*   240 */     2,    2,   14,    9,   11,    9,    9,    9,    9,    8,
+ /*   250 */    37,    1,    9,    8,   14,    9,   14,    8,   14,    6,
+ /*   260 */    12,   14,    7,    9,    8,   37,    9,    9,    8,    8,
+ /*   270 */     7,   12,    8,    6,   37,   37,   14,    9,    9,   14,
+ /*   280 */     8,
 };
-#define YY_SHIFT_USE_DFLT (-3)
-#define YY_SHIFT_COUNT (113)
-#define YY_SHIFT_MIN   (-2)
-#define YY_SHIFT_MAX   (296)
+#define YY_SHIFT_USE_DFLT (-1)
+#define YY_SHIFT_COUNT (105)
+#define YY_SHIFT_MIN   (0)
+#define YY_SHIFT_MAX   (272)
 static const short yy_shift_ofst[] = {
- /*     0 */    22,   22,  125,  111,  111,  111,  111,  111,  111,  111,
- /*    10 */   111,  111,  111,  111,  111,  111,  111,   -2,   -2,   -2,
- /*    20 */   111,   12,   12,  136,   12,   12,   20,   12,   12,   12,
- /*    30 */    12,   12,   12,   12,   64,  151,  207,  209,  211,  213,
- /*    40 */   123,  123,  123,  123,  123,  123,  123,  143,  257,  143,
- /*    50 */   154,  183,  179,  181,  189,  192,  198,  205,   97,  225,
- /*    60 */   227,  175,  228,  109,  226,  229,  233,   97,  237,  238,
- /*    70 */   239,  243,  247,  249,  242,  250,  255,  256,  258,  265,
- /*    80 */   261,  254,  252,  266,  264,  231,  263,  269,  267,  268,
- /*    90 */   270,  272,  275,  276,  277,  278,  279,  282,  280,  283,
- /*   100 */   284,  282,  286,  274,  285,  287,  290,  295,  273,  288,
- /*   110 */   289,  291,  292,  296,
+ /*     0 */    25,   25,   15,   15,   15,  154,  154,   15,   15,   15,
+ /*    10 */    15,  154,   15,   15,   15,   15,  159,   15,  149,  159,
+ /*    20 */   159,  159,  172,  159,  159,  159,  159,  159,  159,  159,
+ /*    30 */   159,  159,   57,   55,    4,   92,  167,  199,   30,   30,
+ /*    40 */    30,   30,   30,   30,   74,  134,   74,  111,   81,  192,
+ /*    50 */   197,   79,   21,  168,  109,   31,  207,  129,  210,  130,
+ /*    60 */   216,  212,  220,  219,  225,  211,  221,  224,  226,  234,
+ /*    70 */   236,  237,  238,  239,  121,  228,  241,  233,  240,  242,
+ /*    80 */   243,  244,  246,  245,  249,  253,  254,  256,  257,  255,
+ /*    90 */   258,  263,  254,  260,  248,  259,  261,  264,  250,  247,
+ /*   100 */   262,  265,  268,  267,  269,  272,
 };
-#define YY_REDUCE_USE_DFLT (-32)
-#define YY_REDUCE_COUNT (49)
-#define YY_REDUCE_MIN   (-31)
-#define YY_REDUCE_MAX   (240)
+#define YY_REDUCE_USE_DFLT (-28)
+#define YY_REDUCE_COUNT (46)
+#define YY_REDUCE_MIN   (-27)
+#define YY_REDUCE_MAX   (182)
 static const short yy_reduce_ofst[] = {
- /*     0 */   -19,   -5,   13,   17,   23,   29,   35,   41,   48,   53,
- /*    10 */    60,   65,   72,   77,   84,   89,   96,  107,  115,  118,
- /*    20 */   120,  130,  142,  144,  146,  155,   15,   27,  147,  166,
- /*    30 */   174,  182,  184,  186,   58,  -31,    2,   38,   57,   57,
- /*    40 */   133,  162,  177,  185,  234,  235,  236,  172,  240,  206,
+ /*     0 */   -19,   -6,   14,   18,   29,   38,   47,   51,   62,   66,
+ /*    10 */    77,   86,   95,   99,  110,  114,  125,   23,   75,  145,
+ /*    20 */   135,  148,  158,  161,  162,  169,  -25,  126,  173,  175,
+ /*    30 */   179,  182,  -12,  -27,    1,   11,  -27,  -27,   26,   40,
+ /*    40 */    46,   59,   73,  105,  115,  164,  147,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */   217,  216,  260,  260,  260,  260,  260,  260,  260,  260,
- /*    10 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
- /*    20 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
- /*    30 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
- /*    40 */   260,  260,  260,  260,  260,  260,  260,  260,  260,  260,
- /*    50 */   242,  260,  260,  244,  260,  246,  260,  260,  247,  260,
- /*    60 */   260,  260,  260,  260,  260,  260,  260,  245,  260,  260,
- /*    70 */   260,  228,  226,  260,  260,  260,  260,  260,  260,  260,
- /*    80 */   260,  260,  234,  260,  260,  231,  260,  260,  230,  260,
- /*    90 */   260,  260,  260,  260,  260,  260,  260,  235,  260,  260,
- /*   100 */   231,  260,  260,  260,  260,  260,  260,  260,  260,  260,
- /*   110 */   255,  230,  260,  260,
+ /*     0 */   208,  207,  250,  250,  250,  250,  250,  250,  250,  250,
+ /*    10 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  250,
+ /*    20 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  250,
+ /*    30 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  250,
+ /*    40 */   250,  250,  250,  250,  250,  250,  250,  232,  250,  250,
+ /*    50 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  234,
+ /*    60 */   250,  236,  250,  235,  250,  250,  250,  217,  250,  250,
+ /*    70 */   250,  250,  250,  250,  250,  228,  250,  250,  223,  250,
+ /*    80 */   250,  250,  250,  250,  250,  219,  228,  250,  250,  225,
+ /*    90 */   223,  250,  250,  250,  250,  250,  250,  250,  250,  250,
+ /*   100 */   250,  245,  222,  250,  250,  250,
 };
 /********** End of lemon-generated parsing tables *****************************/
 
@@ -534,9 +587,9 @@ static const char *const yyTokenName[] = {
   "NUMBER",        "MINUS",         "error",         "start",       
   "prog",          "domain",        "domains",       "predicate",   
   "decl",          "variables",     "rule",          "body",        
-  "bodydef",       "bodydef2",      "head",          "headdef",     
-  "ruleU",         "number",        "string",        "variable",    
-  "lnumber",       "rnumber",     
+  "bodydef",       "bodydef2",      "head",          "ruleU",       
+  "number",        "string",        "variable",      "lnumber",     
+  "rnumber",     
 };
 #endif /* NDEBUG */
 
@@ -560,43 +613,42 @@ static const char *const yyRuleName[] = {
  /*  13 */ "rule ::= REVERSE_IMPLICATION LBRACKET ruleU RBRACKET DOT",
  /*  14 */ "rule ::= LBRACKET ruleU RBRACKET DOT",
  /*  15 */ "ruleU ::= body CONJUNCTION bodydef",
- /*  16 */ "ruleU ::= body DISJUNCTION bodydef",
- /*  17 */ "rule ::= REVERSE_IMPLICATION body CONJUNCTION bodydef DOT",
- /*  18 */ "rule ::= body DISJUNCTION bodydef DOT",
- /*  19 */ "rule ::= number body DISJUNCTION bodydef",
+ /*  16 */ "ruleU ::= head DISJUNCTION bodydef",
+ /*  17 */ "rule ::= REVERSE_IMPLICATION body DOT",
+ /*  18 */ "rule ::= head DISJUNCTION bodydef DOT",
+ /*  19 */ "rule ::= number head DISJUNCTION bodydef",
  /*  20 */ "rule ::= head REVERSE_IMPLICATION body DOT",
  /*  21 */ "rule ::= number head REVERSE_IMPLICATION body",
  /*  22 */ "rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET",
- /*  23 */ "body ::= body CONJUNCTION bodydef",
- /*  24 */ "body ::= body DISJUNCTION bodydef",
- /*  25 */ "body ::= bodydef",
- /*  26 */ "bodydef ::= string LBRACKET variables RBRACKET",
- /*  27 */ "bodydef ::= NEGATION string LBRACKET variables RBRACKET",
- /*  28 */ "bodydef ::= NEGATION NEGATION string LBRACKET variables RBRACKET",
- /*  29 */ "bodydef ::= LBRACKET NEGATION NEGATION string LBRACKET variables RBRACKET RBRACKET",
- /*  30 */ "bodydef ::= string EQUAL string",
- /*  31 */ "bodydef ::= string NEGATION EQUAL string",
- /*  32 */ "head ::= headdef",
- /*  33 */ "headdef ::= string LBRACKET variables RBRACKET",
- /*  34 */ "headdef ::= NEGATION string LBRACKET variables RBRACKET",
- /*  35 */ "decl ::= string LBRACKET variables RBRACKET",
- /*  36 */ "predicate ::= string LBRACKET variables RBRACKET DOT",
- /*  37 */ "predicate ::= number string LBRACKET variables RBRACKET",
- /*  38 */ "predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET",
- /*  39 */ "predicate ::= number NEGATION string LBRACKET variables RBRACKET",
- /*  40 */ "predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET",
- /*  41 */ "domain ::= string EQUAL domains",
- /*  42 */ "domains ::= LPAREN variables RPAREN",
- /*  43 */ "variables ::= variable",
- /*  44 */ "variables ::= variables COMMA variable",
- /*  45 */ "variable ::= string",
- /*  46 */ "variable ::= number",
- /*  47 */ "string ::= STRING",
- /*  48 */ "number ::= NUMBER",
- /*  49 */ "number ::= lnumber DOT rnumber",
- /*  50 */ "number ::= MINUS lnumber DOT rnumber",
- /*  51 */ "lnumber ::= NUMBER",
- /*  52 */ "rnumber ::= NUMBER",
+ /*  23 */ "rule ::= LPAREN head RPAREN REVERSE_IMPLICATION body DOT",
+ /*  24 */ "body ::= body CONJUNCTION bodydef",
+ /*  25 */ "head ::= head DISJUNCTION bodydef",
+ /*  26 */ "head ::= bodydef",
+ /*  27 */ "body ::= bodydef",
+ /*  28 */ "bodydef ::= string LBRACKET variables RBRACKET",
+ /*  29 */ "bodydef ::= NEGATION string LBRACKET variables RBRACKET",
+ /*  30 */ "bodydef ::= NEGATION NEGATION string LBRACKET variables RBRACKET",
+ /*  31 */ "bodydef ::= LBRACKET NEGATION NEGATION string LBRACKET variables RBRACKET RBRACKET",
+ /*  32 */ "bodydef ::= string EQUAL string",
+ /*  33 */ "bodydef ::= string NEGATION EQUAL string",
+ /*  34 */ "decl ::= string LBRACKET variables RBRACKET",
+ /*  35 */ "predicate ::= string LBRACKET variables RBRACKET DOT",
+ /*  36 */ "predicate ::= number string LBRACKET variables RBRACKET",
+ /*  37 */ "predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET",
+ /*  38 */ "predicate ::= number NEGATION string LBRACKET variables RBRACKET",
+ /*  39 */ "predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET DOT",
+ /*  40 */ "domain ::= string EQUAL domains",
+ /*  41 */ "domains ::= LPAREN variables RPAREN",
+ /*  42 */ "variables ::= variable",
+ /*  43 */ "variables ::= variables COMMA variable",
+ /*  44 */ "variable ::= string",
+ /*  45 */ "variable ::= number",
+ /*  46 */ "string ::= STRING",
+ /*  47 */ "number ::= NUMBER",
+ /*  48 */ "number ::= lnumber DOT rnumber",
+ /*  49 */ "number ::= MINUS lnumber DOT rnumber",
+ /*  50 */ "lnumber ::= NUMBER",
+ /*  51 */ "rnumber ::= NUMBER",
 };
 #endif /* NDEBUG */
 
@@ -940,16 +992,18 @@ static const struct {
   { 26, 4 },
   { 26, 5 },
   { 26, 4 },
-  { 32, 3 },
-  { 32, 3 },
-  { 26, 5 },
+  { 31, 3 },
+  { 31, 3 },
+  { 26, 3 },
   { 26, 4 },
   { 26, 4 },
   { 26, 4 },
   { 26, 4 },
   { 26, 8 },
+  { 26, 6 },
   { 27, 3 },
-  { 27, 3 },
+  { 30, 3 },
+  { 30, 1 },
   { 27, 1 },
   { 28, 4 },
   { 28, 5 },
@@ -957,27 +1011,24 @@ static const struct {
   { 28, 8 },
   { 28, 3 },
   { 28, 4 },
-  { 30, 1 },
-  { 31, 4 },
-  { 31, 5 },
   { 24, 4 },
   { 23, 5 },
   { 23, 5 },
   { 23, 7 },
   { 23, 6 },
-  { 23, 6 },
+  { 23, 7 },
   { 21, 3 },
   { 22, 3 },
   { 25, 1 },
   { 25, 3 },
-  { 35, 1 },
-  { 35, 1 },
+  { 34, 1 },
   { 34, 1 },
   { 33, 1 },
-  { 33, 3 },
-  { 33, 4 },
+  { 32, 1 },
+  { 32, 3 },
+  { 32, 4 },
+  { 35, 1 },
   { 36, 1 },
-  { 37, 1 },
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -1020,304 +1071,316 @@ static void yy_reduce(
       case 1: /* prog ::= prog NEWLINE domain */
       case 2: /* prog ::= domain */ yytestcase(yyruleno==2);
 { 
-	tree->domains.insert(*yymsp[0].minor.yy63); 
-	tree->domainNamesList.insert(yymsp[0].minor.yy63->getDomainVar());
-	for(auto& v : yymsp[0].minor.yy63->getVars()){
+	tree->domains.insert(*yymsp[0].minor.yy51); 
+	tree->domainNamesList.insert(yymsp[0].minor.yy51->getDomainVar());
+	for(auto& v : yymsp[0].minor.yy51->getVars()){
 		tree->domainList.insert(v);	
 	}
-	cout<<yymsp[0].minor.yy63->toString(false);
-	delete yymsp[0].minor.yy63;
+	cout<<yymsp[0].minor.yy51->toString(false);
+	delete yymsp[0].minor.yy51;
 }
         break;
       case 3: /* prog ::= prog NEWLINE predicate */
 { 
-	if(yymsp[0].minor.yy52->needsToBeCompleted()){	
-		FactCompletion f(*yymsp[0].minor.yy52);
+	if(yymsp[0].minor.yy26->needsToBeCompleted()){	
+		FactCompletion f(*yymsp[0].minor.yy26);
 		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
 	}	
-	delete yymsp[0].minor.yy52;
+	delete yymsp[0].minor.yy26;
 }
         break;
       case 4: /* prog ::= predicate */
 { 
-	if(yymsp[0].minor.yy52->needsToBeCompleted()){
-		FactCompletion f(*yymsp[0].minor.yy52);
+	if(yymsp[0].minor.yy26->needsToBeCompleted()){
+		FactCompletion f(*yymsp[0].minor.yy26);
 		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 	
 	}
-	delete yymsp[0].minor.yy52;
+	delete yymsp[0].minor.yy26;
 }
         break;
       case 5: /* prog ::= prog NEWLINE decl */
       case 6: /* prog ::= decl */ yytestcase(yyruleno==6);
 {
-	tree->variables.insert(*yymsp[0].minor.yy1);
-	cout<<yymsp[0].minor.yy1->toString();
-	delete yymsp[0].minor.yy1;
+	tree->variables.insert(*yymsp[0].minor.yy57);
+	cout<<yymsp[0].minor.yy57->toString();
+	delete yymsp[0].minor.yy57;
 }
         break;
       case 7: /* prog ::= prog NEWLINE rule */
       case 8: /* prog ::= rule */ yytestcase(yyruleno==8);
 {
-	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->head.getVar(),*yymsp[0].minor.yy9));
-	delete yymsp[0].minor.yy9;
+	if((yymsp[0].minor.yy21->isHeadTop == false) && (yymsp[0].minor.yy21->toBeCompleted == true))
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy21->head.getVar(),*yymsp[0].minor.yy21));
+	delete yymsp[0].minor.yy21;
 }
         break;
       case 11: /* rule ::= number REVERSE_IMPLICATION LBRACKET ruleU RBRACKET */
 {
-	yygotominor.yy9 = yymsp[-1].minor.yy9;
-	yygotominor.yy9->toBeCompleted = false;
-	if(yymsp[-1].minor.yy9->getBodyType() == BodyType::DISJUNCTION){
+	yygotominor.yy21 = yymsp[-1].minor.yy21;
+	yygotominor.yy21->toBeCompleted = false;
+	if(yymsp[-1].minor.yy21->getBodyType() == BodyType::DISJUNCTION){
 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
 	}
-	cout<<yymsp[-4].minor.yy0->toString()<<SPACE<<"!("<<yymsp[-1].minor.yy9->toString()<<")"<<"\n";
+	cout<<yymsp[-4].minor.yy0->toString()<<SPACE<<"!("<<yymsp[-1].minor.yy21->toString()<<")"<<"\n";
 }
         break;
       case 12: /* rule ::= number LBRACKET ruleU RBRACKET */
 {
-	yygotominor.yy9 = yymsp[-1].minor.yy9;
-	yygotominor.yy9->toBeCompleted = false;
-	if(yymsp[-1].minor.yy9->getBodyType() == BodyType::CONJUNCTION){
+	yygotominor.yy21 = yymsp[-1].minor.yy21;
+	yygotominor.yy21->toBeCompleted = false;
+	if(yymsp[-1].minor.yy21->getBodyType() == BodyType::CONJUNCTION){
 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
 	}
-	cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<"("<<yymsp[-1].minor.yy9->toString()<<")"<<"\n";
+	cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<"("<<yymsp[-1].minor.yy21->toString()<<")"<<"\n";
 }
         break;
       case 13: /* rule ::= REVERSE_IMPLICATION LBRACKET ruleU RBRACKET DOT */
 {
-	yygotominor.yy9 = yymsp[-2].minor.yy9;
-	yymsp[-2].minor.yy9->toBeCompleted = false;
-	if(yymsp[-2].minor.yy9->getBodyType() == BodyType::DISJUNCTION){
+	yygotominor.yy21 = yymsp[-2].minor.yy21;
+	yymsp[-2].minor.yy21->toBeCompleted = false;
+	if(yymsp[-2].minor.yy21->getBodyType() == BodyType::DISJUNCTION){
 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
 	}
-	cout<<"!("<<yymsp[-2].minor.yy9->toString()<<")."<<"\n";
+	cout<<"!("<<yymsp[-2].minor.yy21->toString()<<")."<<"\n";
 }
         break;
       case 14: /* rule ::= LBRACKET ruleU RBRACKET DOT */
 {
-	yygotominor.yy9 = yymsp[-2].minor.yy9;
-	yygotominor.yy9->toBeCompleted = false;
-	if(yymsp[-2].minor.yy9->getBodyType() == BodyType::CONJUNCTION){
+	yygotominor.yy21 = yymsp[-2].minor.yy21;
+	yygotominor.yy21->toBeCompleted = false;
+	if(yymsp[-2].minor.yy21->getBodyType() == BodyType::CONJUNCTION){
 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
 	}
-	cout<<"("<<yymsp[-2].minor.yy9->toString()<<")."<<"\n";
+	cout<<"("<<yymsp[-2].minor.yy21->toString()<<")."<<"\n";
 }
         break;
       case 15: /* ruleU ::= body CONJUNCTION bodydef */
 {
-	yygotominor.yy9 = new RuleCompletion;
-	yymsp[-2].minor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,false,true);
-	yygotominor.yy9->appendStr(yymsp[-2].minor.yy45->toString());
-	yygotominor.yy9->setBodyType(BodyType::CONJUNCTION);
-	delete yymsp[-2].minor.yy45;
-	delete yymsp[0].minor.yy12;
+	yygotominor.yy21 = new RuleCompletion;
+	yymsp[-2].minor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,false,true);
+	yygotominor.yy21->appendStr(yymsp[-2].minor.yy53->toString());
+	yygotominor.yy21->setBodyType(BodyType::CONJUNCTION);
+	delete yymsp[-2].minor.yy53;
+	delete yymsp[0].minor.yy20;
 }
         break;
-      case 16: /* ruleU ::= body DISJUNCTION bodydef */
+      case 16: /* ruleU ::= head DISJUNCTION bodydef */
 {
-	yygotominor.yy9 = new RuleCompletion;	
-	yygotominor.yy9->isHeadTop = true;
-	RULE_COMPLETION_BODY_TOP(yymsp[-2].minor.yy45,yymsp[0].minor.yy12)
-	yymsp[-2].minor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,true,false);
-	yygotominor.yy9->appendStr(yymsp[-2].minor.yy45->toString());
-	yygotominor.yy9->setBodyType(BodyType::DISJUNCTION);
-	delete yymsp[-2].minor.yy45;
-	delete yymsp[0].minor.yy12;
+	yygotominor.yy21 = new RuleCompletion;	
+	yygotominor.yy21->isHeadTop = true;
+	yymsp[-2].minor.yy1->addPredicate(yymsp[0].minor.yy20->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-2].minor.yy1,yymsp[0].minor.yy20)
+	RuleCompletion_HD_BT(yymsp[-2].minor.yy1,tree);
+	yymsp[-2].minor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,true,false);
+	yygotominor.yy21->appendStr(yymsp[-2].minor.yy1->toString());
+	yygotominor.yy21->setBodyType(BodyType::DISJUNCTION);
+	delete yymsp[-2].minor.yy1;
+	delete yymsp[0].minor.yy20;
 }
         break;
-      case 17: /* rule ::= REVERSE_IMPLICATION body CONJUNCTION bodydef DOT */
+      case 17: /* rule ::= REVERSE_IMPLICATION body DOT */
 {
-	yygotominor.yy9 = new RuleCompletion;
-	yygotominor.yy9->isHeadTop = true;
-	yymsp[-3].minor.yy45->appendStr(yymsp[-1].minor.yy12->getPredicate().toString(),false,false,true);
-	std::cout<<"!("<<yymsp[-3].minor.yy45->toString()<<")."<<"\n";	
-	delete yymsp[-3].minor.yy45;
-	delete yymsp[-1].minor.yy12;
+	yygotominor.yy21 = new RuleCompletion;
+	yygotominor.yy21->isHeadTop = true;
+	// yymsp[-1].minor.yy53->appendStr(yymsp[-1].minor.yy53->getPredicate().toString(),false,false,true);
+	std::cout<<"!("<<yymsp[-1].minor.yy53->toString()<<")."<<"\n";	
+	delete yymsp[-1].minor.yy53;
+	// delete B1;
 }
         break;
-      case 18: /* rule ::= body DISJUNCTION bodydef DOT */
-{
-	//Doing this 
-	yygotominor.yy9 = new RuleCompletion;
-	yygotominor.yy9->isHeadTop = true;
-	RULE_COMPLETION_BODY_TOP(yymsp[-3].minor.yy45,yymsp[-1].minor.yy12)
-	yymsp[-3].minor.yy45->appendStr(yymsp[-1].minor.yy12->getPredicate().toString(),false,true,false);
-	std::cout<<yymsp[-3].minor.yy45->toString()<<"."<<"\n";
-	delete yymsp[-3].minor.yy45;
-	delete yymsp[-1].minor.yy12;
-}
-        break;
-      case 19: /* rule ::= number body DISJUNCTION bodydef */
+      case 18: /* rule ::= head DISJUNCTION bodydef DOT */
 {
 	//Doing this 
-	yygotominor.yy9 = new RuleCompletion;
-	yygotominor.yy9->isHeadTop = true;
-	RULE_COMPLETION_BODY_TOP(yymsp[-2].minor.yy45,yymsp[0].minor.yy12)
-	yymsp[-2].minor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,true,false);
-	std::cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[-2].minor.yy45->toString()<<"\n";
-	delete yymsp[-2].minor.yy45;
-	delete yymsp[0].minor.yy12;
+	yygotominor.yy21 = new RuleCompletion;
+	yygotominor.yy21->isHeadTop = true;
+	yymsp[-3].minor.yy1->addPredicate(yymsp[-1].minor.yy20->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-3].minor.yy1,yymsp[-1].minor.yy20)
+	RuleCompletion_HD_BT(yymsp[-3].minor.yy1,tree);
+	yymsp[-3].minor.yy1->appendStr(yymsp[-1].minor.yy20->getPredicate().toString(),false,true,false);
+	std::cout<<yymsp[-3].minor.yy1->toString()<<"."<<"\n";
+	delete yymsp[-3].minor.yy1;
+	delete yymsp[-1].minor.yy20;
+}
+        break;
+      case 19: /* rule ::= number head DISJUNCTION bodydef */
+{
+	//Doing this 
+	yygotominor.yy21 = new RuleCompletion;
+	yygotominor.yy21->isHeadTop = true;
+	yymsp[-2].minor.yy1->addPredicate(yymsp[0].minor.yy20->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-2].minor.yy1,yymsp[0].minor.yy20)
+	RuleCompletion_HD_BT(yymsp[-2].minor.yy1,tree);
+	yymsp[-2].minor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,true,false);
+	std::cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[-2].minor.yy1->toString()<<"\n";
+	delete yymsp[-2].minor.yy1;
+	delete yymsp[0].minor.yy20;
 }
         break;
       case 20: /* rule ::= head REVERSE_IMPLICATION body DOT */
 {
-	
-	RULE_COMPLETION_BH(yymsp[-1].minor.yy45,yymsp[-3].minor.yy53);
-	yygotominor.yy9 = new RuleCompletion(yymsp[-3].minor.yy53->getPredicate(),predList, resultMap, varMap);
-	std::cout<<yymsp[-1].minor.yy45->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"."<<"\n";
-	delete yymsp[-1].minor.yy45;
-	delete yymsp[-3].minor.yy53;
+	yygotominor.yy21 = new RuleCompletion;
+
+	if (yymsp[-3].minor.yy1->getDisjunction()){
+		// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-3].minor.yy1,yymsp[-1].minor.yy53)
+		yygotominor.yy21->isHeadTop = true;
+		RuleCompletion_HD_BC(yymsp[-3].minor.yy1,yymsp[-1].minor.yy53,true,tree);
+		std::cout<<yymsp[-1].minor.yy53->toString()<<" => "<<yymsp[-3].minor.yy1->toString()<<"."<<"\n";
+		// std::cout << op;
+	}
+	else{
+		// RULE_COMPLETION_BH(yymsp[-1].minor.yy53,yymsp[-3].minor.yy1);
+		// yygotominor.yy21 = new RuleCompletion(yymsp[-3].minor.yy1->getPredicate(),predList, resultMap, varMap);
+		yygotominor.yy21 = RuleCompletion_BH(yymsp[-1].minor.yy53,yymsp[-3].minor.yy1,tree);
+		std::cout<<yymsp[-1].minor.yy53->toString()<<" => "<<yymsp[-3].minor.yy1->toString()<<"."<<"\n";
+	}
+	delete yymsp[-1].minor.yy53;
+	delete yymsp[-3].minor.yy1;
 }
         break;
       case 21: /* rule ::= number head REVERSE_IMPLICATION body */
 {
-	RULE_COMPLETION_BH(yymsp[0].minor.yy45,yymsp[-2].minor.yy53);
-	yygotominor.yy9 = new RuleCompletion(yymsp[-2].minor.yy53->getPredicate(),predList, resultMap, varMap);
-	std::cout<< yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[0].minor.yy45->toString()<<" => "<<yymsp[-2].minor.yy53->toString()<<"\n";
-	delete yymsp[0].minor.yy45;
-	delete yymsp[-2].minor.yy53;
+	// RULE_COMPLETION_BH(yymsp[0].minor.yy53,yymsp[-2].minor.yy1);
+	// yygotominor.yy21 = new RuleCompletion(yymsp[-2].minor.yy1->getPredicate(),predList, resultMap, varMap);
+	yygotominor.yy21 = RuleCompletion_BH(yymsp[0].minor.yy53,yymsp[-2].minor.yy1,tree);
+	std::cout<< yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[0].minor.yy53->toString()<<" => "<<yymsp[-2].minor.yy1->toString()<<"\n";
+	delete yymsp[0].minor.yy53;
+	delete yymsp[-2].minor.yy1;
 }
         break;
       case 22: /* rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET */
 {
-	yygotominor.yy9 = new RuleCompletion;
-	yygotominor.yy9->isHeadTop = true;	
+	yygotominor.yy21 = new RuleCompletion;
+	yygotominor.yy21->isHeadTop = true;	
 	tree->statHasDblNeg = true;
-	std::cout<< yymsp[-7].minor.yy0->toString() << SPACE <<"!!("<<yymsp[-1].minor.yy45->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"\n"; 
-	delete yymsp[-1].minor.yy45;
-	delete yymsp[-3].minor.yy53;
+	std::cout<< yymsp[-7].minor.yy0->toString() << SPACE <<"!!("<<yymsp[-1].minor.yy53->toString()<<" => "<<yymsp[-3].minor.yy1->toString()<<"\n"; 
+	delete yymsp[-1].minor.yy53;
+	delete yymsp[-3].minor.yy1;
 }
         break;
-      case 23: /* body ::= body CONJUNCTION bodydef */
+      case 23: /* rule ::= LPAREN head RPAREN REVERSE_IMPLICATION body DOT */
 {
-	yygotominor.yy45 = yymsp[-2].minor.yy45;
-	yymsp[-2].minor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
-	yygotominor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,false,true);
-	delete yymsp[0].minor.yy12;
+	
+	if (yymsp[-4].minor.yy1->getPredicate().checkEquality() != 0){
+		throw syntax_exception("Cannot have equality/Inequlity as a part of choice rule\n");
+	}
+
+	// RULE_COMPLETION_BH(yymsp[-1].minor.yy53,yymsp[-4].minor.yy1);
+	// yygotominor.yy21 = new RuleCompletion(yymsp[-4].minor.yy1->getPredicate(),predList, resultMap, varMap);
+	yygotominor.yy21 = RuleCompletion_BH(yymsp[-1].minor.yy53,yymsp[-4].minor.yy1,tree);
+	std::cout<<COMMENT<<yymsp[-1].minor.yy53->toString()<<" => "<<yymsp[-4].minor.yy1->toString()<<"\n";
+	delete yymsp[-1].minor.yy53;
+	delete yymsp[-4].minor.yy1;
 }
         break;
-      case 24: /* body ::= body DISJUNCTION bodydef */
+      case 24: /* body ::= body CONJUNCTION bodydef */
 {
-	yygotominor.yy45 = yymsp[-2].minor.yy45;
-	yymsp[-2].minor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
-	yygotominor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,true,false);
-	delete yymsp[0].minor.yy12;
+	yygotominor.yy53 = yymsp[-2].minor.yy53;
+	yymsp[-2].minor.yy53->addPredicate(yymsp[0].minor.yy20->getPredicate());
+	yygotominor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,false,true);
+	delete yymsp[0].minor.yy20;
 }
         break;
-      case 25: /* body ::= bodydef */
+      case 25: /* head ::= head DISJUNCTION bodydef */
 {
-	yygotominor.yy45 = new Body;
-	yygotominor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
-	yygotominor.yy45->appendStr(yymsp[0].minor.yy12->getPredicate().toString(),false,false,false);
-	delete yymsp[0].minor.yy12;
+	yygotominor.yy1 = yymsp[-2].minor.yy1;
+	yymsp[-2].minor.yy1->addPredicate(yymsp[0].minor.yy20->getPredicate());
+	yygotominor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,true,false);
+	yygotominor.yy1->setDisjunction(true);
+	delete yymsp[0].minor.yy20;
 }
         break;
-      case 26: /* bodydef ::= string LBRACKET variables RBRACKET */
+      case 26: /* head ::= bodydef */
+{
+	yygotominor.yy1 = new Head(yymsp[0].minor.yy20->getPredicate());
+	// yygotominor.yy1->addPredicate(yymsp[0].minor.yy20->getPredicate());
+	yygotominor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,false,false);
+	delete yymsp[0].minor.yy20;
+}
+        break;
+      case 27: /* body ::= bodydef */
+{
+	yygotominor.yy53 = new Body;
+	yygotominor.yy53->addPredicate(yymsp[0].minor.yy20->getPredicate());
+	yygotominor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,false,false);
+	delete yymsp[0].minor.yy20;
+}
+        break;
+      case 28: /* bodydef ::= string LBRACKET variables RBRACKET */
 {	
 	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-1].minor.yy36)
+	for(auto& v : *yymsp[-1].minor.yy45)
 		vars.push_back(*v);
 	
 	Predicate p(yymsp[-3].minor.yy0->token, vars);
-	yygotominor.yy12 = new BodyDef;
-	yygotominor.yy12->addPredicate(p);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy20 = new BodyDef;
+	yygotominor.yy20->addPredicate(p);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 27: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */
+      case 29: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */
 {	
 	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-1].minor.yy36)
+	for(auto& v : *yymsp[-1].minor.yy45)
 		vars.push_back(*v);
 	
 	Predicate p(yymsp[-3].minor.yy0->token, vars);
 	p.setSingleNegation(true);
-	yygotominor.yy12 = new BodyDef;
-	yygotominor.yy12->addPredicate(p);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy20 = new BodyDef;
+	yygotominor.yy20->addPredicate(p);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 28: /* bodydef ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+      case 30: /* bodydef ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
 {	
 	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-1].minor.yy36)
+	for(auto& v : *yymsp[-1].minor.yy45)
 		vars.push_back(*v);
 	
 	Predicate p(yymsp[-3].minor.yy0->token, vars);
 	p.setDoubleNegation(true);
-	yygotominor.yy12 = new BodyDef;
-	yygotominor.yy12->addPredicate(p);
+	yygotominor.yy20 = new BodyDef;
+	yygotominor.yy20->addPredicate(p);
 	tree->statHasDblNeg = true;
-	delete yymsp[-1].minor.yy36;
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 29: /* bodydef ::= LBRACKET NEGATION NEGATION string LBRACKET variables RBRACKET RBRACKET */
+      case 31: /* bodydef ::= LBRACKET NEGATION NEGATION string LBRACKET variables RBRACKET RBRACKET */
 {	
 	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-2].minor.yy36)
+	for(auto& v : *yymsp[-2].minor.yy45)
 		vars.push_back(*v);
 	
 	Predicate p(yymsp[-4].minor.yy0->token, vars);
 	p.setDoubleNegation(true);
 	tree->statHasDblNeg = true;
-	yygotominor.yy12 = new BodyDef;
-	yygotominor.yy12->addPredicate(p);
-	delete yymsp[-2].minor.yy36;
+	yygotominor.yy20 = new BodyDef;
+	yygotominor.yy20->addPredicate(p);
+	delete yymsp[-2].minor.yy45;
 }
         break;
-      case 30: /* bodydef ::= string EQUAL string */
+      case 32: /* bodydef ::= string EQUAL string */
 {
 	Predicate p(yymsp[-2].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setEquality();
-	yygotominor.yy12 = new BodyDef;
-	yygotominor.yy12->addPredicate(p);
+	yygotominor.yy20 = new BodyDef;
+	yygotominor.yy20->addPredicate(p);
 }
         break;
-      case 31: /* bodydef ::= string NEGATION EQUAL string */
+      case 33: /* bodydef ::= string NEGATION EQUAL string */
 {
 	Predicate p(yymsp[-3].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setInEquality();
-	yygotominor.yy12 = new BodyDef;
-	yygotominor.yy12->addPredicate(p);
+	yygotominor.yy20 = new BodyDef;
+	yygotominor.yy20->addPredicate(p);
 }
         break;
-      case 32: /* head ::= headdef */
-{ 
-	yygotominor.yy53 = yymsp[0].minor.yy53;
-}
-        break;
-      case 33: /* headdef ::= string LBRACKET variables RBRACKET */
+      case 34: /* decl ::= string LBRACKET variables RBRACKET */
 {
-	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-1].minor.yy36)
-		vars.push_back(*v);
-	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
-	yygotominor.yy53 = new Head(p);
-	// yygotominor.yy53->addPredicate(p);
-	delete yymsp[-1].minor.yy36;
-}
-        break;
-      case 34: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */
-{
-	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-1].minor.yy36)
-		vars.push_back(*v);
-	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
-	p.setSingleNegation(true);
-	yygotominor.yy53 = new Head(p);
-	yygotominor.yy53->addPredicate(p);
-	delete yymsp[-1].minor.yy36;
-}
-        break;
-      case 35: /* decl ::= string LBRACKET variables RBRACKET */
-{
-	yygotominor.yy1 = new Variable;
+	yygotominor.yy57 = new Variable;
 	std::map<int, Domain> posMap;
 	std::set<Domain>::iterator itr;
 	int i=0;
-	for(auto& v : *yymsp[-1].minor.yy36){
+	for(auto& v : *yymsp[-1].minor.yy45){
 		itr = tree->domains.find(*v);
 		if (itr == tree->domains.end()){
 			std::cout<<"Error:Domain:"+ *v +" not found.\n";
@@ -1325,112 +1388,112 @@ static void yy_reduce(
 		}
 		else{
 			// itr = tree->domains.find(*v);
-			yygotominor.yy1->setVar(yymsp[-3].minor.yy0->token);
+			yygotominor.yy57->setVar(yymsp[-3].minor.yy0->token);
 			posMap[i++] = *itr;
 		}
 	}
-	yygotominor.yy1->setPosMap(posMap);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy57->setPosMap(posMap);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 36: /* predicate ::= string LBRACKET variables RBRACKET DOT */
+      case 35: /* predicate ::= string LBRACKET variables RBRACKET DOT */
 {
-	yygotominor.yy52 = new Predicate;
-	yygotominor.yy52->setVar(yymsp[-4].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-2].minor.yy36);
+	yygotominor.yy26 = new Predicate;
+	yygotominor.yy26->setVar(yymsp[-4].minor.yy0->token);
+	yygotominor.yy26->setTokens(*yymsp[-2].minor.yy45);
 	std::string s1;
-	cout<<yygotominor.yy52->toString(s1,true);
-	delete yymsp[-2].minor.yy36;
+	cout<<yygotominor.yy26->toString(s1,true);
+	delete yymsp[-2].minor.yy45;
 }
         break;
-      case 37: /* predicate ::= number string LBRACKET variables RBRACKET */
+      case 36: /* predicate ::= number string LBRACKET variables RBRACKET */
 {
-	yygotominor.yy52 = new Predicate;
-	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
-	cout<<yygotominor.yy52->toString(yymsp[-4].minor.yy0->toString()+SPACE, false);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy26 = new Predicate;
+	yygotominor.yy26->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy26->setTokens(*yymsp[-1].minor.yy45);
+	cout<<yygotominor.yy26->toString(yymsp[-4].minor.yy0->toString()+SPACE, false);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 38: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
+      case 37: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
 {
-	yygotominor.yy52 = new Predicate;
-	yygotominor.yy52->notToBeCompleted();
+	yygotominor.yy26 = new Predicate;
+	yygotominor.yy26->notToBeCompleted();
 	tree->statHasDblNeg = true;
-	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
-	cout<<yygotominor.yy52->toString(yymsp[-6].minor.yy0->toString()+SPACE, false);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy26->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy26->setTokens(*yymsp[-1].minor.yy45);
+	cout<<yygotominor.yy26->toString(yymsp[-6].minor.yy0->toString()+SPACE, false);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 39: /* predicate ::= number NEGATION string LBRACKET variables RBRACKET */
+      case 38: /* predicate ::= number NEGATION string LBRACKET variables RBRACKET */
 {
-	yygotominor.yy52 = new Predicate;
-	yygotominor.yy52->notToBeCompleted();
-	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
-	cout<<yygotominor.yy52->toString(yymsp[-5].minor.yy0->toString()+SPACE+"!", false);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy26 = new Predicate;
+	yygotominor.yy26->notToBeCompleted();
+	yygotominor.yy26->setVar(yymsp[-3].minor.yy0->token);
+	yygotominor.yy26->setTokens(*yymsp[-1].minor.yy45);
+	cout<<yygotominor.yy26->toString(yymsp[-5].minor.yy0->toString()+SPACE+"!", false);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 40: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+      case 39: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET DOT */
 {
-	yygotominor.yy52 = new Predicate;
-	yygotominor.yy52->notToBeCompleted();
+	yygotominor.yy26 = new Predicate;
+	yygotominor.yy26->notToBeCompleted();
 	tree->statHasDblNeg = true;
-	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	yygotominor.yy26->setVar(yymsp[-4].minor.yy0->token);
+	yygotominor.yy26->setTokens(*yymsp[-2].minor.yy45);
 	std::string s1; 
-	cout<<yygotominor.yy52->toString(s1, false);
-	delete yymsp[-1].minor.yy36;
+	cout<<yygotominor.yy26->toString(s1, false);
+	delete yymsp[-2].minor.yy45;
 }
         break;
-      case 41: /* domain ::= string EQUAL domains */
+      case 40: /* domain ::= string EQUAL domains */
 { 
-	yygotominor.yy63 = yymsp[0].minor.yy63;
-	yymsp[0].minor.yy63->setDomainVar(yymsp[-2].minor.yy0->token);
+	yygotominor.yy51 = yymsp[0].minor.yy51;
+	yymsp[0].minor.yy51->setDomainVar(yymsp[-2].minor.yy0->token);
 }
         break;
-      case 42: /* domains ::= LPAREN variables RPAREN */
+      case 41: /* domains ::= LPAREN variables RPAREN */
 {
-	yygotominor.yy63 = new Domain();
-	yygotominor.yy63->setVars(*yymsp[-1].minor.yy36);
-	delete yymsp[-1].minor.yy36;
+	yygotominor.yy51 = new Domain();
+	yygotominor.yy51->setVars(*yymsp[-1].minor.yy45);
+	delete yymsp[-1].minor.yy45;
 }
         break;
-      case 43: /* variables ::= variable */
+      case 42: /* variables ::= variable */
 {
-	yygotominor.yy36 = new std::vector<std::string*>();
-	yygotominor.yy36->push_back(yymsp[0].minor.yy0->token);
+	yygotominor.yy45 = new std::vector<std::string*>();
+	yygotominor.yy45->push_back(yymsp[0].minor.yy0->token);
 }
         break;
-      case 44: /* variables ::= variables COMMA variable */
+      case 43: /* variables ::= variables COMMA variable */
 {
-	yygotominor.yy36 = yymsp[-2].minor.yy36;
-	yymsp[-2].minor.yy36->push_back(yymsp[0].minor.yy0->token);
+	yygotominor.yy45 = yymsp[-2].minor.yy45;
+	yymsp[-2].minor.yy45->push_back(yymsp[0].minor.yy0->token);
 }
         break;
-      case 45: /* variable ::= string */
-      case 46: /* variable ::= number */ yytestcase(yyruleno==46);
-      case 47: /* string ::= STRING */ yytestcase(yyruleno==47);
-      case 48: /* number ::= NUMBER */ yytestcase(yyruleno==48);
+      case 44: /* variable ::= string */
+      case 45: /* variable ::= number */ yytestcase(yyruleno==45);
+      case 46: /* string ::= STRING */ yytestcase(yyruleno==46);
+      case 47: /* number ::= NUMBER */ yytestcase(yyruleno==47);
 { yygotominor.yy0=yymsp[0].minor.yy0;}
         break;
-      case 49: /* number ::= lnumber DOT rnumber */
+      case 48: /* number ::= lnumber DOT rnumber */
 { 
 	// yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
         break;
-      case 50: /* number ::= MINUS lnumber DOT rnumber */
+      case 49: /* number ::= MINUS lnumber DOT rnumber */
 {
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
         break;
-      case 51: /* lnumber ::= NUMBER */
-      case 52: /* rnumber ::= NUMBER */ yytestcase(yyruleno==52);
+      case 50: /* lnumber ::= NUMBER */
+      case 51: /* rnumber ::= NUMBER */ yytestcase(yyruleno==51);
 { yygotominor.yy0=yymsp[0].minor.yy0; }
         break;
       default:

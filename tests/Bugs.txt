@@ -1,0 +1,12 @@
+num={0,1}
+load(num,num)
+step(num,num)
+temp(num,num)
+
+//Run these cases individually not together.
+//Mostly because the domains are all num.
+//Bug in this case
+load(a,b) <= step(a,b) ^ temp(a,c).
+
+//Bug in this case
+load(a,b) <= step(a,b) ^ temp(a,b).

@@ -19,6 +19,7 @@
 	#include "Head.h"
 	#include "Body.h"
 	#include "BodyDef.h"
+	
 
 	#include "exceptions/undefined_predicate.h"
 	#include "exceptions/syntax_exception.h"
@@ -27,12 +28,18 @@
 	using namespace std;
 
 	#define SPACE " "
+	#define COMMENT "//"
 
 	struct cmp{
 		bool operator()(const std::pair<std::string, std::string>& left, const std::pair<std::string, std::string>& right) const{
 			return left.first < right.first;
 		}
 	};
+
+	RuleCompletion* RuleCompletion_BH(Body*, Head*, Tree*);
+	void RuleCompletion_HD_BT(Head*, Tree*);
+	void RuleCompletion_HD_BC(Head*, Body*, bool, Tree*);
+
 }
 
 %name ASPParserGrammar
@@ -102,78 +109,132 @@
 %type variables {std::vector<std::string*>*}
 
 %include{
-#define RULE_COMPLETION_BH(B,H) \
-	std::set<std::pair<std::string,std::string>> orphanVarsMap;  \
-	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap; \
-	std::vector<Predicate> predList = B->getPredicate(); \
-	for(auto& p : predList){ \
-		int tempCount = 0; \
-		for(auto& v : p.getTokens()){ \
-			if(tree->variables.find(p.getVar()) == tree->variables.end()){ \
-				undefined_predicate ex(p.getVar()); \
-				throw ex; \
-			} \
-			else \
-				orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar())); \
-		} \
-	} \
-	int count = 0; \
-	std::map<int,std::pair<int, std::string>> varMap; \
-	int tempCount = 0; \
-	for(auto& str : H->getPredicate().getTokens()){ \
-		if(tree->isConstant(str)){ \
-			varMap[count++] = std::pair<int, std::string>(count, str); \
-		} \
-		else \
-			count++; \
-		 \
-		if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){ \
-			undefined_predicate ex(H->getPredicate().getVar()); \
-			throw ex; \
-		} \
-		else	 \
-			orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar())); \
-	} \
-	std::set<std::string> result; \
-	tree->removeConstantsPair(orphanVarsMap); \
-	tree->removeConstantsPair(orphanVarsHeadMap); \
-	std::set<std::pair<std::string,std::string>> resultMap; \
-	std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp())
 
+	RuleCompletion* RuleCompletion_BH(Body* B, Head* H, Tree* tree){
+		std::set<std::pair<std::string,std::string>> orphanVarsMap;  
+		std::set<std::pair<std::string,std::string>> orphanVarsHeadMap; 
+		std::vector<Predicate> predList = B->getPredicate(); 
+		for(auto& p : predList){ 
+			int tempCount = 0; 
+			for(auto& v : p.getTokens()){ 
+				if(tree->variables.find(p.getVar()) == tree->variables.end()){ 
+					undefined_predicate ex(p.getVar()); 
+					throw ex; 
+				} 
+				else 
+					orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar())); 
+			} 
+		} 
+		int count = 0; 
+		std::map<int,std::pair<int, std::string>> varMap; 
+		int tempCount = 0; 
+		for(auto& str : H->getPredicate().getTokens()){ 
+			if(tree->isConstant(str)){ 
+				varMap[count++] = std::pair<int, std::string>(count, str); 
+			} 
+			else 
+				count++; 
+			 
+			if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){ 
+				undefined_predicate ex(H->getPredicate().getVar()); 
+				throw ex; 
+			} 
+			else	 
+				orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar())); 
+		} 
+		std::set<std::string> result; 
+		tree->removeConstantsPair(orphanVarsMap); 
+		tree->removeConstantsPair(orphanVarsHeadMap); 
+		std::set<std::pair<std::string,std::string>> resultMap; 
+		std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
+		RuleCompletion* rule = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+		return rule;
+	}
+		
+	void RuleCompletion_HD_BT(Head* B, Tree* tree){
+		std::vector<Predicate> pred = B->getPredicateList(); 
+		for(unsigned long int i=0;i<pred.size();i++){ 
+			Head* H = new Head(pred.at(i)); 
+			std::vector<Predicate> temp; 
+			for (unsigned long int j = 0; j < pred.size(); j++){ 
+				if(j == i) continue; 
+				bool singleN = pred.at(j).isSingleNegated(); 
+				bool doubleN = pred.at(j).isDoubleNegated(); 
+				if(pred.at(j).isSingleNegated()){ 
+					pred.at(j).setSingleNegation(false); 
+					pred.at(j).setDoubleNegation(true); 
+				} 
+				else if(pred.at(j).isDoubleNegated()){ 
+					pred.at(j).setDoubleNegation(false); 
+					pred.at(j).setSingleNegation(true); 
+				} 
+				else{ 
+					pred.at(j).setSingleNegation(true);	 
+				} 
+				temp.push_back(pred.at(j)); 
+				pred.at(j).setSingleNegation(singleN); 
+				pred.at(j).setDoubleNegation(doubleN); 
+			} 
+			Body* b = new Body(temp); 
+			// RULE_COMPLETION_BH(b,H); 
+			// RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); 
+			RuleCompletion* R1 = RuleCompletion_BH(b,H,tree); 
+			tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); 
+			delete R1; 
+			delete b;
+			delete H;
+		}
+	}
 
-#define RULE_COMPLETION_BODY_TOP(B,B1) \
-	B->addPredicate(B1->getPredicate()); \
-	std::vector<Predicate> pred = B->getPredicate(); \
-	for(unsigned long int i=0;i<pred.size();i++){ \
-		std::unique_ptr<Head> H(new Head(pred.at(i))); \
-		std::vector<Predicate> temp; \
-		for (unsigned long int j = 0; j < pred.size(); j++){ \
-			if(j == i) continue; \
-			bool singleN = pred.at(j).isSingleNegated(); \
-			bool doubleN = pred.at(j).isDoubleNegated(); \
-			if(pred.at(j).isSingleNegated()){ \
-				pred.at(j).setSingleNegation(false); \
-			} \
-			else if(pred.at(j).isDoubleNegated()){ \
-				pred.at(j).setDoubleNegation(false); \
-				pred.at(j).setSingleNegation(true); \
-			} \
-			else{ \
-				pred.at(j).setSingleNegation(true);	 \
-			} \
-			temp.push_back(pred.at(j)); \
-			pred.at(j).setSingleNegation(singleN); \
-			pred.at(j).setDoubleNegation(doubleN); \
-		} \
-		std::unique_ptr<Body> b(new Body(temp)); \
-		RULE_COMPLETION_BH(b,H); \
-		RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); \
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
-		delete R1; \
-	} 
-	
-	 
+	void RuleCompletion_HD_BC(Head* H, Body* B, bool hard, Tree* tree){
+		std::vector<Predicate> pred = H->getPredicateList(); 
+		std::vector<Predicate> bp = B->getPredicate(); 
+		for(unsigned long int i=0;i<pred.size();i++){ 
+			Head* H = new Head(pred.at(i)); 
+			std::vector<Predicate> temp;
+			for (unsigned long int j = 0; j < pred.size(); j++){ 
+				if(j == i) continue; 
+				bool singleN = pred.at(j).isSingleNegated(); 
+				bool doubleN = pred.at(j).isDoubleNegated(); 
+				if(pred.at(j).isSingleNegated()){ 
+					pred.at(j).setSingleNegation(false); 
+				} 
+				else if(pred.at(j).isDoubleNegated()){ 
+					pred.at(j).setDoubleNegation(false); 
+					pred.at(j).setSingleNegation(true); 
+				} 
+				else{ 
+					pred.at(j).setSingleNegation(true);	 
+				} 
+				temp.push_back(pred.at(j)); 
+				pred.at(j).setSingleNegation(singleN); 
+				pred.at(j).setDoubleNegation(doubleN); 
+			}
+
+			for (unsigned long int j = 0; j < bp.size(); ++j){ 
+				temp.push_back(bp.at(j)); 
+			} 
+			
+			Body* b = new Body(temp); 
+			// RULE_COMPLETION_BH(b,H); 
+			// RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); 
+			RuleCompletion* R1 = RuleCompletion_BH(b,H,tree); 
+			tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); 
+			delete R1; 
+			// std::string op;
+			// op = b->toString() + "=>" + H->toString(); 
+			// if(hard) 
+			// 	op += "."; 
+			// op += "\n";
+			// cout << op; 
+
+			delete b;
+			delete H;
+		}
+	}
 }
+
+
 
 start ::= prog.
 
@@ -247,7 +308,6 @@ prog ::= .
 
 %type head {Head*}
 
-%type headdef {Head*}
 
 
 %type rule {RuleCompletion*}
@@ -255,7 +315,7 @@ prog ::= .
 //RuleU are rules with head bottom
 %type ruleU {RuleCompletion*}
 
-//ex 0.8536 !(B => Bottom)
+//ex 0.8536 <= (ruleU)
 //Test case covered
 rule(R) ::= number(N) REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET.{
 	R = R1;
@@ -266,6 +326,7 @@ rule(R) ::= number(N) REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET.{
 	cout<<N->toString()<<SPACE<<"!("<<R1->toString()<<")"<<"\n";
 }
 
+//ex 0.8536 (ruleU)
 rule(R) ::= number(N) LBRACKET ruleU(R1) RBRACKET.{
 	R = R1;
 	R->toBeCompleted = false;
@@ -275,8 +336,8 @@ rule(R) ::= number(N) LBRACKET ruleU(R1) RBRACKET.{
 	cout<<N->toString()<<SPACE<<"("<<R1->toString()<<")"<<"\n";
 }
 
-// //ex !(B => Bottom).
-// //Test case wrong
+//ex <= (ruleU).
+//Test case wrong
 rule(R) ::= REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET DOT.{
 	R = R1;
 	R1->toBeCompleted = false;
@@ -286,7 +347,7 @@ rule(R) ::= REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET DOT.{
 	cout<<"!("<<R1->toString()<<")."<<"\n";
 }
 
-//ex (B => Bottom).
+//ex (ruleU).
 //Test case covered
 rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
 	R = R1;
@@ -298,7 +359,7 @@ rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
 }
 
 
-// //B=>bottom
+//B=>bottom
 ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 	R = new RuleCompletion;
 	B->appendStr(B1->getPredicate().toString(),false,false,true);
@@ -308,11 +369,14 @@ ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 	delete B1;
 }
 
-// //Top => H
-ruleU(R) ::= body(B) DISJUNCTION bodydef(B1).{
+//ruleU's are all in brackets so no need for DOT, Number
+//Top => H
+ruleU(R) ::= head(B) DISJUNCTION bodydef(B1).{
 	R = new RuleCompletion;	
 	R->isHeadTop = true;
-	RULE_COMPLETION_BODY_TOP(B,B1)
+	B->addPredicate(B1->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(B,B1)
+	RuleCompletion_HD_BT(B,tree);
 	B->appendStr(B1->getPredicate().toString(),false,true,false);
 	R->appendStr(B->toString());
 	R->setBodyType(BodyType::DISJUNCTION);
@@ -324,37 +388,41 @@ ruleU(R) ::= body(B) DISJUNCTION bodydef(B1).{
 //Parse Hard rule
 //<= B.
 //Test case covered
-rule(R) ::= REVERSE_IMPLICATION body(B) CONJUNCTION bodydef(B1) DOT.{
+rule(R) ::= REVERSE_IMPLICATION body(B) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	B->appendStr(B1->getPredicate().toString(),false,false,true);
+	// B->appendStr(B->getPredicate().toString(),false,false,true);
 	std::cout<<"!("<<B->toString()<<")."<<"\n";	
 	delete B;
-	delete B1;
+	// delete B1;
 }
 
 //Parse Hard rule
 //H.
 //Test case covered
-rule(R) ::= body(B) DISJUNCTION bodydef(B1) DOT.{
+rule(R) ::= head(B) DISJUNCTION bodydef(B1) DOT.{
 	//Doing this 
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	RULE_COMPLETION_BODY_TOP(B,B1)
+	B->addPredicate(B1->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(B,B1)
+	RuleCompletion_HD_BT(B,tree);
 	B->appendStr(B1->getPredicate().toString(),false,true,false);
 	std::cout<<B->toString()<<"."<<"\n";
 	delete B;
 	delete B1;
 }
 
-//Parse Hard rule
-//Top => H.
+//Parse soft rule
+//0.8536 H.
 //Test case covered
-rule(R) ::= number(N) body(B) DISJUNCTION bodydef(B1).{
+rule(R) ::= number(N) head(B) DISJUNCTION bodydef(B1).{
 	//Doing this 
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	RULE_COMPLETION_BODY_TOP(B,B1)
+	B->addPredicate(B1->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(B,B1)
+	RuleCompletion_HD_BT(B,tree);
 	B->appendStr(B1->getPredicate().toString(),false,true,false);
 	std::cout<<N->toString()<<SPACE<<B->toString()<<"\n";
 	delete B;
@@ -365,10 +433,21 @@ rule(R) ::= number(N) body(B) DISJUNCTION bodydef(B1).{
 //B => H.
 //Test case covered
 rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
-	
-	RULE_COMPLETION_BH(B,H);
-	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
-	std::cout<<B->toString()<<" => "<<H->toString()<<"."<<"\n";
+	R = new RuleCompletion;
+
+	if (H->getDisjunction()){
+		// RULE_COMPLETION_HEAD_DIS_BODY_TOP(H,B)
+		R->isHeadTop = true;
+		RuleCompletion_HD_BC(H,B,true,tree);
+		std::cout<<B->toString()<<" => "<<H->toString()<<"."<<"\n";
+		// std::cout << op;
+	}
+	else{
+		// RULE_COMPLETION_BH(B,H);
+		// R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+		R = RuleCompletion_BH(B,H,tree);
+		std::cout<<B->toString()<<" => "<<H->toString()<<"."<<"\n";
+	}
 	delete B;
 	delete H;
 }
@@ -377,8 +456,9 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 //0.8536 B => H
 //Test case covered
 rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
-	RULE_COMPLETION_BH(B,H);
-	R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+	// RULE_COMPLETION_BH(B,H);
+	// R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+	R = RuleCompletion_BH(B,H,tree);
 	std::cout<< N->toString()<<SPACE<<B->toString()<<" => "<<H->toString()<<"\n";
 	delete B;
 	delete H;
@@ -405,6 +485,20 @@ rule(R) ::= number(N) NEGATION NEGATION LBRACKET head(H) REVERSE_IMPLICATION bod
 	delete H;
 }
 
+rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
+	
+	if (H->getPredicate().checkEquality() != 0){
+		throw syntax_exception("Cannot have equality/Inequlity as a part of choice rule\n");
+	}
+
+	// RULE_COMPLETION_BH(B,H);
+	// R = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
+	R = RuleCompletion_BH(B,H,tree);
+	std::cout<<COMMENT<<B->toString()<<" => "<<H->toString()<<"\n";
+	delete B;
+	delete H;
+}
+
 //Parses body of rules
 body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B = B1;
@@ -413,18 +507,36 @@ body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	delete Bd;
 }
 
-body(B) ::= body(B1) DISJUNCTION bodydef(Bd).{
-	B = B1;
-	B1->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate().toString(),false,true,false);
+// body(B) ::= body(B1) DISJUNCTION bodydef(Bd).{
+// 	B = B1;
+// 	B1->addPredicate(Bd->getPredicate());
+// 	B->appendStr(Bd->getPredicate().toString(),false,true,false);
+// 	delete Bd;
+// }
+
+head(H) ::= head(H1) DISJUNCTION bodydef(Hd).{
+	H = H1;
+	H1->addPredicate(Hd->getPredicate());
+	H->appendStr(Hd->getPredicate().toString(),false,true,false);
+	H->setDisjunction(true);
+	delete Hd;
+}
+
+head(H) ::= bodydef(Bd).{
+	H = new Head(Bd->getPredicate());
+	// H->addPredicate(Bd->getPredicate());
+	H->appendStr(Bd->getPredicate().toString(),false,false,false);
 	delete Bd;
 }
+
 body(B) ::= bodydef(Bd).{
 	B = new Body;
 	B->addPredicate(Bd->getPredicate());
 	B->appendStr(Bd->getPredicate().toString(),false,false,false);
 	delete Bd;
 }
+
+
 
 //BodyDef without negation in front
 bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{	
@@ -451,7 +563,7 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	delete Ve;
 }
 
-// //BodyDef with double negation in front
+//BodyDef with double negation in front
 bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
 	std::vector<std::string> vars;
 	for(auto& v : *Ve)
@@ -498,35 +610,32 @@ bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
 }
 
 
-//Parses head of rules
-head(H) ::= headdef(H1). { 
-	H = H1;
-}
+
 
 //Head without negation in front
-headdef(H) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
+// headdef(H) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
+// 	std::vector<std::string> vars;
+// 	for(auto& v : *Ve)
+// 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
-	H = new Head(p);
-	// H->addPredicate(p);
-	delete Ve;
-}
+// 	Predicate p(S->token, vars);
+// 	H = new HeadDef(p);
+// 	H->addPredicate(p);
+// 	delete Ve;
+// }
 
-//Head with negation in front
-headdef(H) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
+// //Head with negation in front
+// headdef(H) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
+// 	std::vector<std::string> vars;
+// 	for(auto& v : *Ve)
+// 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
-	p.setSingleNegation(true);
-	H = new Head(p);
-	H->addPredicate(p);
-	delete Ve;
-}
+// 	Predicate p(S->token, vars);
+// 	p.setSingleNegation(true);
+// 	H = new HeadDef();
+// 	H->addPredicate(p);
+// 	delete Ve;
+// }
 
 //Parses declarations ex. next(step,step)
 decl(D) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
@@ -592,7 +701,7 @@ predicate(P) ::= number(N) NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
 	delete Ve;
 }
 //!!load(T,T).
-predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
+predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET DOT. {
 	P = new Predicate;
 	P->notToBeCompleted();
 	tree->statHasDblNeg = true;
