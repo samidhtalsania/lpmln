@@ -25,7 +25,7 @@ public:
 
 	std::set<Domain> domains;
 	std::multimap<std::string, FactCompletion> facts;
-
+	std::map<std::string, std::string> completedLiterals;
 
 	std::set<std::string> domainNamesList;
 	

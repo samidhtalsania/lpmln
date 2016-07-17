@@ -362,7 +362,13 @@ void Tree::completeRules(){
 		strLhs = strLhs.substr(0,strLhs.size()-1);
 		strLhs.append(")");
 
-		std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
+		// std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
+
+		std::string completedStr = completedLiterals[strLhs];
+		if(completedStr.empty())
+			completedLiterals[strLhs] = strRhs;
+		else
+			completedLiterals[strLhs] = completedLiterals[strLhs] + " v " + strRhs;
 	}
 
 }
@@ -432,11 +438,20 @@ void Tree::completeFacts(){
 			strLhs.append(uniqueVars[count++]).append(",");
 		strLhs = strLhs.substr(0,strLhs.size()-1);
 		strLhs.append(")");
-		std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
+
+		std::string completedStr = completedLiterals[strLhs];
+		if(completedStr.empty())
+			completedLiterals[strLhs] = strRhs;
+		else
+			completedLiterals[strLhs] = completedLiterals[strLhs] + " v " + strRhs;
+		// std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
 	}
 }
 
 void Tree::completeDeclarations(){
+	for(auto itr = completedLiterals.begin(); itr != completedLiterals.end() ; ++itr)
+		std::cout << itr->first << " => " << itr->second << ".\n"; 
+
 	for(auto itr = variables.begin(); itr != variables.end(); ++itr){
 
 		if (!itr->isCompleted()){
@@ -455,4 +470,6 @@ void Tree::completeDeclarations(){
 			std::cout<<str;
 		}
 	}
+
+
 }

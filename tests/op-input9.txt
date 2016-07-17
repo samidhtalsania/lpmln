@@ -73,5 +73,4 @@ Roll(d, n) ^ PossDefProbRoll(d, n) ^ PrApplied(d,3,1,b1) ^ PrApplied(d,4,2,b2) =
 -0.2877  UnAssProbRoll(d,T,F)
 -0.5978  UnAssProbRoll(d,T,T)
 //parsing complete!
-Owner(_a,_b) => (_a=D1 ^ _b=Mike) v (_a=D2 ^ _b=John).
 Internal error.This is usually thrown when there is a disjunctive statement with an equality of the form a=b. This is only allowed in body and not in the head of any statement. Head does not have conjunctions.

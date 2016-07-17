@@ -166,18 +166,11 @@ ParserWrapper::~ParserWrapper(){
 }
 
 void ParserWrapper::print(std::string str){
-  
   if(parserType == ParserType::FOL){
-    if(tree->statHasDblNeg){
+    if(tree->statHasDblNeg && str.find("!!") != string::npos){
         tree->statHasDblNeg = false;
         str.erase(str.find("!!"),2);
-        // Remove double neg from program
-        // remove_copy(str.begin(), str.end(),
-        //    ostream_iterator<char>(std::cout), '!');
     }
-    // else{
-        cout<<str;
-    // }
+    cout<<str;
   }
-
 }

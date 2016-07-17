@@ -72,10 +72,6 @@ Do(Selected, D1) => Intervene(Selected).
 Obs(Open, D2).
 !(Obs(Open, D2) ^ !open(D2)).
 //parsing complete!
-Do(_a,_b) => (_a=Selected ^ _b=D1).
-NumDefProb(_a,_b) => (_b=2) v (_b=3).
-Obs(_a,_b) => (_a=Open ^ _b=D2).
-Intervene(_a) => (_a=Selected ^ Do(Selected,D1)).
 aux_NumDefProb_0(number,constant,door,door)
 aux_NumDefProb_0(_b,_a,d1,d2) <=> _a=Prize ^ _b=2 ^ prize(d1) ^ PosswithDefProb(Prize,d1) ^ PosswithDefProb(Prize,d2) ^ d1!=d2.
 aux_NumDefProb_1(number,constant,door,door,door)
@@ -88,7 +84,10 @@ aux_NumDefProb_4(number,constant,door,door)
 aux_NumDefProb_4(_b,_a,d1,d2) <=> _a=Open ^ _b=2 ^ open(d1) ^ PosswithDefProb(Open,d1) ^ PosswithDefProb(Open,d2) ^ d1!=d2.
 aux_NumDefProb_5(number,constant,door,door,door)
 aux_NumDefProb_5(_b,_a,d1,d2,d3) <=> _a=Open ^ _b=3 ^ open(d1) ^ PosswithDefProb(Open,d1) ^ PosswithDefProb(Open,d2) ^ PosswithDefProb(Open,d3) ^ d1!=d2 ^ d1!=d3 ^ d2!=d3.
-NumDefProb(_a,_b) => (EXIST d1,d2 (aux_NumDefProb_0(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_1(_b,_a,d1,d2,d3))) v (EXIST d1,d2 (aux_NumDefProb_2(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_3(_b,_a,d1,d2,d3))) v (EXIST d1,d2 (aux_NumDefProb_4(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_5(_b,_a,d1,d2,d3))).
+Do(_a,_b) => (_a=Selected ^ _b=D1).
+Intervene(_a) => (_a=Selected ^ Do(Selected,D1)).
+NumDefProb(_a,_b) => (_b=2) v (_b=3) v (EXIST d1,d2 (aux_NumDefProb_0(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_1(_b,_a,d1,d2,d3))) v (EXIST d1,d2 (aux_NumDefProb_2(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_3(_b,_a,d1,d2,d3))) v (EXIST d1,d2 (aux_NumDefProb_4(_b,_a,d1,d2))) v (EXIST d1,d2,d3 (aux_NumDefProb_5(_b,_a,d1,d2,d3))).
+Obs(_a,_b) => (_a=Open ^ _b=D2).
 PosswithDefProb(_a,_b) => (_a=Selected ^ !PosswithAssProb(Selected,_b) ^ !Intervene(Selected)) v (_a=Prize ^ !PosswithAssProb(Prize,_b) ^ !Intervene(Prize)) v (_a=Open ^ !PosswithAssProb(Open,_b) ^ canopen(_b,T) ^ !Intervene(Open)).
 canopen(_a,_b) => (_b=F ^ selected(_a)) v (_b=F ^ prize(_a)) v (_b=T ^ !canopen(_a,F)).
 open(_a) => (_a=D3 ^ !open(D1) ^ !open(D2) ^ !Intervene(Open)) v (_a=D2 ^ !open(D1) ^ !open(D3) ^ !Intervene(Open)) v (_a=D1 ^ !open(D3) ^ !open(D2) ^ !Intervene(Open)).

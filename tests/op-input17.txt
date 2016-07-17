@@ -66,31 +66,31 @@ in(1, r) ^ PosswithDefProb(In1, r) ^ PrAtomApplied(In1, r) => UnAssProb(In1, T).
 
 -0.6931 UnAssProb(In1, T)
 //parsing complete!
-break(_a) => (_a=T).
-goin(_a,_b) => (_a=R1 ^ _b=T).
-AssProb(_a,_b) => (_a=In1 ^ PosswithAssProb(In1,_b) ^ in(1,_b)).
 aux_NumDefProb_0(number,constant,room,room)
 aux_NumDefProb_0(_b,_a,r1,r2) <=> _a=In1 ^ _b=2 ^ in(1,r1) ^ PosswithDefProb(In1,r1) ^ PosswithDefProb(In1,r2) ^ r1!=r2.
 aux_NumDefProb_1(number,constant,room,room,room)
 aux_NumDefProb_1(_b,_a,r1,r2,r3) <=> _a=In1 ^ _b=3 ^ in(1,r1) ^ PosswithDefProb(In1,r1) ^ PosswithDefProb(In1,r2) ^ PosswithDefProb(In1,r3) ^ r1!=r2 ^ r1!=r3 ^ r2!=r3.
-NumDefProb(_a,_b) => (EXIST r1,r2 (aux_NumDefProb_0(_b,_a,r1,r2))) v (EXIST r1,r2,r3 (aux_NumDefProb_1(_b,_a,r1,r2,r3))).
-PosswithAssProb(_a,_b) => (_a=In1 ^ goin(_b,T) ^ break(T) ^ !Intervene(In1) ^ open(_b,T)).
 aux_PosswithDefProb_0(room,constant,room)
 aux_PosswithDefProb_0(_b,_a,r2) <=> _a=In1 ^ !PosswithAssProb(In1,_b) ^ open(_b,T) ^ goin(r2,T) ^ break(T) ^ !Intervene(In1).
-PosswithDefProb(_a,_b) => (EXIST r2 (aux_PosswithDefProb_0(_b,_a,r2))).
-PrAtomApplied(_a,_b) => (_a=In1 ^ goin(_b,T) ^ break(T) ^ !Intervene(In1) ^ open(_b,T)).
 aux_UnAssProb_0(boolean,constant,room)
 aux_UnAssProb_0(_b,_a,r) <=> _a=In1 ^ _b=F ^ in(1,r) ^ PosswithDefProb(In1,r) ^ !PrAtomApplied(In1,r).
 aux_UnAssProb_1(boolean,constant,room)
 aux_UnAssProb_1(_b,_a,r) <=> _a=In1 ^ _b=T ^ in(1,r) ^ PosswithDefProb(In1,r) ^ PrAtomApplied(In1,r).
-UnAssProb(_a,_b) => (EXIST r (aux_UnAssProb_0(_b,_a,r))) v (EXIST r (aux_UnAssProb_1(_b,_a,r))).
-ab(_a) => (_a=T ^ break(T)).
 aux_in_0(room,time,room)
 aux_in_0(_b,_a,r) <=> _a=1 ^ _b=R1 ^ goin(r,T) ^ break(T) ^ !Intervene(In1) ^ !in(1,R2) ^ !in(1,R3).
 aux_in_1(room,time,room)
 aux_in_1(_b,_a,r) <=> _a=1 ^ _b=R2 ^ goin(r,T) ^ break(T) ^ !Intervene(In1) ^ !in(1,R1) ^ !in(1,R3).
 aux_in_2(room,time,room)
 aux_in_2(_b,_a,r) <=> _a=1 ^ _b=R3 ^ goin(r,T) ^ break(T) ^ !Intervene(In1) ^ !in(1,R2) ^ !in(1,R1).
+AssProb(_a,_b) => (_a=In1 ^ PosswithAssProb(In1,_b) ^ in(1,_b)).
+NumDefProb(_a,_b) => (EXIST r1,r2 (aux_NumDefProb_0(_b,_a,r1,r2))) v (EXIST r1,r2,r3 (aux_NumDefProb_1(_b,_a,r1,r2,r3))).
+PosswithAssProb(_a,_b) => (_a=In1 ^ goin(_b,T) ^ break(T) ^ !Intervene(In1) ^ open(_b,T)).
+PosswithDefProb(_a,_b) => (EXIST r2 (aux_PosswithDefProb_0(_b,_a,r2))).
+PrAtomApplied(_a,_b) => (_a=In1 ^ goin(_b,T) ^ break(T) ^ !Intervene(In1) ^ open(_b,T)).
+UnAssProb(_a,_b) => (EXIST r (aux_UnAssProb_0(_b,_a,r))) v (EXIST r (aux_UnAssProb_1(_b,_a,r))).
+ab(_a) => (_a=T ^ break(T)).
+break(_a) => (_a=T).
+goin(_a,_b) => (_a=R1 ^ _b=T).
 in(_a,_b) => (_a=1 ^ goin(_b) ^ !ab(T)) v (EXIST r (aux_in_0(_b,_a,r))) v (EXIST r (aux_in_1(_b,_a,r))) v (EXIST r (aux_in_2(_b,_a,r))).
 open(_a,_b) => (_b=T ^ !open(_a,F)).
 !Intervene(_a).
