@@ -1,0 +1,33 @@
+bool = {T,F}
+constants = {C2}
+rterm = {Male,Recover,Drug}
+
+male(bool)
+recover(bool)
+drug(bool)
+
+intervene(rterm)
+PosswithDefProb(rterm,bool)
+PosswithAssProb(rterm,bool)
+NumdefProb(rterm, constants)
+
+PrAtomApplied1(bool)
+AssProb1(bool)
+UnassProb1(bool,bool)
+
+male(T) v male(F) <= not intervene(Male).
+PosswithDefProb(Male,b) <= not PosswithAssProb(Male,b) ^ not intervene(Male).
+NumdefProb(Male,C2) <= male(b) ^ PosswithDefProb(Male,b) ^ PosswithDefProb(Male,b2) ^ b!=b2.
+
+-0.6931 not not NumdefProb(Male,C2)
+
+PrAtomApplied1(T) <= not intervene(Male).
+PosswithAssProb(Male,T) <= PrAtomApplied1(T).
+AssProb1(T) <= PrAtomApplied1(T) ^ male(T).
+
+-0.6931 not not AssProb1(T)
+
+UnassProb1(b,b1) <= male(b) ^ PosswithDefProb(Male,b) ^ PrAtomApplied1(b1).
+-0.6931 not not UnassProb1(b,T)  
+
+<= male(a) ^ male(b) ^ a!=b.

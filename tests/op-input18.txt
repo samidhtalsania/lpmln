@@ -1,0 +1,28 @@
+time = {0, 1}
+room = {R1, R2, R3}
+boolean = {T, F}
+constant = {In1}
+
+
+in(time, room)
+goin(room, boolean)
+ab(boolean)
+break(boolean)
+Intervene(constant)
+
+goin(r) ^ !ab(T) => in(1, r).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R2) ^ !in(1, R3) => in(1, R1).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R1) ^ !in(1, R3) => in(1, R2).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R2) ^ !in(1, R1) => in(1, R3).
+//parsing complete!
+aux_in_0(room,time,room)
+aux_in_0(_b,_a,r) <=> _a=1 ^ _b=R1 ^ goin(r,T) ^ break(T) ^ !Intervene(In1) ^ !in(1,R2) ^ !in(1,R3).
+aux_in_1(room,time,room)
+aux_in_1(_b,_a,r) <=> _a=1 ^ _b=R2 ^ goin(r,T) ^ break(T) ^ !Intervene(In1) ^ !in(1,R1) ^ !in(1,R3).
+aux_in_2(room,time,room)
+aux_in_2(_b,_a,r) <=> _a=1 ^ _b=R3 ^ goin(r,T) ^ break(T) ^ !Intervene(In1) ^ !in(1,R2) ^ !in(1,R1).
+in(_a,_b) => (_a=1 ^ goin(_b) ^ !ab(T)) v (EXIST r (aux_in_0(_b,_a,r))) v (EXIST r (aux_in_1(_b,_a,r))) v (EXIST r (aux_in_2(_b,_a,r))).
+!Intervene(_a).
+!ab(_a).
+!break(_a).
+!goin(_a,_b).

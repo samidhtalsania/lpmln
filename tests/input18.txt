@@ -1,0 +1,16 @@
+time = {0, 1}
+room = {R1, R2, R3}
+boolean = {T, F}
+constant = {In1}
+
+
+in(time, room)
+goin(room, boolean)
+ab(boolean)
+break(boolean)
+Intervene(constant)
+
+goin(r) ^ !ab(T) => in(1, r).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R2) ^ !in(1, R3) => in(1, R1).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R1) ^ !in(1, R3) => in(1, R2).
+goin(r, T) ^ break(T) ^ !Intervene(In1) ^ !in(1, R2) ^ !in(1, R1) => in(1, R3).

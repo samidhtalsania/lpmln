@@ -1,0 +1,11 @@
+bool = {T,F}
+constants = {C2}
+rterm = {Male,Recover,Drug}
+
+intervene(rterm)
+PosswithDefProb(rterm,bool)
+PosswithAssProb(rterm,bool)
+
+PosswithDefProb(Male,b) <= not PosswithAssProb(Male,b) ^ not intervene(Male).
+PosswithDefProb(Recover,a) <= not PosswithAssProb(Recover,a) ^ not intervene(Recover).
+PosswithDefProb(Drug,a) <= not PosswithAssProb(Drug,a) ^ not intervene(Drug).

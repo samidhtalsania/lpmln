@@ -1,0 +1,15 @@
+bool={T,F}
+constants={C2}
+rterm={Male,Recover,Drug}
+
+intervene(rterm)
+PosswithDefProb(rterm,bool)
+PosswithAssProb(rterm,bool)
+
+!PosswithAssProb(Male,b) ^ !intervene(Male) => PosswithDefProb(Male,b).
+!PosswithAssProb(Recover,a) ^ !intervene(Recover) => PosswithDefProb(Recover,a).
+!PosswithAssProb(Drug,a) ^ !intervene(Drug) => PosswithDefProb(Drug,a).
+//parsing complete!
+PosswithDefProb(_a,_b) => (_a=Male ^ !PosswithAssProb(Male,_b) ^ !intervene(Male)) v (_a=Recover ^ !PosswithAssProb(Recover,_b) ^ !intervene(Recover)) v (_a=Drug ^ !PosswithAssProb(Drug,_b) ^ !intervene(Drug)).
+!PosswithAssProb(_a,_b).
+!intervene(_a).

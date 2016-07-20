@@ -1,0 +1,46 @@
+bool={T,F}
+constants={C2}
+rterm={Male,Recover,Drug}
+
+male(bool)
+recover(bool)
+drug(bool)
+
+intervene(rterm)
+PosswithDefProb(rterm,bool)
+PosswithAssProb(rterm,bool)
+NumdefProb(rterm,constants)
+
+PrAtomApplied1(bool)
+AssProb1(bool)
+UnassProb1(bool,bool)
+
+!intervene(Male) => male(T) v male(F).
+!PosswithAssProb(Male,b) ^ !intervene(Male) => PosswithDefProb(Male,b).
+male(b) ^ PosswithDefProb(Male,b) ^ PosswithDefProb(Male,b2) ^ b!=b2 => NumdefProb(Male,C2).
+
+-0.6931 NumdefProb(Male,C2)
+
+!intervene(Male) => PrAtomApplied1(T).
+PrAtomApplied1(T) => PosswithAssProb(Male,T).
+PrAtomApplied1(T) ^ male(T) => AssProb1(T).
+
+-0.6931 AssProb1(T)
+
+male(b) ^ PosswithDefProb(Male,b) ^ PrAtomApplied1(b1) => UnassProb1(b,b1).
+-0.6931 UnassProb1(b,T)
+
+!(male(a) ^ male(b) ^ a!=b).
+//parsing complete!
+aux_NumdefProb_0(constants,rterm,bool,bool)
+aux_NumdefProb_0(_b,_a,b,b2) <=> _a=Male ^ _b=C2 ^ male(b) ^ PosswithDefProb(Male,b) ^ PosswithDefProb(Male,b2) ^ b!=b2.
+AssProb1(_a) => (_a=T ^ PrAtomApplied1(T) ^ male(T)).
+NumdefProb(_a,_b) => (EXIST b,b2 (aux_NumdefProb_0(_b,_a,b,b2))).
+PosswithAssProb(_a,_b) => (_a=Male ^ _b=T ^ PrAtomApplied1(T)).
+PosswithDefProb(_a,_b) => (_a=Male ^ !PosswithAssProb(Male,_b) ^ !intervene(Male)).
+PrAtomApplied1(_a) => (_a=T ^ !intervene(Male)).
+UnassProb1(_a,_b) => (male(_a) ^ PosswithDefProb(Male,_a) ^ PrAtomApplied1(_b)).
+male(_a) => (_a=T ^ !male(F) ^ !intervene(Male)) v (_a=F ^ !male(T) ^ !intervene(Male)).
+!drug(_a).
+!intervene(_a).
+!recover(_a).
