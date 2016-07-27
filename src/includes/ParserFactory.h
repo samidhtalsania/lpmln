@@ -1,6 +1,7 @@
 #include "Parser.h"
 #include "FOLParser.h"
 #include "ASPParser.h"
+#include "MVSMParser.h"
 #include "Config.h"
 
 #pragma once

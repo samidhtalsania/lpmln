@@ -6,7 +6,7 @@
 class syntax_exception : public std::exception{
 	public:
 		syntax_exception(std::string);
-		
+		syntax_exception();
 		~syntax_exception();
 
 		const char* what() const throw(){

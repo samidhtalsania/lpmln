@@ -20,21 +20,18 @@ public:
 	
 	std::vector<std::string> getTokens() const {return tokens;}
 
-	void setTokens(std::vector<std::string*> domainVariables)
-	{
+	void setTokens(std::vector<std::string*> domainVariables){
 		for(auto& v: domainVariables)
 			tokens.push_back(*v);
 	}	
 
-	void setVar(std::string* domainVariable)
-	{
+	void setVar(std::string* domainVariable){
 		var = *domainVariable;
 	}
 
 	std::vector<std::string> getTokens(){ return tokens;}
 
-	int checkEquality() 
-	{ 
+	int checkEquality(){ 
 		if(isEquality)
 			return 1;
 		else if(isInEquality)

@@ -9,46 +9,38 @@ public:
 	Domain();
 	~Domain();
 	
-	void setVars(std::vector<std::string> domainVariables)
-	{
+	void setVars(std::vector<std::string> domainVariables){
 		vars = domainVariables;
 	}
 
-	void setVars(std::vector<std::string*> domainVariables)
-	{
+	void setVars(std::vector<std::string*> domainVariables){
 		for(auto& v: domainVariables)
 			vars.push_back(*v);
 
 		// vars = domainVariables;
 	}
 
-	void addVars(std::string str)
-	{
+	void addVars(std::string str){
 		vars.push_back(str);
 	}
 	
-	std::vector<std::string> getVars()
-	{
+	std::vector<std::string> getVars(){
 		return vars;
 	}
 	
-	void setDomainVar(std::string* domainVariable)
-	{
+	void setDomainVar(std::string* domainVariable){
 		domainVar = *domainVariable;
 	}
 	
-	std::string getDomainVar() const
-	{
+	std::string getDomainVar() const{
 		return domainVar;
 	}
 	
-	bool operator< (const Domain& right) const
-	{
+	bool operator< (const Domain& right) const{
 		return domainVar < right.getDomainVar();
 	}
 	
-	bool operator== (const Domain& right) const
-	{
+	bool operator== (const Domain& right) const{
 		return domainVar == right.getDomainVar();
 	}
 

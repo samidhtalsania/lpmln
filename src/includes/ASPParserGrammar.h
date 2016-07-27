@@ -15,4 +15,3 @@ void ASPParserGrammarTrace(FILE *TraceFILE,char *zTracePrompt);
 #define ASPParserGrammarARG_STORE yypParser->tree = tree
 #define ASPParserGrammarARG_FETCH Tree* tree = yypParser->tree
 #define ASPParserGrammarARG_SDECL Tree* tree;
-

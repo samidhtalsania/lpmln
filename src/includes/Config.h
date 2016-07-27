@@ -22,6 +22,7 @@ enum Error{
 enum ParserType{
 	FOL,
 	ASP,
+	MVSM,
 	PARSER_NONE
 };
 

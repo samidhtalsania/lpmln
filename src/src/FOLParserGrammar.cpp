@@ -123,7 +123,7 @@
 		std::unique_ptr<Body> b(new Body(temp)); \
 		RULE_COMPLETION_BH(b,H); \
 		RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); \
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->getHead().getVar(),*R1)); \
 		delete R1; \
 	} 
 
@@ -134,23 +134,23 @@
 ** "lemon" is run with the "-m" command-line option.
 ***************** Begin makeheaders token definitions *************************/
 #if INTERFACE
-#define PARSE_TOKEN_EQUAL                           1
-#define PARSE_TOKEN_COMMA                           2
-#define PARSE_TOKEN_LPAREN                          3
-#define PARSE_TOKEN_RPAREN                          4
-#define PARSE_TOKEN_NEWLINE                         5
-#define PARSE_TOKEN_CONJUNCTION                     6
-#define PARSE_TOKEN_DISJUNCTION                     7
-#define PARSE_TOKEN_LBRACKET                        8
-#define PARSE_TOKEN_RBRACKET                        9
-#define PARSE_TOKEN_IMPLICATION                    10
-#define PARSE_TOKEN_REVERSE_IMPLICATION            11
-#define PARSE_TOKEN_NEGATION                       12
-#define PARSE_TOKEN_WS                             13
-#define PARSE_TOKEN_DOT                            14
-#define PARSE_TOKEN_STRING                         15
-#define PARSE_TOKEN_NUMBER                         16
-#define PARSE_TOKEN_MINUS                          17
+#define FOL_PARSE_TOKEN_EQUAL                           1
+#define FOL_PARSE_TOKEN_COMMA                           2
+#define FOL_PARSE_TOKEN_LPAREN                          3
+#define FOL_PARSE_TOKEN_RPAREN                          4
+#define FOL_PARSE_TOKEN_NEWLINE                         5
+#define FOL_PARSE_TOKEN_CONJUNCTION                     6
+#define FOL_PARSE_TOKEN_DISJUNCTION                     7
+#define FOL_PARSE_TOKEN_LBRACKET                        8
+#define FOL_PARSE_TOKEN_RBRACKET                        9
+#define FOL_PARSE_TOKEN_IMPLICATION                    10
+#define FOL_PARSE_TOKEN_REVERSE_IMPLICATION            11
+#define FOL_PARSE_TOKEN_NEGATION                       12
+#define FOL_PARSE_TOKEN_WS                             13
+#define FOL_PARSE_TOKEN_DOT                            14
+#define FOL_PARSE_TOKEN_STRING                         15
+#define FOL_PARSE_TOKEN_NUMBER                         16
+#define FOL_PARSE_TOKEN_MINUS                          17
 #endif
 /**************** End makeheaders token definitions ***************************/
 
@@ -1023,7 +1023,7 @@ static void yy_reduce(
 { 
 	if(yymsp[0].minor.yy52->needsToBeCompleted()){	
 		FactCompletion f(*yymsp[0].minor.yy52);
-		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 
 	}	
 	delete yymsp[0].minor.yy52;
 }
@@ -1032,7 +1032,7 @@ static void yy_reduce(
 { 
 	if(yymsp[0].minor.yy52->needsToBeCompleted()){
 		FactCompletion f(*yymsp[0].minor.yy52);
-		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 	
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 	
 	}
 	delete yymsp[0].minor.yy52;
 }
@@ -1047,14 +1047,14 @@ static void yy_reduce(
       case 7: /* prog ::= prog NEWLINE rule */
 {
 	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->head.getVar(),*yymsp[0].minor.yy9));
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->getHead().getVar(),*yymsp[0].minor.yy9));
 	delete yymsp[0].minor.yy9;
 }
         break;
       case 8: /* prog ::= rule */
 {
 	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->head.getVar(),*yymsp[0].minor.yy9));
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->getHead().getVar(),*yymsp[0].minor.yy9));
 
 	delete yymsp[0].minor.yy9;
 }
@@ -1290,7 +1290,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-1].minor.yy36){
 		itr = tree->domains.find(*v);
 		if (itr == tree->domains.end()){
-			std::cout<<"Error:Domain:"+ *v +" not found.\n";
+			// std::cout<<"Error:Domain:"+ *v +" not found.\n";
+			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
 			//Exit
 		}
 		else{

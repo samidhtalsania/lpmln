@@ -12,13 +12,21 @@ public:
 
 	std::string getVar() const { return var;}
 	
-	void setVar(std::string* str) { var = *str;}; 
+	void setVar(std::string* str) { var = *str;}
+
+	void setVar(std::string str) { var = str;}
 	
 	void insertPos(const int i, const Domain d) { pos[i] = d ;}
 	
 	std::map<int,Domain> getPosMap() const { return pos;}
 	
-	void setPosMap(std::map<int,Domain> _pos) { pos = _pos;}
+	void setPosMap(std::map<int,Domain> _pos) { 
+		pos = _pos;
+	}
+
+	int getSize() const {
+		return pos.size();
+	}
 	
 	bool operator< (const Variable& right) const
 	{

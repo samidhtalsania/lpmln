@@ -4,6 +4,7 @@
 #include "Tree.h"
 #include "Token.h"
 #include "Parser.h"
+#include "Lexer.h"
 
 #pragma once
 
@@ -26,6 +27,7 @@ private:
 	std::string inputFile;
 	FILE* pFile;
 	Parser* parser;
+	Lexer* lexer;
 	Tree* tree;
 	std::vector<Token*> v;
 	

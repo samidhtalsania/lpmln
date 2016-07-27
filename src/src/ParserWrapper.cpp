@@ -1,5 +1,6 @@
 #include "ParserWrapper.h"
-#include "lexer.h"
+// #include "lexer.h"
+#include "LexerFactory.h"
 #include "Domain.h"
 #include "ParserFactory.h"
 #include "exceptions/undefined_predicate.h"
@@ -34,6 +35,7 @@ ParserWrapper::ParserWrapper(Config c){
 
 	// parser = ParseAlloc(malloc);
   parser = ParserFactory::getParser(c.getParser()); 
+  lexer = LexerFactory::getLexer(c.getParser());
   parser->ParseAlloc();
 }
 
@@ -104,8 +106,9 @@ int ParserWrapper::parse(){
           lexeme.current = buffer;
           lexeme.begin = buffer;
           // lexeme.col = 0;
-          while( (hTokenId = lexer::tokenize(buffer, len, &lexeme)) != 0 ){
-            if(hTokenId != PARSE_TOKEN_WS){
+          while( (hTokenId = lexer->Tokenize(buffer, len, &lexeme)) != 0 ){
+            /* -1 is whitespace. Skip over whitespaces*/
+            if(hTokenId != -1){
               unsigned long int pos = static_cast<unsigned long int>(lexeme.current - lexeme.start);
               string substr(lexeme.start, pos);
               Token* tok = new Token(substr);
@@ -113,8 +116,6 @@ int ParserWrapper::parse(){
               parser->Parse(hTokenId, tok, tree);
             }
           }
-
-
           print(str);  
         }
         
@@ -131,7 +132,7 @@ int ParserWrapper::parse(){
       
     }
     catch(const syntax_exception& e){
-      cout<<str;
+      cout<<str;/*Prints the erroneous line*/
       std::cout << e.what();
       std::cout<<"Line:"<<lineCount<<" Column:"<<lexeme.current - lexeme.begin<<"\n";
       throw e;

@@ -7,5 +7,7 @@ typedef struct lexeme_struct {
 class lexer
 {
 public:
-	static int tokenize(const char * yycursor, int len , lexeme_t* lexeme);
+	static int FOL_tokenize(const char * yycursor, int len , lexeme_t* lexeme);
+	static int ASP_tokenize(const char * yycursor, int len , lexeme_t* lexeme);
+	static int MVSM_tokenize(const char * yycursor, int len , lexeme_t* lexeme);
 };

@@ -59,6 +59,14 @@ Config::Config(int argc, char** argv){
 									continue;	
 								}
 
+		"-p"					{
+									if(parserType == ParserType::PARSER_NONE)
+										parserType = ParserType::MVSM;
+									else
+										Config::showError(Error::INVALID_A,i);
+									continue;
+								}
+
 		"-d"					{
 									debug = true;
 									continue;
@@ -75,7 +83,7 @@ Config::Config(int argc, char** argv){
 									return;
 								}
 
-		[a-zA-Z_0-9/-.]+			{
+		[a-zA-Z_0-9/-.]+		{
 									if(i == 0){
 										path = argv[i];
 										continue;

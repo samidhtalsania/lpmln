@@ -14,12 +14,21 @@
 #include "RuleCompletion.h"
 
 #include "exceptions/undefined_key.h"
+#include "exceptions/invalid_arguments.h"
 
 class Tree
 {
 public:
 	Tree();
 	~Tree();
+
+	/* Required for MVSM parsing*/
+	enum Current_Decl_Part{
+		DECL_NONE,
+		DECL_SORTS,
+		DECL_OBJECTS,
+		DECL_CONSTANTS
+	};
 
 	bool statHasDblNeg = false;
 
@@ -35,6 +44,11 @@ public:
 	std::multimap<std::string, RuleCompletion> rules;
 
 	std::string uniqueVars[14] = {"_a","_b","_c","_d","_e","_f","_g","_h","_i","_j","_k","_l","_m","_n"};
+
+
+	/* Required for MVSM Parsing */
+	// std::set<std::string> sorts;
+	Current_Decl_Part cdp = Current_Decl_Part::DECL_NONE;
 
 	void completeFacts();
 

@@ -38,9 +38,7 @@ void Tree::completeRules(){
 		}
 
 		ret = rules.equal_range(key.first);
-
-
-			
+		
 		//Based on key, from varaibles set find out its domains.
 		//Assign a variable to each of the domain of the key.
 		//Use this variable in constructing strLhs and strRhs 
@@ -48,25 +46,46 @@ void Tree::completeRules(){
 
 		if(itrV != variables.end()) itrV->setCompleted();
 
-		std::map<std::string, int> varMapVarCount;
-		std::unordered_multimap<int, std::pair<std::string, std::string> > varMap;
-		std::set<std::pair<std::string,std::string>> orphanVarsSet;
-		
-		int count = 0;
+		std::map<std::string, int> varMapVarCount; /* Maps how many times a particular argument is occuring*/
+		std::map<std::string, std::string> varMapAssociate; 
+		std::unordered_multimap<int, std::pair<std::string, std::string> > varMap; /* Maps every position of argument in a predicate to the argument type and the variable to be used in its place */
+		std::vector<std::string> vtemp = key.second.getHead().getTokens();
+
+		long unsigned int count = 0;
+		if(itrV->getPosMap().size() != vtemp.size()){
+			throw invalid_arguments(itrV->getPosMap().size(), vtemp.size(), key.first);
+		}
 		for(auto &var : itrV->getPosMap()){
-			std::pair<int, std::pair<std::string, std::string>> pa(var.first, std::pair<std::string, std::string>(var.second.getDomainVar(), uniqueVars[count++]));
+			varMapAssociate[vtemp.at(count)] = uniqueVars[count];
+			std::pair<int, std::pair<std::string, std::string>> pa(var.first, std::pair<std::string, std::string>(var.second.getDomainVar(), uniqueVars[count]));
 			varMap.insert(pa);
 			varMapVarCount[pa.second.first] = varMapVarCount[pa.second.first] + 1;
+			count++;
 		}
 		
 		RuleCompletion r;
+
+		strLhs.append(key.first).append("(");
+		
+		std::vector<std::string> v(varMap.size());
+		long unsigned int ii;
+		for(auto &vm : varMap){
+			ii = static_cast<long unsigned int>(vm.first);
+			v[ii] = vm.second.second;
+		}
+			
+		for(auto &vm : v)
+			strLhs.append(vm).append(",");
+		
+		strLhs = strLhs.substr(0,strLhs.size()-1);
+		strLhs.append(")");
 		
 		
 		int auxCount = 0;
 		for (std::multimap<std::string,RuleCompletion>::iterator it=ret.first; it!=ret.second; ++it)
 		{
 			r = it->second;
-			
+			std::set<std::pair<std::string,std::string>> orphanVarsSet;
 			strRhs.append("(");
 			
 			//append exist and associated variables to string.
@@ -98,7 +117,8 @@ void Tree::completeRules(){
 				}
 			}
 			
-			for(auto &pred : r.body)
+			int bodyVecCount = 0;
+			for(auto &pred : r.getBody())
 			{
 				/*		
 					if(isEquality)
@@ -111,20 +131,23 @@ void Tree::completeRules(){
 				int e = pred.checkEquality();
 				if(e != 0)
 				{
+					/*Check if LHS is in the orphanVarsSet */
 					auto itr = std::find_if(orphanVarsSet.begin(), orphanVarsSet.end(), [&](const std::pair<std::string, std::string>& val) -> bool{
 						return val.first == pred.getLvar();
 					});
 
-					if(itr != orphanVarsSet.end())
-					{
+					//If it is then simply add it
+					if(itr != orphanVarsSet.end()){
 						strRhs.append(pred.getLvar());
 					}
+
+					//Otherwise find out which internal variable is the LHS replaced with
 					else
 					{
-						Predicate* predicateWeWant;
+						Predicate predicateWeWant;
 						//search all predicates innerVariables to find out its domain
 						int pos = 0; 
-						for(auto &innerPred: r.body){
+						for(auto innerPred: r.getBody()){
 							int found = 0;
 
 							if(innerPred.checkEquality()==0){
@@ -132,7 +155,7 @@ void Tree::completeRules(){
 								pos = 0;
 								for(auto &tokenStr:tok){
 									if(tokenStr == pred.getLvar()){
-										predicateWeWant = &innerPred;
+										predicateWeWant = innerPred;
 										found = 1;
 										break;
 									}
@@ -142,21 +165,26 @@ void Tree::completeRules(){
 							if(found == 1) break;
 						}
 
-						if(predicateWeWant == NULL){
-							std::cout<<"Error: Cannot find predicate containing "<<pred.getLvar();
-						}
-						else{
-							std::set<Variable>::iterator itrInner = variables.find(Variable(predicateWeWant->getVar()));
+
+						int x = 10;
+						x++;
+
+						if(!predicateWeWant.getVar().empty()){
+							
+							std::set<Variable>::iterator itrInner = variables.find(predicateWeWant.getVar());
 							//Finds variable with var=next
-							Domain d = (*itrInner).getPosMap().at(pos);
+							Domain d = itrInner->getPosMap().at(pos);
 							std::string varType(d.getDomainVar());
 
-							auto pa = variables.find(predicateWeWant->getVar())->getPosMap()[pos].getDomainVar();
+							auto pa = variables.find(predicateWeWant.getVar())->getPosMap()[pos].getDomainVar();
 							for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
 								if(it3->second.first.compare(pa) == 0)
 									strRhs.append(it3->second.second);	
 
 							}
+						}
+						else{
+							std::cout<<"Error: Cannot find predicate containing "<<pred.getLvar();
 						}
 
 					}
@@ -178,7 +206,7 @@ void Tree::completeRules(){
 						Predicate* predicateWeWant;
 						//search all predicates innerVariables to find out its domain
 						int pos = 0; 
-						for(auto &innerPred: r.body){
+						for(auto &innerPred: r.getBody()){
 							int found = 0;
 
 							if(innerPred.checkEquality()==0){
@@ -245,6 +273,17 @@ void Tree::completeRules(){
 					}
 					else
 					{
+						if(domainList.find(vars) != domainList.end()){
+							strRhs.append(vars).append(",");
+							pos++;
+							continue;	
+						}
+
+						if(!varMapAssociate[vars].empty()){
+							strRhs.append(varMapAssociate[vars]).append(",");	
+							pos++;
+							continue;
+						}
 						std::set<Variable>::iterator itrInner = variables.find(Variable(pred.getVar()));
 						//Finds domain of the predicate at position pos
 						Domain d = (*itrInner).getPosMap().at(pos);
@@ -255,15 +294,19 @@ void Tree::completeRules(){
 							strRhs.append(vars).append(",");	
 						}
 						else{
-							//find out the domain at position pos of the predicate pred
+							//find out the domain at position pos of the predicateq pred
 							auto pa = variables.find(pred.getVar())->getPosMap()[pos].getDomainVar();
 							for(auto it3=varMap.begin(); it3!=varMap.end();++it3){
 								if(it3->second.first.compare(pa) == 0){
+
+
 									if(varMapVarCount[pa] > 1){
 										varMapVarCount[pa] = varMapVarCount[pa] - 1;
 										continue;
 									}
 									varMapVarCount[pa] = varMapVarCount[pa] - 1;
+
+
 									strRhs.append(it3->second.second).append(",");	
 									break;
 									
@@ -278,6 +321,8 @@ void Tree::completeRules(){
 				strRhs = strRhs.substr(0,strRhs.size()-1);
 				strRhs.append(")");
 				strRhs.append(" ^ ");
+				
+				bodyVecCount++;
 			}
 			
 
@@ -345,23 +390,6 @@ void Tree::completeRules(){
 		}
 		
 		strRhs = strRhs.substr(0,strRhs.size()-3);
-		
-		
-		strLhs.append(key.first).append("(");
-		
-		std::vector<std::string> v(varMap.size());
-		long unsigned int ii;
-		for(auto &vm : varMap){
-			ii = static_cast<long unsigned int>(vm.first);
-			v[ii] = vm.second.second;
-		}
-			
-		for(auto &vm : v)
-			strLhs.append(vm).append(",");
-		
-		strLhs = strLhs.substr(0,strLhs.size()-1);
-		strLhs.append(")");
-
 		// std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
 
 		std::string completedStr = completedLiterals[strLhs];
@@ -399,7 +427,7 @@ void Tree::completeFacts(){
 		for (std::multimap<std::string,FactCompletion>::iterator it=ret.first; it!=ret.second; ++it){
 			//it.second are FactCompletions
 			f = it->second;
-			std::vector<std::string> v = f.head.getTokens();
+			std::vector<std::string> v = f.getHead().getTokens();
 			count = 0;
 			strRhs.append("(");
 			for(auto &str : v){
@@ -434,7 +462,7 @@ void Tree::completeFacts(){
 
 		strLhs.append("(");
 		count=0;
-		for(unsigned int i=0;i<f.head.getTokens().size();i++)
+		for(unsigned int i=0;i<f.getHead().getTokens().size();i++)
 			strLhs.append(uniqueVars[count++]).append(",");
 		strLhs = strLhs.substr(0,strLhs.size()-1);
 		strLhs.append(")");
@@ -470,6 +498,4 @@ void Tree::completeDeclarations(){
 			std::cout<<str;
 		}
 	}
-
-
 }

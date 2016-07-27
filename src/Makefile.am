@@ -12,7 +12,6 @@ ___lpmln_SOURCES = \
 			src/Predicate.cpp \
 			src/Token.cpp \
 			src/Tree.cpp \
-			src/lexer.cpp \
 			src/Variable.cpp \
 			src/RuleCompletion.cpp \
 			src/Body.cpp \
@@ -21,8 +20,14 @@ ___lpmln_SOURCES = \
 			src/exceptions/undefined_predicate.cpp \
 			src/exceptions/syntax_exception.cpp \
 			src/exceptions/undefined_key.cpp \
+			src/exceptions/invalid_arguments.cpp \
 			src/Config.cpp \
 			src/ParserWrapper.cpp \
 			src/ParserFactory.cpp \
 			src/FOLParserGrammar.cpp \
-			src/ASPParserGrammar.cpp
+			src/ASPParserGrammar.cpp \
+			src/MVSMParserGrammar.cpp \
+			src/FOLLexer.cpp \
+			src/ASPLexer.cpp \
+			src/MVSMLexer.cpp \
+			src/LexerFactory.cpp

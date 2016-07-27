@@ -35,7 +35,7 @@
 
 %name FOLParserGrammar
 %start_symbol start
-%token_prefix PARSE_TOKEN_
+%token_prefix FOL_PARSE_TOKEN_
 
 %extra_argument {Tree* tree}
 
@@ -166,7 +166,7 @@
 		std::unique_ptr<Body> b(new Body(temp)); \
 		RULE_COMPLETION_BH(b,H); \
 		RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); \
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->head.getVar(),*R1)); \
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->getHead().getVar(),*R1)); \
 		delete R1; \
 	} 
 
@@ -194,7 +194,7 @@ prog ::= domain(D). {
 prog ::= prog NEWLINE predicate(P). { 
 	if(P->needsToBeCompleted()){	
 		FactCompletion f(*P);
-		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 
 	}	
 	delete P;
 }
@@ -202,7 +202,7 @@ prog ::= prog NEWLINE predicate(P). {
 prog ::= predicate(P). { 
 	if(P->needsToBeCompleted()){
 		FactCompletion f(*P);
-		tree->facts.insert(std::pair<std::string,FactCompletion>(f.head.getVar(),f)); 	
+		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 	
 	}
 	delete P;
 }
@@ -218,12 +218,12 @@ prog ::= decl(D). {
 
 prog ::= prog NEWLINE rule(R). {
 	if((R->isHeadTop == false) && (R->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->head.getVar(),*R));
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->getHead().getVar(),*R));
 	delete R;
 }
 prog ::= rule(R).{
 	if((R->isHeadTop == false) && (R->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->head.getVar(),*R));
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->getHead().getVar(),*R));
 
 	delete R;
 }
@@ -523,7 +523,8 @@ decl(D) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve){
 		itr = tree->domains.find(*v);
 		if (itr == tree->domains.end()){
-			std::cout<<"Error:Domain:"+ *v +" not found.\n";
+			// std::cout<<"Error:Domain:"+ *v +" not found.\n";
+			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
 			//Exit
 		}
 		else{
