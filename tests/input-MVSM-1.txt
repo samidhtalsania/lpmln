@@ -1,0 +1,15 @@
+:-sorts
+bool;
+temp;
+step.
+
+:-objects
+T,F::bool;
+1,2,3,4,5::step;
+T1,T2,T3::temp.
+
+:-constants
+HiddenIn::temp;
+FoundIn(step,temp)::bool.
+
+HiddenIn=T1=T2.

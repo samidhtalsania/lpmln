@@ -1,0 +1,140 @@
+:-sorts
+bool;
+constants;
+rterm.
+
+:-objects
+T,F::bool;
+C2::constants;
+Male,Recover,Drug::rterm.
+
+:-constants
+male::bool;
+recover::bool;
+drug::bool;
+intervene::rterm;
+PosswithDefProb(rterm)::bool;
+PosswithAssProb(rterm)::bool;
+NumdefProb(rterm)::constants;
+PrAtomApplied1::bool;
+AssProb1::bool;
+UnassProb1(bool)::bool;
+PrAtomApplied21::bool;
+PrAtomApplied22::bool;
+PrAtomApplied23::bool;
+PrAtomApplied24::bool;
+AssProb21::bool;
+AssProb22::bool;
+AssProb23::bool;
+AssProb24::bool;
+UnassProb2(bool,bool,bool,bool)::bool;
+PrAtomApplied31::bool;
+PrAtomApplied32::bool;
+AssProb31::bool;
+AssProb32::bool;
+UnassProb3(bool,bool)::bool.
+
+// [1] random(Male).
+// pr(Male) = 0 · 5.
+male=T v male=F <= not intervene=Male.
+PosswithDefProb(Male)=b <= not PosswithAssProb(Male)=b ^ not intervene=Male.
+NumdefProb(Male)=C2 <= male=b ^ PosswithDefProb(Male)=b ^ PosswithDefProb(Male)=b2 ^ b!=b2.
+
+-0.6931 not not NumdefProb(Male)=C2
+
+PrAtomApplied1=T <= not intervene=Male.
+PosswithAssProb(Male)=T <= PrAtomApplied1=T.
+AssProb1=T <= PrAtomApplied1=T ^ male=T.
+
+-0.6931 not not AssProb1=T
+
+UnassProb1(b)=b1 <= male=b ^ PosswithDefProb(Male)=b ^ PrAtomApplied1=b1.
+-0.6931 not not UnassProb1(b)=T  
+
+<= male=a ^ male=b ^ a!=b.
+
+// [2] random(Recover).
+// pr(Recover | Male, Drug) = 0 · 6.
+// pr(Recover | Male, ¬Drug) = 0 · 7.
+// pr(Recover | ¬Male, Drug) = 0 · 2.
+// pr(Recover | ¬Male, ¬Drug) = 0 · 3.
+<= recover=a ^ recover=b ^ a!=b.
+recover=T v recover=F <= not intervene=Recover.
+PosswithDefProb(Recover)=a <= not PosswithAssProb(Recover)=a ^ not intervene=Recover.
+NumdefProb(Recover)=C2 <= recover=b1 ^ PosswithDefProb(Recover)=b1 ^ PosswithDefProb(Recover)=b2 ^ b1!=b2.
+
+-0.6931 not not NumdefProb(Recover)=C2
+
+
+// //4 pr atoms
+PrAtomApplied21=T <= male=T ^ drug=T ^ not intervene=Recover.
+PrAtomApplied22=T <= male=T ^ drug=F ^ not intervene=Recover.
+PrAtomApplied23=T <= male=F ^ drug=T ^ not intervene=Recover.
+PrAtomApplied24=T <= male=F ^ drug=F ^ not intervene=Recover.
+
+PosswithAssProb(Recover)=T <= PrAtomApplied21=T.
+PosswithAssProb(Recover)=T <= PrAtomApplied22=T.
+PosswithAssProb(Recover)=T <= PrAtomApplied23=T.
+PosswithAssProb(Recover)=T <= PrAtomApplied24=T.
+
+AssProb21=T <= PrAtomApplied21=T ^ recover=T.
+AssProb22=T <= PrAtomApplied22=T ^ recover=T.
+AssProb23=T <= PrAtomApplied23=T ^ recover=T.
+AssProb24=T <= PrAtomApplied24=T ^ recover=T.
+
+-0.5108 not not AssProb21=T
+-0.3567 not not AssProb22=T
+-1.6094 not not AssProb23=T
+-1.2039 not not AssProb24=T
+
+UnassProb2(b,b1,b2,b3)=b4 <=  recover=b ^ PosswithDefProb(Recover)=b ^ PrAtomApplied21=b1 ^ PrAtomApplied22=b2 ^ PrAtomApplied23=b3^ PrAtomApplied24=b4. 
+
+// // not not UnassProb2(b,F,F,F,F)
+-0.3566 not not UnassProb2(b,F,F,F)=T
+-0.2231 not not UnassProb2(b,F,F,T)=F
+-0.6931 not not UnassProb2(b,F,F,T)=T
+
+-1.204 not not UnassProb2(b,F,T,F)=F
+<= UnassProb2(b,F,T,F)=T.
+-2.3025 not not UnassProb2(b,F,T,T)=F
+<= UnassProb2(b,F,T,T)=T.
+
+-0.9162 not not UnassProb2(b,T,F,F)=F
+-2.3025 not not UnassProb2(b,T,F,F)=T
+-1.6094 not not UnassProb2(b,T,F,T)=F
+<= UnassProb2(b,T,F,T)=T.
+
+<= UnassProb2(b,T,T,F)=F.
+<= UnassProb2(b,T,T,F)=T.
+<= UnassProb2(b,T,T,T)=F.
+<= UnassProb2(b,T,T,T)=T.
+
+// // [3] random(Drug).
+// // pr(Drug | Male) = 0 · 75.
+// // pr(Drug | ¬Male) = ·25.
+<= drug=a ^ drug=b ^ a!=b.
+drug=T v drug=F <= not intervene=Drug.
+PosswithDefProb(Drug)=a <= not PosswithAssProb(Drug)=a ^ not intervene=Drug.
+NumdefProb(Drug)=C2 <= drug=b1 ^ PosswithDefProb(Drug)=b1 ^ PosswithDefProb(Drug)=b2 ^ b1!=b2. 
+
+-0.6931 not not NumdefProb(Drug)=C2
+
+// //2 pr atoms
+PrAtomApplied31=T <= male=T ^ not intervene=Drug.
+PrAtomApplied32=T <= male=F ^ not intervene=Drug.
+
+PosswithAssProb(Drug)=T <= PrAtomApplied31=T.
+PosswithAssProb(Drug)=T <= PrAtomApplied32=T.
+
+AssProb31=T <= PrAtomApplied31=T ^ drug=T.
+AssProb32=T <= PrAtomApplied32=T ^ drug=T.
+
+-0.2876 not not AssProb31=T
+-1.3863 not not AssProb32=T
+
+UnassProb3(b,b1)=b2 <= drug=b ^ PosswithDefProb(Drug)=b ^ PrAtomApplied31=b1 ^ PrAtomApplied32=b2.
+
+// //weights for UnassProb3. How to? 
+-0.2877 not not UnassProb3(b,F)=T
+-1.3863 not not UnassProb3(b,T)=F
+0 not not UnassProb3(b,T)=T

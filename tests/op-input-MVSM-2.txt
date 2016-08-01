@@ -1,0 +1,10 @@
+
+bool={T,F}
+step={1,2,3,4,5}
+temp={T1,T2,T3}
+
+HiddenIn(temp)
+FoundIn(step,temp,bool)
+//parsing complete!
+!FoundIn(_a,_b,_c).
+!HiddenIn(_a).
