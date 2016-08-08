@@ -27,6 +27,14 @@ public:
 	int getSize() const {
 		return pos.size();
 	}
+
+	void setRhsDomain(const Domain& domain){
+		rhsVar = domain;
+	}
+
+	Domain getRhsDomain() const{
+		return rhsVar;
+	}
 	
 	bool operator< (const Variable& right) const
 	{
@@ -40,6 +48,10 @@ public:
 	std::string toString() const{
 		std::string str;
 		str += var;
+		
+		/*If singleton variable just return appended str*/
+		if(pos.size() == 0) return str;
+
 		str += "(";
 		for(auto it = pos.begin();it!=pos.end();++it){
 			str += it->second.toString(true);
@@ -49,9 +61,14 @@ public:
 		str += ")\n";
 		return str;
 	}
+
+	int getArgumentSize(){
+		return pos.size();
+	}
 	
 private:
 	std::string var;
 	std::map<int,Domain> pos;
 	mutable bool completed = false;
+	Domain rhsVar; /*Required for MVSM Parsers*/
 };

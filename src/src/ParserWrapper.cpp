@@ -37,6 +37,9 @@ ParserWrapper::ParserWrapper(Config c){
   parser = ParserFactory::getParser(c.getParser()); 
   lexer = LexerFactory::getLexer(c.getParser());
   parser->ParseAlloc();
+  if(c.getParser() == ParserType::FOL){
+    isFOLlexer = true;
+  }
 }
 
 int ParserWrapper::parse(){
@@ -93,11 +96,11 @@ int ParserWrapper::parse(){
           //temporary hack to allow passing of hard facts which need not be completed.
           //!!p(0,1).
           //TODO add this to grammar. Let the grammar handle this.
-          // else if(str.substr(0,2).compare("!!") == 0){
-          //   int s = str.size();
-          //   cout<<str.substr(2 ,s-2)<<"\n";
-          //   continue;
-          // }
+          else if(str.substr(0,2).compare("!!") == 0 && isFOLlexer){
+            int s = str.size();
+            cout<<str.substr(2 ,s-2)<<"\n";
+            continue;
+          }
           str += "\n";
           char* buffer;
           buffer = const_cast<char*>(str.c_str());
@@ -160,6 +163,8 @@ void ParserWrapper::parseComplete(){
 ParserWrapper::~ParserWrapper(){
 	delete tree;
 	parser->ParseFree();
+  LexerFactory::free();
+  ParserFactory::free();
   for(auto& ve : v)
     delete ve;
 	if(pFile != NULL && debug)

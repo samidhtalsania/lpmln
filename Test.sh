@@ -20,7 +20,9 @@ for f in $files
 do
 	ff=${f#*/}
 	if [[ "$ff" == *$asp* ]]; then
-		args=" -a "	
+		args=" -a "
+	else
+		args=" -m "	
 	fi
 
 	name=$(echo $f | sed "s_.*\/__")

@@ -1,7 +1,4 @@
-:-sorts
-bool;
-temp;
-step.
+:-sorts bool;temp;step.
 
 :-objects
 T,F::bool;
@@ -12,4 +9,4 @@ T1,T2,T3::temp.
 HiddenIn::temp;
 FoundIn(step,temp)::bool.
 
-HiddenIn=T1=T2.
+//HiddenIn=T1=T2.

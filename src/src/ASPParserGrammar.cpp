@@ -1473,10 +1473,11 @@ static void yy_reduce(
 		}
 		else{
 			// itr = tree->domains.find(*v);
-			yygotominor.yy57->setVar(yymsp[-3].minor.yy0->token);
+			
 			posMap[i++] = *itr;
 		}
 	}
+	yygotominor.yy57->setVar(yymsp[-3].minor.yy0->token);
 	yygotominor.yy57->setPosMap(posMap);
 	delete yymsp[-1].minor.yy45;
 }

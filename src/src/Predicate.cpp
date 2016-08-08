@@ -54,16 +54,18 @@ std::string Predicate::toString() const{
 
 	str += var;
 
-	str += "(";
+	if(tokens.size() != 0){
+		str += "(";
 
-	for (auto i = tokens.begin(); i != tokens.end(); ++i)
-	{
-		str += *i;
-		str += ",";
+		for (auto i = tokens.begin(); i != tokens.end(); ++i)
+		{
+			str += *i;
+			str += ",";
+		}
+
+		str = str.substr(0,str.size()-1);
+		str += ")";
 	}
-
-	str = str.substr(0,str.size()-1);
-	str += ")";
 
 	return str;
 }

@@ -65,20 +65,24 @@ void Tree::completeRules(){
 		
 		RuleCompletion r;
 
-		strLhs.append(key.first).append("(");
-		
-		std::vector<std::string> v(varMap.size());
-		long unsigned int ii;
-		for(auto &vm : varMap){
-			ii = static_cast<long unsigned int>(vm.first);
-			v[ii] = vm.second.second;
-		}
+		strLhs.append(key.first);
+		/*TODO put this opening brace in an if condition*/
+		if(varMap.size() != 0){
+			strLhs.append("(");
 			
-		for(auto &vm : v)
-			strLhs.append(vm).append(",");
-		
-		strLhs = strLhs.substr(0,strLhs.size()-1);
-		strLhs.append(")");
+			std::vector<std::string> v(varMap.size());
+			long unsigned int ii;
+			for(auto &vm : varMap){
+				ii = static_cast<long unsigned int>(vm.first);
+				v[ii] = vm.second.second;
+			}
+				
+			for(auto &vm : v)
+				strLhs.append(vm).append(",");
+			
+			strLhs = strLhs.substr(0,strLhs.size()-1);
+			strLhs.append(")");
+		}
 		
 		
 		int auxCount = 0;
@@ -146,7 +150,8 @@ void Tree::completeRules(){
 					{
 						Predicate predicateWeWant;
 						//search all predicates innerVariables to find out its domain
-						int pos = 0; 
+						int pos = 0;
+						//TODO Optimize this 
 						for(auto innerPred: r.getBody()){
 							int found = 0;
 
@@ -165,9 +170,6 @@ void Tree::completeRules(){
 							if(found == 1) break;
 						}
 
-
-						int x = 10;
-						x++;
 
 						if(!predicateWeWant.getVar().empty()){
 							
@@ -319,7 +321,11 @@ void Tree::completeRules(){
 				}
 				
 				strRhs = strRhs.substr(0,strRhs.size()-1);
-				strRhs.append(")");
+				
+				/*Condition added for singletons*/
+				if(pred.getTokens().size() != 0){
+					strRhs.append(")");
+				}
 				strRhs.append(" ^ ");
 				
 				bodyVecCount++;
@@ -487,14 +493,20 @@ void Tree::completeDeclarations(){
 			std::string str;
 			str += "!";
 			str += itr->getVar();
-			str += "(";
+			unsigned int varSize = itr->getPosMap().size();
+
+			if(varSize > 0)
+				str += "(";
 
 			for(unsigned int i=0;i<itr->getPosMap().size();++i){
 				str += uniqueVars[i];
 				str += ",";
 			}
-			str = str.substr(0, str.size()-1);
-			str += ").\n";
+			if(varSize > 0){
+				str = str.substr(0, str.size()-1);
+				str += ")";
+			}
+			str += ".\n";
 			std::cout<<str;
 		}
 	}

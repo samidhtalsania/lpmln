@@ -10,12 +10,10 @@ class LexerFactory
 {
 public:
 	LexerFactory();
-	~LexerFactory(){
-		if(l)
-			delete l;
-	}
+	~LexerFactory();
 
 	static Lexer* getLexer(ParserType);
+	static void free();
 
 private:
 	static Lexer* l;

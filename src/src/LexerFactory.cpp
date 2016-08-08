@@ -23,4 +23,8 @@ Lexer* LexerFactory::getLexer(ParserType parser){
 	return l; 
 }
 
+void LexerFactory::free(){
+	delete l;
+}
+
 Lexer* LexerFactory::l;

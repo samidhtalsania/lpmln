@@ -69,6 +69,10 @@ source = false : Request comes from toString method of Parser
 	}
 	
 private :
+	/*
+	TODO Make this vector as set? 
+	Efficient finds since all values have to be unique!
+	*/
 	std::vector<std::string> vars;
 	std::string domainVar;
 

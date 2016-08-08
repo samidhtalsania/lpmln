@@ -10,6 +10,7 @@ public:
 	Predicate(std::string* _var, std::vector<std::string> _tokens): var(*_var), tokens(_tokens){};
 	Predicate(std::string* _lvar, std::string* _rvar):
 				lVar(*_lvar),rVar(*_rvar){};
+	Predicate(std::string* _var):var(*_var){};
 	Predicate();				
 	~Predicate();
 	
@@ -40,6 +41,10 @@ public:
 			return 0;
 	}
 
+	void insertToken(std::string str){
+		tokens.push_back(str);
+	}
+
 	std::string getLvar() const { return lVar;}
 	std::string getRvar() const { return rVar;}
 
@@ -50,11 +55,10 @@ public:
 
 	bool isSingleNegated() { return singleNegation; }
 	bool isDoubleNegated() { return doubleNegation; }
-
 	bool needsToBeCompleted() { return toBeCompleted; }
 
 	void notToBeCompleted() { toBeCompleted = false;} 
-
+	
 	/*Called by parser to print facts*/
 	std::string toString(const std::string& s, bool period) const{
 		std::string str;

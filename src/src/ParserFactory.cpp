@@ -21,4 +21,8 @@ Parser* ParserFactory::getParser(ParserType parser){
 	return p; 
 }
 
+void ParserFactory::free(){
+	delete p;
+}
+
 Parser* ParserFactory::p;

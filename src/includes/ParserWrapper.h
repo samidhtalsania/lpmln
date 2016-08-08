@@ -30,5 +30,7 @@ private:
 	Lexer* lexer;
 	Tree* tree;
 	std::vector<Token*> v;
+	/*TODO fix this*/
+	bool isFOLlexer;
 	
 };

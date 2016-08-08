@@ -9,11 +9,10 @@
 class ParserFactory
 {
 public:
-	~ParserFactory(){
-		if(p)
-			delete p;
-	}
+	ParserFactory();
+	~ParserFactory();
 	static Parser* getParser(ParserType);
+	static void free();
 
 private:
 	static Parser* p;

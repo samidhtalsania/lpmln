@@ -30,6 +30,9 @@
 	#define SPACE " "
 	#define COMMENT "//"
 
+	#define YYNOERRORRECOVERY 
+	#undef YYERRORSYMBOL
+
 	struct cmp{
 		bool operator()(const std::pair<std::string, std::string>& left, const std::pair<std::string, std::string>& right) const{
 			return left.first < right.first;
@@ -48,38 +51,36 @@
 
 %extra_argument {Tree* tree}
 
-%parse_accept 
-{
+%parse_accept {
     std::cout<<("//parsing complete!\n");
 }
 
 %parse_failure 
 {
-    // std::cout<<"Giving up.  Parser is lost...\n";
+    std::cout<<"Giving up.Parser is lost...\n";
 
 }
 
-%syntax_error
-{
+%syntax_error{
 	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
     for (int i = 0; i < n; ++i) {
             int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
             if (a < YYNSTATE + YYNRULE) {
                     // std::cout << "expected " << yyTokenName[i] << std::endl;
-            		yy_parse_failed(yypParser);
+            		// yy_parse_failed(yypParser);
                     throw syntax_exception("Syntax Error - Expected " + std::string(yyTokenName[i]) + " Found " + std::string(yyTokenName[yymajor])
 + "\n");
             }
     }
+    throw syntax_exception("Parsing Failed. Unexpected sequence of tokens\n");
     
 }
 
-
+%left REVERSE_IMPLICATION.
 %nonassoc EQUAL.
 %nonassoc COMMA.
 %nonassoc LPAREN RPAREN.
-
 
 %right NEWLINE.
 %right CONJUNCTION.
@@ -87,10 +88,9 @@
 
 %nonassoc LBRACKET RBRACKET.
 %nonassoc IMPLICATION.
-%nonassoc REVERSE_IMPLICATION.
+
 %nonassoc SORTS.
 %right NEGATION.
-
 %nonassoc WS.
 
 %token_type {Token*}
@@ -99,170 +99,18 @@
 
 %type prog {Tree*}
 
-// %type domain {Domain*}
-
-// %type domains {Domain*}
-
 %type predicate {Predicate*}
 
 %type decl {Variable*}
 
 %type variables {std::vector<std::string*>*}
 
-// %include{
-
-// 	RuleCompletion* RuleCompletion_BH(Body* B, Head* H, Tree* tree){
-// 		std::set<std::pair<std::string,std::string>> orphanVarsMap;  
-// 		std::set<std::pair<std::string,std::string>> orphanVarsHeadMap; 
-// 		std::vector<Predicate> predList = B->getPredicate(); 
-// 		for(auto& p : predList){ 
-// 			int tempCount = 0; 
-// 			for(auto& v : p.getTokens()){ 
-// 				if(tree->variables.find(p.getVar()) == tree->variables.end()){ 
-// 					undefined_predicate ex(p.getVar()); 
-// 					throw ex; 
-// 				} 
-// 				else 
-// 					orphanVarsMap.insert(std::pair<std::string, std::string>(v,tree->variables.find(p.getVar())->getPosMap().at(tempCount++).getDomainVar())); 
-// 			} 
-// 		} 
-// 		int count = 0; 
-// 		std::map<int,std::pair<int, std::string>> varMap; 
-// 		int tempCount = 0; 
-// 		for(auto& str : H->getPredicate().getTokens()){ 
-// 			if(tree->isConstant(str)){ 
-// 				varMap[count++] = std::pair<int, std::string>(count, str); 
-// 			} 
-// 			else 
-// 				count++; 
-			 
-// 			if(tree->variables.find(H->getPredicate().getVar()) == tree->variables.end()){ 
-// 				undefined_predicate ex(H->getPredicate().getVar()); 
-// 				throw ex; 
-// 			} 
-// 			else	 
-// 				orphanVarsHeadMap.insert(std::pair<std::string, std::string>(str,tree->variables.find(H->getPredicate().getVar())->getPosMap().at(tempCount++).getDomainVar())); 
-// 		} 
-// 		std::set<std::string> result; 
-// 		tree->removeConstantsPair(orphanVarsMap); 
-// 		tree->removeConstantsPair(orphanVarsHeadMap); 
-// 		std::set<std::pair<std::string,std::string>> resultMap; 
-// 		std::set_difference(orphanVarsMap.begin(), orphanVarsMap.end(), orphanVarsHeadMap.begin(), orphanVarsHeadMap.end(),std::inserter(resultMap, resultMap.end()), cmp());
-// 		RuleCompletion* rule = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap);
-// 		return rule;
-// 	}
-		
-// 	void RuleCompletion_HD_BT(Head* B, Tree* tree){
-// 		std::vector<Predicate> pred = B->getPredicateList(); 
-// 		for(unsigned long int i=0;i<pred.size();i++){ 
-// 			Head* H = new Head(pred.at(i)); 
-// 			std::vector<Predicate> temp; 
-// 			for (unsigned long int j = 0; j < pred.size(); j++){ 
-// 				if(j == i) continue; 
-// 				bool singleN = pred.at(j).isSingleNegated(); 
-// 				bool doubleN = pred.at(j).isDoubleNegated(); 
-// 				if(pred.at(j).isSingleNegated()){ 
-// 					pred.at(j).setSingleNegation(false); 
-// 					pred.at(j).setDoubleNegation(true); 
-// 				} 
-// 				else if(pred.at(j).isDoubleNegated()){ 
-// 					pred.at(j).setDoubleNegation(false); 
-// 					pred.at(j).setSingleNegation(true); 
-// 				} 
-// 				else{ 
-// 					pred.at(j).setSingleNegation(true);	 
-// 				} 
-// 				temp.push_back(pred.at(j)); 
-// 				pred.at(j).setSingleNegation(singleN); 
-// 				pred.at(j).setDoubleNegation(doubleN); 
-// 			} 
-// 			Body* b = new Body(temp); 
-// 			// RULE_COMPLETION_BH(b,H); 
-// 			// RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); 
-// 			RuleCompletion* R1 = RuleCompletion_BH(b,H,tree); 
-// 			tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->getHead().getVar(),*R1)); 
-// 			delete R1; 
-// 			delete b;
-// 			delete H;
-// 		}
-// 	}
-
-// 	void RuleCompletion_HD_BC(Head* H, Body* B, bool hard, Tree* tree){
-// 		std::vector<Predicate> pred = H->getPredicateList(); 
-// 		std::vector<Predicate> bp = B->getPredicate(); 
-// 		for(unsigned long int i=0;i<pred.size();i++){ 
-// 			Head* H = new Head(pred.at(i)); 
-// 			std::vector<Predicate> temp;
-// 			for (unsigned long int j = 0; j < pred.size(); j++){ 
-// 				if(j == i) continue; 
-// 				bool singleN = pred.at(j).isSingleNegated(); 
-// 				bool doubleN = pred.at(j).isDoubleNegated(); 
-// 				if(pred.at(j).isSingleNegated()){ 
-// 					pred.at(j).setSingleNegation(false); 
-// 				} 
-// 				else if(pred.at(j).isDoubleNegated()){ 
-// 					pred.at(j).setDoubleNegation(false); 
-// 					pred.at(j).setSingleNegation(true); 
-// 				} 
-// 				else{ 
-// 					pred.at(j).setSingleNegation(true);	 
-// 				} 
-// 				temp.push_back(pred.at(j)); 
-// 				pred.at(j).setSingleNegation(singleN); 
-// 				pred.at(j).setDoubleNegation(doubleN); 
-// 			}
-
-// 			for (unsigned long int j = 0; j < bp.size(); ++j){ 
-// 				temp.push_back(bp.at(j)); 
-// 			} 
-			
-// 			Body* b = new Body(temp); 
-// 			// RULE_COMPLETION_BH(b,H); 
-// 			// RuleCompletion* R1 = new RuleCompletion(H->getPredicate(),predList, resultMap, varMap); 
-// 			RuleCompletion* R1 = RuleCompletion_BH(b,H,tree); 
-// 			tree->rules.insert(std::pair<std::string,RuleCompletion>(R1->getHead().getVar(),*R1)); 
-// 			delete R1; 
-// 			// std::string op;
-// 			// op = b->toString() + "=>" + H->toString(); 
-// 			// if(hard) 
-// 			// 	op += "."; 
-// 			// op += "\n";
-// 			// cout << op; 
-
-// 			delete b;
-// 			delete H;
-// 		}
-// 	}
-// }
-
-
 
 start ::= prog.
 
-prog ::= prog NEWLINE sort.
+prog ::= prog SORTS sortdecl.
 
-prog ::= sort.
-
-sort ::= SORTS.{
-	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
-		tree->cdp = Tree::Current_Decl_Part::DECL_SORTS;
-	}
-	else{
-		throw syntax_exception("Expected Sorts.");
-	}
-}
-
-sort ::= string(S) DOT.{
-	std::string str = S->toString();
-	auto it = tree->domainNamesList.find(str);
-	if(it != tree->domainNamesList.end())
-		throw syntax_exception("Redeclaration of sort "+S->toString()+"\n");
-	else
-		tree->domainNamesList.insert(str);	
-	tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
-}
-
-sort ::= string(S) SEMI_COLON.{
+sortdecl ::= string(S) SEMI_COLON sortdecl.{
 	std::string str = S->toString();
 	auto it = tree->domainNamesList.find(str);
 	if(it != tree->domainNamesList.end())
@@ -271,21 +119,89 @@ sort ::= string(S) SEMI_COLON.{
 		tree->domainNamesList.insert(S->toString());
 }
 
-prog ::= prog NEWLINE object.
+sortdecl ::= NEWLINE sortdecl.
 
-prog ::= object.
-
-object ::= OBJECTS.{
-	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
-		tree->cdp = Tree::Current_Decl_Part::DECL_OBJECTS;
-	}
-	else{
-		throw syntax_exception("Expected Objects.");
-	}
+sortdecl ::= string(S) DOT.{
+	std::string str = S->toString();
+	auto it = tree->domainNamesList.find(str);
+	if(it != tree->domainNamesList.end())
+		throw syntax_exception("Redeclaration of sort "+S->toString()+"\n");
+	else
+		tree->domainNamesList.insert(str);	
 }
 
-object ::= variables(Ve) COLON COLON string(S) SEMI_COLON.{
-	if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
+// prog ::= prog NEWLINE sort.
+
+// prog ::= sort.
+
+// sort ::= SORTS.{
+// 	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
+// 		tree->cdp = Tree::Current_Decl_Part::DECL_SORTS;
+// 	}
+// 	else{
+// 		throw syntax_exception("Expected Sorts.");
+// 	}
+// }
+
+// sort ::= string(S) DOT.{
+// 	if(tree->cdp == Tree::Current_Decl_Part::DECL_SORTS){
+// 		std::string str = S->toString();
+// 		auto it = tree->domainNamesList.find(str);
+// 		if(it != tree->domainNamesList.end())
+// 			throw syntax_exception("Redeclaration of sort "+S->toString()+"\n");
+// 		else
+// 			tree->domainNamesList.insert(str);	
+// 	}
+// 	else if (tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
+// 		Variable* va = new Variable;
+// 		va->setVar(S->toString());
+// 		tree->variables.insert(*va);
+// 		cout<<va->toString()<<"\n";
+// 	}
+
+// 	tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
+// }
+
+// sort ::= string(S) SEMI_COLON.{
+// 	if(tree->cdp == Tree::Current_Decl_Part::DECL_SORTS){
+// 		std::string str = S->toString();
+// 		auto it = tree->domainNamesList.find(str);
+// 		if(it != tree->domainNamesList.end())
+// 			throw syntax_exception("Redeclaration of sort "+S->toString()+"\n");
+// 		else
+// 			tree->domainNamesList.insert(S->toString());
+// 	}
+// 	else if (tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
+// 		Variable* va = new Variable;
+// 		va->setVar(S->toString());
+// 		tree->variables.insert(*va);
+// 		cout<<va->toString()<<"\n";	
+// 	}
+// }
+
+prog ::= prog OBJECTS objectdecl.
+
+objectdecl ::= object SEMI_COLON objectdecl.
+
+objectdecl ::= object DOT.
+
+objectdecl ::= NEWLINE objectdecl.
+
+// prog ::= prog NEWLINE object.
+
+// prog ::= object.
+
+// object ::= OBJECTS.{
+// 	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
+// 		tree->cdp = Tree::Current_Decl_Part::DECL_OBJECTS;
+// 	}
+// 	else{
+// 		throw syntax_exception("Expected Objects.\n");
+// 	}
+// }
+
+object ::= variables(Ve) COLON COLON string(S).{
+	// if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
 		auto itr = tree->domainNamesList.find(S->toString());
 		if(itr != tree->domainNamesList.end()){
 			Domain* d  = new Domain(S->toString());
@@ -300,87 +216,104 @@ object ::= variables(Ve) COLON COLON string(S) SEMI_COLON.{
 		else{
 			throw syntax_exception("Domain " + S->toString() +" not declared.\n");
 		}
-	}
-	else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-		Variable* v = new Variable;
-		std::string str = *(Ve->at(0));
-		std::map<int, Domain> posMap;
-		std::set<Domain>::iterator itr;
-		int i=0;
-		itr = tree->domains.find(S->toString());
-		if (itr == tree->domains.end()){
-			throw syntax_exception("Syntax Error - Domain " + S->toString() + " not found.\n");
-		}
-		else{
-			v->setVar(str);
-			posMap[0] = *itr;
-		}
-		v->setPosMap(posMap);
-		tree->variables.insert(*v);
-		cout<<v->toString();
-		delete v;		
-	}
-	delete Ve;
-}
-
-object ::= variables(Ve) COLON COLON string(S) DOT.{
-
-	if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
-		auto itr = tree->domainNamesList.find(S->toString());
-		if(itr != tree->domainNamesList.end()){
-			Domain* d  = new Domain(S->toString());
-			d->setVars(*Ve);
-			tree->domains.insert(*d);
-			for(auto& v : d->getVars()){
-				tree->domainList.insert(v);	
-			}
-			cout<<d->toString(false);
-			delete d;
-		}
-		else{
-			throw syntax_exception("Domain " + S->toString() +" not declared.\n");
-		}
-		tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
-	}
-
-	else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-		Variable* v = new Variable;
-		std::string str = *(Ve->at(0));
-		std::map<int, Domain> posMap;
-		std::set<Domain>::iterator itr;
-		int i=0;
-		itr = tree->domains.find(S->toString());
-		if (itr == tree->domains.end()){
-			throw syntax_exception("Syntax Error - Domain " + S->toString() + " not found.\n");
-		}
-		else{
-			v->setVar(str);
-			posMap[0] = *itr;
-		}
-		v->setPosMap(posMap);
+	// }
+	/*For cases like 
+	male::bool;
+	which is a constant declaration but parsed as object since variables can also be a single string. 
+	*/
+	// else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
+	// 	Variable* va = new Variable;
+	// 	std::map<int, Domain> posMap;
+	// 	std::set<Domain>::iterator itr;
+	// 	int i=0;
 		
-		tree->variables.insert(*v);
-		cout<<v->toString();
-		tree->cdp = Tree::Current_Decl_Part::DECL_NONE;		
-		delete v;
-	}
+
+	// 	itr = tree->domains.find(S->toString());
+	// 	if (itr == tree->domains.end()){
+	// 		throw syntax_exception("Syntax Error - Domain " + S->toString() + " not found.\n");
+	// 	}
+	// 	else{
+	// 		posMap[i] = *itr;
+	// 		va->setRhsDomain(*itr);
+	// 	}
+
+	// 	va->setVar(Ve->at(0));
+	// 	va->setPosMap(posMap);
+	// 	tree->variables.insert(*va);
+	// 	cout<<va->toString();
+	// 	delete va;
+			
+	// }
 	delete Ve;
 }
 
-prog ::= prog NEWLINE constant.
+// object ::= variables(Ve) COLON COLON string(S).{
 
-prog ::= constant.
+// 	if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
+// 		auto itr = tree->domainNamesList.find(S->toString());
+// 		if(itr != tree->domainNamesList.end()){
+// 			Domain* d  = new Domain(S->toString());
+// 			d->setVars(*Ve);
+// 			tree->domains.insert(*d);
+// 			for(auto& v : d->getVars()){
+// 				tree->domainList.insert(v);	
+// 			}
+// 			cout<<d->toString(false);
+// 			delete d;
+// 		}
+// 		else{
+// 			throw syntax_exception("Domain " + S->toString() +" not declared.\n");
+// 		}
+// 		tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
+// 	}
 
-constant ::= CONSTANTS.{
-	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
-		tree->cdp = Tree::Current_Decl_Part::DECL_CONSTANTS;
-	}
-	else{
-		throw syntax_exception("Expected Constants.");
-	}
-}
+// 	else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
+// 		Variable* va = new Variable;
+// 		std::map<int, Domain> posMap;
+// 		std::set<Domain>::iterator itr;
+// 		int i=0;
+		
 
-constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1) SEMI_COLON.{
+// 		itr = tree->domains.find(S->toString());
+// 		if (itr == tree->domains.end()){
+// 			throw syntax_exception("Syntax Error - Domain " + S->toString() + " not found.\n");
+// 		}
+// 		else{
+// 			posMap[i] = *itr;
+// 			va->setRhsDomain(*itr);
+// 		}
+
+// 		va->setVar(Ve->at(0));
+// 		va->setPosMap(posMap);
+// 		tree->variables.insert(*va);
+// 		cout<<va->toString();
+// 		delete va;
+// 	}
+// 	delete Ve;
+// }
+
+// prog ::= prog NEWLINE constant.
+
+// prog ::= constant.
+
+// constant ::= CONSTANTS.{
+// 	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
+// 		tree->cdp = Tree::Current_Decl_Part::DECL_CONSTANTS;
+// 	}
+// 	else{
+// 		throw syntax_exception("Expected Constants.");
+// 	}
+// }
+
+prog ::= prog CONSTANTS constantdecl.
+
+constantdecl ::= constant SEMI_COLON constantdecl.
+
+constantdecl ::= constant DOT.
+
+constantdecl ::= NEWLINE constantdecl. 
+
+constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1).{
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
 	std::set<Domain>::iterator itr;
@@ -404,17 +337,54 @@ constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1) SE
 	}
 	else{
 		posMap[i] = *itr;
+		va->setRhsDomain(*itr);
 	}
 
 	va->setVar(S->toString());
 	va->setPosMap(posMap);
 	tree->variables.insert(*va);
 	cout<<va->toString();
-	delete Ve;
 	delete va;
+	delete Ve;
 }
 
-constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1) DOT.{
+// constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1) DOT.{
+// 	Variable* va = new Variable;
+// 	std::map<int, Domain> posMap;
+// 	std::set<Domain>::iterator itr;
+// 	int i=0;
+// 	for(auto& v : *Ve){
+// 		itr = tree->domains.find(*v);
+// 		if (itr == tree->domains.end()){
+// 			// std::cout<<"Error:Domain:"+ *v +" not found.\n";
+// 			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
+// 		}
+// 		else{
+// 			// itr = tree->domains.find(*v);
+// 			// D->setVar(S->token);
+// 			posMap[i++] = *itr;
+// 		}
+// 	}
+
+// 	itr = tree->domains.find(S1->toString());
+// 	if (itr == tree->domains.end()){
+// 		throw syntax_exception("Syntax Error - Domain " + S1->toString() + " not found.\n");
+// 	}
+// 	else{
+// 		posMap[i] = *itr;
+// 		va->setRhsDomain(*itr);
+// 	}
+
+// 	va->setVar(S->toString());
+// 	va->setPosMap(posMap);
+// 	tree->variables.insert(*va);
+// 	tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
+// 	cout<<va->toString();
+// 	delete Ve;
+// 	delete va;
+// }
+
+constant ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
 	std::set<Domain>::iterator itr;
@@ -422,15 +392,58 @@ constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1) DO
 	for(auto& v : *Ve){
 		itr = tree->domains.find(*v);
 		if (itr == tree->domains.end()){
-			// std::cout<<"Error:Domain:"+ *v +" not found.\n";
 			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
 		}
 		else{
-			// itr = tree->domains.find(*v);
-			// D->setVar(S->token);
 			posMap[i++] = *itr;
 		}
 	}
+
+	va->setVar(S->toString());
+	va->setPosMap(posMap);
+	tree->variables.insert(*va);
+	cout<<va->toString();
+	delete Ve;
+	delete va;
+}
+
+// constant ::= string(S) LBRACKET variables(Ve) RBRACKET DOT.{
+// 	Variable* va = new Variable;
+// 	std::map<int, Domain> posMap;
+// 	std::set<Domain>::iterator itr;
+// 	int i=0;
+// 	for(auto& v : *Ve){
+// 		itr = tree->domains.find(*v);
+// 		if (itr == tree->domains.end()){
+// 			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
+// 		}
+// 		else{
+// 			posMap[i++] = *itr;
+// 		}
+// 	}
+// 	va->setVar(S->toString());
+// 	va->setPosMap(posMap);
+// 	tree->variables.insert(*va);
+// 	cout<<va->toString();
+// 	tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
+// 	delete Ve;
+// 	delete va;
+// }
+
+constant ::= string(S).{
+	Variable* va = new Variable;
+	va->setVar(S->toString());
+	tree->variables.insert(*va);
+	cout<<va->toString()<<"\n";
+	delete va;	
+}
+
+constant ::= string(S) COLON COLON string(S1).{
+	Variable* va = new Variable;
+	std::map<int, Domain> posMap;
+	std::set<Domain>::iterator itr;
+	int i=0;
+	
 
 	itr = tree->domains.find(S1->toString());
 	if (itr == tree->domains.end()){
@@ -438,35 +451,16 @@ constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1) DO
 	}
 	else{
 		posMap[i] = *itr;
+		va->setRhsDomain(*itr);
 	}
 
 	va->setVar(S->toString());
 	va->setPosMap(posMap);
 	tree->variables.insert(*va);
-	tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
 	cout<<va->toString();
-	delete Ve;
-	delete va;
+	delete va;	
 }
 
-// prog ::= prog NEWLINE domain(D). { 
-// 	tree->domains.insert(*D); 
-// 	tree->domainNamesList.insert(D->getDomainVar());
-// 	for(auto& v : D->getVars()){
-// 		tree->domainList.insert(v);	
-// 	}
-// 	cout<<D->toString(false);
-// 	delete D;
-// }
-// prog ::= domain(D). { 
-// 	tree->domains.insert(*D); 
-// 	tree->domainNamesList.insert(D->getDomainVar());
-// 	for(auto& v : D->getVars()){
-// 		tree->domainList.insert(v);	
-// 	}
-// 	cout<<D->toString(false);
-// 	delete D;
-// }
 
 prog ::= prog NEWLINE predicate(P). { 
 	if(P->needsToBeCompleted()){	
@@ -484,22 +478,12 @@ prog ::= predicate(P). {
 	delete P;
 }
 
-prog ::= prog NEWLINE decl(D). {
-	tree->variables.insert(*D);
-	cout<<D->toString();
-	delete D;
-}
-prog ::= decl(D). {
-	tree->variables.insert(*D);
-	cout<<D->toString();
-	delete D;
-}
-
 prog ::= prog NEWLINE rule(R). {
 	if((R->isHeadTop == false) && (R->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->getHead().getVar(),*R));
 	delete R;
 }
+
 prog ::= rule(R).{
 	if((R->isHeadTop == false) && (R->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->getHead().getVar(),*R));
@@ -509,6 +493,7 @@ prog ::= rule(R).{
 prog ::= prog NEWLINE.
 
 prog ::= .
+
 
 
 
@@ -523,83 +508,83 @@ prog ::= .
 
 %type rule {RuleCompletion*}
 
-//RuleU are rules with head bottom
-%type ruleU {RuleCompletion*}
+// //RuleU are rules with head bottom
+// %type ruleU {RuleCompletion*}
 
-//ex 0.8536 <= (ruleU)
-//Test case covered
-rule(R) ::= number(N) REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET.{
-	R = R1;
-	R->toBeCompleted = false;
-	if(R1->getBodyType() == BodyType::DISJUNCTION){
-		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
-	}
-	cout<<N->toString()<<SPACE<<"!("<<R1->toString()<<")"<<"\n";
-}
+// //ex 0.8536 <= (ruleU)
+// //Test case covered
+// rule(R) ::= number(N) REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET.{
+// 	R = R1;
+// 	R->toBeCompleted = false;
+// 	if(R1->getBodyType() == BodyType::DISJUNCTION){
+// 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
+// 	}
+// 	cout<<N->toString()<<SPACE<<"!("<<R1->toString()<<")"<<"\n";
+// }
 
-//ex 0.8536 (ruleU)
-rule(R) ::= number(N) LBRACKET ruleU(R1) RBRACKET.{
-	R = R1;
-	R->toBeCompleted = false;
-	if(R1->getBodyType() == BodyType::CONJUNCTION){
-		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
-	}
-	cout<<N->toString()<<SPACE<<"("<<R1->toString()<<")"<<"\n";
-}
+// // //ex 0.8536 (ruleU)
+// rule(R) ::= number(N) LBRACKET ruleU(R1) RBRACKET.{
+// 	R = R1;
+// 	R->toBeCompleted = false;
+// 	if(R1->getBodyType() == BodyType::CONJUNCTION){
+// 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
+// 	}
+// 	cout<<N->toString()<<SPACE<<"("<<R1->toString()<<")"<<"\n";
+// }
 
-//ex <= (ruleU).
-//Test case wrong
-rule(R) ::= REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET DOT.{
-	R = R1;
-	R1->toBeCompleted = false;
-	if(R1->getBodyType() == BodyType::DISJUNCTION){
-		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
-	}
-	cout<<"!("<<R1->toString()<<")."<<"\n";
-}
+// // //ex <= (ruleU).
+// // //Test case wrong
+// rule(R) ::= REVERSE_IMPLICATION LBRACKET ruleU(R1) RBRACKET DOT.{
+// 	R = R1;
+// 	R1->toBeCompleted = false;
+// 	if(R1->getBodyType() == BodyType::DISJUNCTION){
+// 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
+// 	}
+// 	cout<<"!("<<R1->toString()<<")."<<"\n";
+// }
 
-//ex (ruleU).
-//Test case covered
-rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
-	R = R1;
-	R->toBeCompleted = false;
-	if(R1->getBodyType() == BodyType::CONJUNCTION){
-		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
-	}
-	cout<<"("<<R1->toString()<<")."<<"\n";
-}
+// // //ex (ruleU).
+// // //Test case covered
+// rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
+	// R = R1;
+	// R->toBeCompleted = false;
+	// if(R1->getBodyType() == BodyType::CONJUNCTION){
+	// 	throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
+	// }
+	// cout<<"("<<R1->toString()<<")."<<"\n";
+// }
 
 
 //B=>bottom
-ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
-	R = new RuleCompletion;
-	B->appendStr(B1->getPredicate().toString(),false,false,true);
-	R->appendStr(B->toString());
-	R->setBodyType(BodyType::CONJUNCTION);
-	delete B;
-	delete B1;
-}
+// ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
+// 	R = new RuleCompletion;
+// 	B->appendStr(B1->getPredicate().toString(),false,false,true);
+// 	R->appendStr(B->toString());
+// 	R->setBodyType(BodyType::CONJUNCTION);
+// 	delete B;
+// 	delete B1;
+// }
 
 //ruleU's are all in brackets so no need for DOT, Number
 //Top => H
-ruleU(R) ::= head(B) DISJUNCTION bodydef(B1).{
-	R = new RuleCompletion;	
-	R->isHeadTop = true;
-	B->addPredicate(B1->getPredicate());
-	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(B,B1)
-	try{
-		RuleCompletion_HD_BT(B,tree);
-	}
-	catch(const std::out_of_range& e){
-		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
-	}
+// ruleU(R) ::= head(B) DISJUNCTION bodydef(B1).{
+// 	R = new RuleCompletion;	
+// 	R->isHeadTop = true;
+// 	B->addPredicate(B1->getPredicate());
+// 	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(B,B1)
+// 	try{
+// 		RuleCompletion_HD_BT(B,tree);
+// 	}
+// 	catch(const std::out_of_range& e){
+// 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
+// 	}
 
-	B->appendStr(B1->getPredicate().toString(),false,true,false);
-	R->appendStr(B->toString());
-	R->setBodyType(BodyType::DISJUNCTION);
-	delete B;
-	delete B1;
-}
+// 	B->appendStr(B1->getPredicate().toString(),false,true,false);
+// 	R->appendStr(B->toString());
+// 	R->setBodyType(BodyType::DISJUNCTION);
+// 	delete B;
+// 	delete B1;
+// }
 
 
 //Parse Hard rule
@@ -701,15 +686,6 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 	delete H;
 }
 
-//Parse soft exogenity rules (not to be completed)
-//Ex. 0.8536 !!<body> => head.
-// rule(R) ::= number NEGATION NEGATION body(B) IMPLICATION head(H). {
-// 	tree->statHasDblNeg = true;
-// 	R = new RuleCompletion;
-// 	R->isHeadTop = true;	
-// 	delete B;
-// 	delete H;
-// }
 
 //Ex. 0.8536 !!(B => H)
 //Test case covered
@@ -741,7 +717,6 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 	delete H;
 }
 
-
 //Parses body of rules
 body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B = B1;
@@ -749,13 +724,6 @@ body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B->appendStr(Bd->getPredicate().toString(),false,false,true);
 	delete Bd;
 }
-
-// body(B) ::= body(B1) DISJUNCTION bodydef(Bd).{
-// 	B = B1;
-// 	B1->addPredicate(Bd->getPredicate());
-// 	B->appendStr(Bd->getPredicate().toString(),false,true,false);
-// 	delete Bd;
-// }
 
 head(H) ::= head(H1) DISJUNCTION bodydef(Hd).{
 	H = H1;
@@ -779,96 +747,98 @@ body(B) ::= bodydef(Bd).{
 	delete Bd;
 }
 
-//BodyDef without negation in front
-bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{	
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
-	
-	Predicate p(S->token, vars);
-	B = new BodyDef;
-	B->addPredicate(p);
-	delete Ve;
-	int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
-	if (expectedArgs != vars.size()){
-		delete B;
-		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
-	}
 
+
+// BodyDef without negation in front
+bodydef(B) ::= literal(L).{	
+	B = L;
 }
 
-//BodyDef with negation in front
-bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
-	
-	Predicate p(S->token, vars);
-	p.setSingleNegation(true);
-	B = new BodyDef;
-	B->addPredicate(p);
-	delete Ve;
-	int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
-	if (expectedArgs != vars.size()){
-		delete B;
-		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
-	}
-
+// //BodyDef with negation in front
+bodydef(B) ::= NEGATION literal(L).{	
+	B = L;
+	B->getPredicate().setSingleNegation(true);
 }
 
-//BodyDef with double negation in front
-bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{	
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
-	
-	Predicate p(S->token, vars);
-	p.setDoubleNegation(true);
-	B = new BodyDef;
-	B->addPredicate(p);
+// //BodyDef with double negation in front
+bodydef(B) ::= NEGATION NEGATION literal(L).{	
+	B = L;
 	tree->statHasDblNeg = true;
-	delete Ve;
-	int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
-	if (expectedArgs != vars.size()){
-		delete B;
-		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
-	}
-
+	B->getPredicate().setDoubleNegation(true);
 }
 
 
-//BodyDef with double negation in front
-//Bodydefs of the form (!!Load(A,B)) => Load(A,B). which needs to be completed. 
-bodydef(B) ::= LBRACKET NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET RBRACKET.{	
-	std::vector<std::string> vars;
-	for(auto& v : *Ve)
-		vars.push_back(*v);
-	
-	Predicate p(S->token, vars);
-	p.setDoubleNegation(true);
+// // BodyDef with double negation in front
+// // Bodydefs of the form (!!Load(A,B)) => Load(A,B). which needs to be completed. 
+bodydef(B) ::= LBRACKET NEGATION NEGATION literal(L) RBRACKET.{	
+	B = L;
 	tree->statHasDblNeg = true;
-	B = new BodyDef;
-	B->addPredicate(p);
-	delete Ve;
-	int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
-	if (expectedArgs != vars.size()){
-		delete B;
-		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
-	}
-
+	B->getPredicate().setDoubleNegation(true);
 }
 
 //parses bodydef of the form a=b
 bodydef(B) ::= string(S) EQUAL string(S1).{
-	Predicate p(S->token,S1->token);
-	p.setEquality();
 	B = new BodyDef;
-	B->addPredicate(p);
+	auto itr = tree->variables.find(*(S->token));
+	if (itr != tree->variables.end()){
+		/*Treat it as a bodydef with 1 variable*/
+
+		/* 
+		Check if S1 is a valid value of it's domain.
+		If it is not throw syntax_exception.
+		Why? It could be a variable also which is not a part of the domain. 
+		Not required in this case.
+		*/
+
+		// Domain d = itr->getRhsDomain();
+
+		// if(std::find(d.getVars().begin(),d.getVars().end(),*(S1->token)) == d.getVars().end())
+		// 	throw syntax_exception("The value on RHS does not belong to the Domain "+ d.getDomainVar() + ".\n");	
+		
+		std::vector<std::string> vars;
+		vars.push_back(*(S1->token));
+		Predicate p(S->token, vars);
+		B->addPredicate(p);
+		int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
+		if (expectedArgs != vars.size()){
+			delete B;
+			throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
+		}
+	}
+	
+	else{
+		Predicate p(S->token,S1->token);
+		p.setEquality();
+		B->addPredicate(p);
+	}
 }
 
+//not HiddenIn=P1
+bodydef(B) ::= NEGATION string(S) EQUAL string(S1).{
+	std::vector<std::string> vars;
+	vars.push_back(S1->toString());
+	Predicate p(S->token, vars);
+	p.setSingleNegation(true);
+	B = new BodyDef;
+	B->addPredicate(p);
+	// delete Ve;
+	int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
+	if (expectedArgs != vars.size()){
+		delete B;
+		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
+	}
+}
 //parses bodydef of the form a!=b
 bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
 	
+	/*check if S is declared in constant section
+	 if it is then it's a syntax error 
+	 Cannot have HiddeIn != P1 */
+	auto itr = tree->variables.find(*(S->token));
+	if (itr != tree->variables.end()){
+		throw syntax_exception("!= cannot be used with a constant on LHS.\n");
+	}
+
 	Predicate p(S->token,S1->token);
 	p.setInEquality();
 	B = new BodyDef;
@@ -876,107 +846,234 @@ bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
 }
 
 
+%type literal{BodyDef*}
 
-
-//Head without negation in front
-// headdef(H) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
-// 	std::vector<std::string> vars;
-// 	for(auto& v : *Ve)
-// 		vars.push_back(*v);
-	
-// 	Predicate p(S->token, vars);
-// 	H = new HeadDef(p);
-// 	H->addPredicate(p);
-// 	delete Ve;
-// }
-
-// //Head with negation in front
-// headdef(H) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
-// 	std::vector<std::string> vars;
-// 	for(auto& v : *Ve)
-// 		vars.push_back(*v);
-	
-// 	Predicate p(S->token, vars);
-// 	p.setSingleNegation(true);
-// 	H = new HeadDef();
-// 	H->addPredicate(p);
-// 	delete Ve;
-// }
-
-//Parses declarations ex. next(step,step)
-decl(D) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
-	D = new Variable;
-	std::map<int, Domain> posMap;
-	std::set<Domain>::iterator itr;
-	int i=0;
-	for(auto& v : *Ve){
-		itr = tree->domains.find(*v);
-		if (itr == tree->domains.end()){
-			// std::cout<<"Error:Domain:"+ *v +" not found.\n";
-			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
-		}
-		else{
-			// itr = tree->domains.find(*v);
-			D->setVar(S->token);
-			posMap[i++] = *itr;
-		}
+literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET EQUAL string(R).{
+	std::vector<std::string> vars;
+	for(auto& v : *Ve)
+		vars.push_back(*v);
+	vars.push_back(*(R->token));
+	Predicate p(S->token, vars);
+	L = new BodyDef;
+	L->addPredicate(p);
+	auto itr = tree->variables.find(S->toString());
+	if(itr == tree->variables.end()){
+		delete L;
+		throw syntax_exception("Literal "+ S->toString() + " not found.\n");
 	}
-	D->setPosMap(posMap);
 	delete Ve;
+	int expectedArgs = (tree->variables.find(S->toString()))->getSize();
+	if (expectedArgs != vars.size()){
+		delete L;
+		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
+	}
 }
+
+literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
+	std::vector<std::string> vars;
+	for(auto& v : *Ve)
+		vars.push_back(*v);
+	Predicate p(S->token, vars);
+	L = new BodyDef;
+	L->addPredicate(p);
+	delete Ve;
+	auto itr = tree->variables.find(S->toString());
+	if(itr == tree->variables.end()){
+		delete L;
+		throw syntax_exception("Literal "+ S->toString() + " not found.\n");
+	}
+	int expectedArgs = itr->getSize();
+	if (expectedArgs != vars.size()){
+		delete L;
+		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
+	}	
+}
+
+literal(L) ::= variable(V).{
+	Predicate p(V->token);
+	auto itr = tree->variables.find(V->toString());
+	if(itr == tree->variables.end()){
+		throw syntax_exception("Literal "+ V->toString() + " not found.\n");
+	}
+	L = new BodyDef;
+	L->addPredicate(p);
+}
+
+
+predicate(P) ::= literal(L) DOT.{
+	P = new Predicate;
+	*P = L->getPredicate();
+	std::string s1;
+	cout<<P->toString(s1,true);
+	delete L;
+}
+predicate(P) ::= number(N) literal(L).{
+	P = new Predicate;
+	*P = L->getPredicate();
+	cout<<P->toString(N->toString()+SPACE, false);
+	delete L;
+}
+
+predicate(P) ::= number(N) NEGATION NEGATION literal(L).{
+	P = new Predicate;
+	*P = L->getPredicate();
+	P->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	cout<<P->toString(N->toString()+SPACE, false);
+	delete L;
+}
+
+
+predicate(P) ::= number(N) NEGATION literal(L).{
+	P = new Predicate;
+	*P = L->getPredicate();
+	P->notToBeCompleted();
+	cout<<P->toString(N->toString()+SPACE, false);
+	delete L;
+}
+
+
+predicate(P) ::= NEGATION NEGATION literal(L) DOT.{
+	P = new Predicate;
+	*P = L->getPredicate();
+	P->notToBeCompleted();
+	tree->statHasDblNeg = true;
+	std::string s1; 
+	cout<<P->toString(s1, false);
+	delete L;	
+}
+
 
 
 //Parses hard facts ex. next(0,1).
-predicate(P) ::= string(S) LBRACKET variables(Ve) RBRACKET DOT. {
-	P = new Predicate;
-	P->setVar(S->token);
-	P->setTokens(*Ve);
-	std::string s1;
-	cout<<P->toString(s1,true);
-	delete Ve;
-}
+// predicate(P) ::=  string(S) LBRACKET variables(Ve) RBRACKET DOT. {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	// P->insertToken(*(R->token));
+// 	std::string s1;
+// 	cout<<P->toString(s1,true);
+// 	delete Ve;
+// }
 
-//Parses weighted/soft facts ex. 12 next(0,1)
-predicate(P) ::= number(N) string(S) LBRACKET variables(Ve) RBRACKET. {
-	P = new Predicate;
-	P->setVar(S->token);
-	P->setTokens(*Ve);
-	cout<<P->toString(N->toString()+SPACE, false);
-	delete Ve;
-}
+// //Parses weighted/soft facts ex. 12 next(0,1)
+// predicate(P) ::= number(N) string(S) LBRACKET variables(Ve) RBRACKET. {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	P->insertToken(*(R->token));
+// 	cout<<P->toString(N->toString()+SPACE, false);
+// 	delete Ve;
+// }
 
-//Parses weighted/soft constraints ex. 
-// 0.4536 !!next(0,1)
-predicate(P) ::= number(N) NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
-	P = new Predicate;
-	P->notToBeCompleted();
-	tree->statHasDblNeg = true;
-	P->setVar(S->token);
-	P->setTokens(*Ve);
-	cout<<P->toString(N->toString()+SPACE, false);
-	delete Ve;
-}
+// //Parses weighted/soft constraints ex. 
+// // 0.4536 !!next(0,1)
+// predicate(P) ::= number(N) NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET . {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->notToBeCompleted();
+// 	tree->statHasDblNeg = true;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	// P->insertToken(*(R->token));
+// 	cout<<P->toString(N->toString()+SPACE, false);
+// 	delete Ve;
+// }
 
-//0.8536 !load(T,T)
-predicate(P) ::= number(N) NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
-	P = new Predicate;
-	P->notToBeCompleted();
-	P->setVar(S->token);
-	P->setTokens(*Ve);
-	cout<<P->toString(N->toString()+SPACE+"!", false);
-	delete Ve;
-}
-//!!load(T,T).
-predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET DOT. {
-	P = new Predicate;
-	P->notToBeCompleted();
-	tree->statHasDblNeg = true;
-	P->setVar(S->token);
-	P->setTokens(*Ve);
-	std::string s1; 
-	cout<<P->toString(s1, false);
-	delete Ve;
-}
+// //0.8536 !load(T,T)
+// predicate(P) ::= number(N) NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->notToBeCompleted();
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	// P->insertToken(*(R->token));
+// 	cout<<P->toString(N->toString()+SPACE+"!", false);
+// 	delete Ve;
+// }
+// //!!load(T,T).
+// predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET DOT. {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->notToBeCompleted();
+// 	tree->statHasDblNeg = true;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	// P->insertToken(*(R->token));
+// 	std::string s1; 
+// 	cout<<P->toString(s1, false);
+// 	delete Ve;
+// }
+
+
+// /*Next section parses predicates with multi valued domains*/
+
+// //Parses hard facts ex. next(0,1).
+// predicate(P) ::=  string(S) LBRACKET variables(Ve) RBRACKET EQUAL string(S1) DOT. {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	P->insertToken(S1->toString());
+// 	std::string s1;
+// 	cout<<P->toString(s1,true);
+// 	delete Ve;
+// }
+
+// //Parses weighted/soft facts ex. 12 next(0,1)
+// predicate(P) ::= number(N) string(S) LBRACKET variables(Ve) RBRACKET EQUAL string(S1). {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	P->insertToken(S1->toString());
+// 	cout<<P->toString(N->toString()+SPACE, false);
+// 	delete Ve;
+// }
+
+// //Parses weighted/soft constraints ex. 
+// // 0.4536 !!next(0,1)
+// predicate(P) ::= number(N) NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET EQUAL string(S1). {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->notToBeCompleted();
+// 	tree->statHasDblNeg = true;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	P->insertToken(S1->toString());
+// 	cout<<P->toString(N->toString()+SPACE, false);
+// 	delete Ve;
+// }
+
+// //0.8536 !load(T,T)
+// predicate(P) ::= number(N) NEGATION string(S) LBRACKET variables(Ve) RBRACKET EQUAL string(S1). {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->notToBeCompleted();
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	P->insertToken(S1->toString());
+// 	cout<<P->toString(N->toString()+SPACE+"!", false);
+// 	delete Ve;
+// }
+// //!!load(T,T).
+// predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve)  RBRACKET EQUAL string(S1) DOT. {
+// 	// P = P1;
+// 	P = new Predicate;
+// 	P->notToBeCompleted();
+// 	tree->statHasDblNeg = true;
+// 	P->setVar(S->token);
+// 	P->setTokens(*Ve);
+// 	P->insertToken(S1->toString());
+// 	std::string s1; 
+// 	cout<<P->toString(s1, false);
+// 	delete Ve;
+// }
+
+
+
 
 //Parses domains ex. step={1,2,3}
 // domain(D) ::= string(S) EQUAL domains(Ds).{ 
