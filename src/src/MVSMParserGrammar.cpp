@@ -1316,7 +1316,10 @@ static void yy_reduce(
       case 36: /* bodydef ::= NEGATION literal */
 {	
 	yygotominor.yy43 = yymsp[0].minor.yy43;
-	yygotominor.yy43->getPredicate().setSingleNegation(true);
+	Predicate p = yygotominor.yy43->getPredicate();
+	p.setSingleNegation(true);
+	yygotominor.yy43->addPredicate(p);
+	// yygotominor.yy43->getPredicate().setSingleNegation(true);
 }
         break;
       case 37: /* bodydef ::= NEGATION NEGATION literal */

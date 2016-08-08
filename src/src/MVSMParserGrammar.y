@@ -757,7 +757,10 @@ bodydef(B) ::= literal(L).{
 // //BodyDef with negation in front
 bodydef(B) ::= NEGATION literal(L).{	
 	B = L;
-	B->getPredicate().setSingleNegation(true);
+	Predicate p = B->getPredicate();
+	p.setSingleNegation(true);
+	B->addPredicate(p);
+	// B->getPredicate().setSingleNegation(true);
 }
 
 // //BodyDef with double negation in front
