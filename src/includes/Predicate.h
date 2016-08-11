@@ -64,13 +64,15 @@ public:
 		std::string str;
 		str += s;
 		str += var;
-		str += "(";
-		for(auto it=tokens.begin();it != tokens.end(); ++it){
-			str += *it;
-			str += ",";
+		if(tokens.size() != 0){
+			str += "(";
+			for(auto it=tokens.begin();it != tokens.end(); ++it){
+				str += *it;
+				str += ",";
+			}
+			str = str.substr(0, str.size()-1);
+			str += ")";
 		}
-		str = str.substr(0, str.size()-1);
-		str += ")";
 		if(period)
 			str += ".\n";
 		else

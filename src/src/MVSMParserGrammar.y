@@ -851,7 +851,7 @@ bodydef(B) ::= string(S) NEGATION EQUAL string(S1).{
 
 %type literal{BodyDef*}
 
-literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET EQUAL string(R).{
+literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET EQUAL variable(R).{
 	std::vector<std::string> vars;
 	for(auto& v : *Ve)
 		vars.push_back(*v);
@@ -895,9 +895,9 @@ literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 literal(L) ::= variable(V).{
 	Predicate p(V->token);
 	auto itr = tree->variables.find(V->toString());
-	if(itr == tree->variables.end()){
-		throw syntax_exception("Literal "+ V->toString() + " not found.\n");
-	}
+	// if(itr == tree->variables.end()){
+	// 	throw syntax_exception("Literal "+ V->toString() + " not found.\n");
+	// }
 	L = new BodyDef;
 	L->addPredicate(p);
 }
@@ -1112,7 +1112,7 @@ string(S) ::= STRING(S1). { S=S1;}
 number(N) ::= NUMBER(N1). { N=N1;}
 
 //Parses decimals
-number(N) ::= lnumber(L) DOT rnumber(R). { 
+number(N) ::= NUMBER(L) DOT NUMBER(R). { 
 	// N = new Token(*(L->token)+"."+*(R->token));
 	N = L;
 	N->modifyToken(*(L->token)+"."+*(R->token));
