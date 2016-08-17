@@ -18,7 +18,8 @@ int MVSMLexer::Tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 		
 		"."						{ return MVSM_PARSE_TOKEN_DOT; }
 		'\000'              	{ return 0; }
-		[0-9]+					{ return MVSM_PARSE_TOKEN_NUMBER; }
+		[-]?([0-9]+[.]{1}[0-9]+|[0-9]+)
+								{ return MVSM_PARSE_TOKEN_NUMBER; }
 		"not"|"NOT"				{ return MVSM_PARSE_TOKEN_NEGATION;}
 		[a-zA-Z]+[a-zA-Z0-9]*	{ return MVSM_PARSE_TOKEN_STRING; }
 		"=>"                	{ return MVSM_PARSE_TOKEN_IMPLICATION; }

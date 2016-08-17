@@ -96,7 +96,6 @@
 #define MVSM_PARSE_TOKEN_CONSTANTS                      19
 #define MVSM_PARSE_TOKEN_STRING                         20
 #define MVSM_PARSE_TOKEN_NUMBER                         21
-#define MVSM_PARSE_TOKEN_MINUS                          22
 #endif
 /**************** End makeheaders token definitions ***************************/
 
@@ -152,7 +151,7 @@
 #endif
 /************* Begin control #defines *****************************************/
 #define YYCODETYPE unsigned char
-#define YYNOCODE 46
+#define YYNOCODE 43
 #define YYACTIONTYPE unsigned char
 #if INTERFACE
 #define MVSMParserGrammarTOKENTYPE Token*
@@ -160,14 +159,14 @@
 typedef union {
   int yyinit;
   MVSMParserGrammarTOKENTYPE yy0;
-  RuleCompletion* yy3;
-  Predicate* yy42;
-  BodyDef* yy43;
-  Body* yy49;
-  Head* yy65;
-  Tree* yy67;
-  Variable* yy73;
-  std::vector<std::string*>* yy85;
+  Tree* yy7;
+  Predicate* yy24;
+  Variable* yy37;
+  std::vector<std::string*>* yy43;
+  Head* yy53;
+  RuleCompletion* yy57;
+  BodyDef* yy72;
+  Body* yy73;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
@@ -178,16 +177,16 @@ typedef union {
 #define MVSMParserGrammarARG_FETCH Tree* tree = yypParser->tree
 #define MVSMParserGrammarARG_STORE yypParser->tree = tree
 #endif
-#define YYNSTATE             82
-#define YYNRULE              60
-#define YY_MAX_SHIFT         81
-#define YY_MIN_SHIFTREDUCE   130
-#define YY_MAX_SHIFTREDUCE   189
-#define YY_MIN_REDUCE        190
-#define YY_MAX_REDUCE        249
-#define YY_ERROR_ACTION      250
-#define YY_ACCEPT_ACTION     251
-#define YY_NO_ACTION         252
+#define YYNSTATE             77
+#define YYNRULE              56
+#define YY_MAX_SHIFT         76
+#define YY_MIN_SHIFTREDUCE   122
+#define YY_MAX_SHIFTREDUCE   177
+#define YY_MIN_REDUCE        178
+#define YY_MAX_REDUCE        233
+#define YY_ERROR_ACTION      234
+#define YY_ACCEPT_ACTION     235
+#define YY_NO_ACTION         236
 /************* End control #defines *******************************************/
 
 /* The yyzerominor constant is used to initialize instances of
@@ -259,105 +258,98 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (285)
+#define YY_ACTTAB_COUNT (267)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */   251,   42,  149,  184,   80,   40,   43,  133,   63,   66,
- /*    10 */   148,  151,   13,  163,   43,   54,    7,   65,  174,  150,
- /*    20 */   184,  163,   43,   54,    7,   65,  174,    9,   44,  164,
- /*    30 */     3,   43,  183,  165,  174,   72,  132,   63,  163,   17,
- /*    40 */    45,  183,  165,  174,   43,  171,  184,   80,   40,  169,
- /*    50 */    49,  164,   43,  170,  183,  165,  174,  131,   63,  163,
- /*    60 */    43,   50,  183,  165,  174,   16,   67,  164,  147,   43,
- /*    70 */   183,  165,  174,  144,  160,   35,  163,   43,   52,  183,
- /*    80 */    46,  174,   23,   53,  164,   43,   69,  183,  165,  174,
- /*    90 */    16,   57,  164,  159,  182,  183,  165,  174,   61,   10,
- /*   100 */   182,  138,   62,  189,  183,   61,  172,  182,  136,   62,
- /*   110 */   183,  187,  180,  184,   80,   40,   21,  183,   61,  180,
- /*   120 */   182,  135,   62,  184,   80,   40,   16,   72,   28,   36,
- /*   130 */   183,   20,  180,    5,   78,  157,   23,   72,  184,   80,
- /*   140 */    40,   19,  184,   55,  184,   80,   40,  139,  184,   80,
- /*   150 */    40,   43,   27,  183,  166,  174,   59,   18,  162,  143,
- /*   160 */    60,  183,  165,  174,  184,   80,   40,   81,   43,   27,
- /*   170 */    59,   31,   74,  141,   60,   51,   73,   16,  183,  165,
- /*   180 */   174,   43,  183,   48,  174,  184,  154,  179,   68,   43,
- /*   190 */   188,  183,  165,  174,   55,  225,  161,  190,   25,  183,
- /*   200 */   165,  174,  225,    1,  183,   47,  174,   75,  175,   33,
- /*   210 */     2,   24,   74,   16,   12,   74,   30,   34,  184,   80,
- /*   220 */    40,  155,  183,   64,  174,  183,   70,  174,   56,   58,
- /*   230 */   182,  182,   59,   22,   74,  140,   60,  182,   29,  142,
- /*   240 */   183,  183,  180,  180,  183,  167,  174,  183,  226,  181,
- /*   250 */   227,    4,  222,    6,    8,  226,  168,  227,   13,  222,
- /*   260 */    14,   15,   27,   11,  137,   26,   23,   71,  192,   77,
- /*   270 */    32,  134,  192,  192,   37,  192,   38,   39,   76,  192,
- /*   280 */    79,  192,  192,  186,   41,
+ /*     0 */   235,   40,  141,   16,   57,  163,   41,  135,   58,  176,
+ /*    10 */   140,  143,  152,  155,   41,   52,    7,   63,  166,  142,
+ /*    20 */   161,  155,   41,   52,    7,   63,  166,    9,   42,  156,
+ /*    30 */     3,   41,  175,  157,  166,   70,   16,    5,  155,   17,
+ /*    40 */    43,  175,  157,  166,   41,  149,  176,  177,  176,  177,
+ /*    50 */    47,  156,   41,  162,  175,  157,  166,  171,   35,  155,
+ /*    60 */    41,   48,  175,  157,  166,   23,   65,  156,   41,   67,
+ /*    70 */   175,  157,  166,  176,  177,  155,   41,   50,  175,   44,
+ /*    80 */   166,   70,   51,  156,   41,   20,  175,  157,  166,  139,
+ /*    90 */    55,  156,  176,  177,  175,  157,  166,   27,   59,   16,
+ /*   100 */   174,  130,   60,   59,   25,  174,  128,   60,  146,   31,
+ /*   110 */   175,  176,  172,   73,   41,  175,   59,  172,  174,  127,
+ /*   120 */    60,  154,   53,  176,  175,  157,  166,  136,  175,  131,
+ /*   130 */   172,   41,  175,  158,  166,  167,   57,   41,   49,  133,
+ /*   140 */    58,  175,  157,  166,   66,   41,    2,  175,  157,  166,
+ /*   150 */    72,  213,  153,  178,  174,  175,  157,  166,  213,    1,
+ /*   160 */   175,   46,  166,   70,  175,   33,  164,   19,   53,   16,
+ /*   170 */    12,   72,   29,   64,  176,  177,   13,   72,  175,   45,
+ /*   180 */   166,  175,   62,  166,   54,  174,  174,  175,   68,  166,
+ /*   190 */    72,   56,   36,  174,   10,  175,  175,  173,  172,   23,
+ /*   200 */   175,  159,  166,  175,   21,  172,  214,   18,  176,  177,
+ /*   210 */    24,  176,  177,  214,  176,  177,   57,  176,  177,  132,
+ /*   220 */    58,  215,   16,  125,   61,  151,  124,   61,  215,  123,
+ /*   230 */    61,    4,  210,    6,    8,  147,  160,   30,   13,  210,
+ /*   240 */    14,   15,   30,   30,   71,   34,   26,   37,  180,   75,
+ /*   250 */    28,  134,  180,   11,  129,   22,   32,  126,   76,   69,
+ /*   260 */    23,  180,  180,   38,  180,   74,   39,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    24,   25,   26,   20,   21,   22,   30,   29,   30,    5,
- /*    10 */    26,   35,    8,   37,   30,   39,   40,   41,   42,   35,
- /*    20 */    20,   37,   30,   39,   40,   41,   42,    1,   36,   37,
- /*    30 */     4,   30,   40,   41,   42,    9,   29,   30,   37,   13,
- /*    40 */    39,   40,   41,   42,   30,   30,   20,   21,   22,   30,
- /*    50 */    36,   37,   30,   30,   40,   41,   42,   29,   30,   37,
- /*    60 */    30,   39,   40,   41,   42,    7,   36,   37,   30,   30,
- /*    70 */    40,   41,   42,   30,   16,    2,   37,   30,   39,   40,
- /*    80 */    41,   42,    9,   36,   37,   30,   13,   40,   41,   42,
- /*    90 */     7,   36,   37,   10,   30,   40,   41,   42,   28,    6,
- /*   100 */    30,   31,   32,   21,   40,   28,   42,   30,   31,   32,
- /*   110 */    40,   44,   42,   20,   21,   22,   13,   40,   28,   42,
- /*   120 */    30,   31,   32,   20,   21,   22,    7,    9,    6,    2,
- /*   130 */    40,   13,   42,    9,   43,   16,    9,    9,   20,   21,
- /*   140 */    22,   13,   20,   30,   20,   21,   22,   30,   20,   21,
- /*   150 */    22,   30,    3,   40,   41,   42,   30,   13,   37,   33,
- /*   160 */    34,   40,   41,   42,   20,   21,   22,   18,   30,    3,
- /*   170 */    30,    6,   30,   33,   34,   37,   10,    7,   40,   41,
- /*   180 */    42,   30,   40,   41,   42,   20,   16,   16,   37,   30,
- /*   190 */    21,   40,   41,   42,   30,    1,   37,    0,    9,   40,
- /*   200 */    41,   42,    8,    6,   40,   41,   42,   18,   16,   12,
- /*   210 */     1,   13,   30,    7,   17,   30,   19,    2,   20,   21,
- /*   220 */    22,   16,   40,   41,   42,   40,   41,   42,   28,   28,
- /*   230 */    30,   30,   30,   13,   30,   33,   34,   30,   15,   16,
- /*   240 */    40,   40,   42,   42,   40,   41,   42,   40,    1,   42,
- /*   250 */     1,    1,    1,    1,    1,    8,   10,    8,    8,    8,
- /*   260 */     8,    8,    3,   15,   16,    2,    9,   13,   45,   10,
- /*   270 */    15,   16,   45,   45,   18,   45,   18,   16,   18,   45,
- /*   280 */    16,   45,   45,   21,   18,
+ /*     0 */    23,   24,   25,    7,   29,   29,   29,   32,   33,   20,
+ /*    10 */    25,   34,   16,   36,   29,   38,   39,   40,   41,   34,
+ /*    20 */    29,   36,   29,   38,   39,   40,   41,    1,   35,   36,
+ /*    30 */     4,   29,   39,   40,   41,    9,    7,    9,   36,   13,
+ /*    40 */    38,   39,   40,   41,   29,   16,   20,   21,   20,   21,
+ /*    50 */    35,   36,   29,   29,   39,   40,   41,   16,    2,   36,
+ /*    60 */    29,   38,   39,   40,   41,    9,   35,   36,   29,   13,
+ /*    70 */    39,   40,   41,   20,   21,   36,   29,   38,   39,   40,
+ /*    80 */    41,    9,   35,   36,   29,   13,   39,   40,   41,   29,
+ /*    90 */    35,   36,   20,   21,   39,   40,   41,    6,   27,    7,
+ /*   100 */    29,   30,   31,   27,    9,   29,   30,   31,   16,    6,
+ /*   110 */    39,   20,   41,   18,   29,   39,   27,   41,   29,   30,
+ /*   120 */    31,   36,   29,   20,   39,   40,   41,   29,   39,   29,
+ /*   130 */    41,   29,   39,   40,   41,   16,   29,   29,   36,   32,
+ /*   140 */    33,   39,   40,   41,   36,   29,    1,   39,   40,   41,
+ /*   150 */    29,    1,   36,    0,   29,   39,   40,   41,    8,    6,
+ /*   160 */    39,   40,   41,    9,   39,   12,   41,   13,   29,    7,
+ /*   170 */    17,   29,   19,    5,   20,   21,    8,   29,   39,   40,
+ /*   180 */    41,   39,   40,   41,   27,   29,   29,   39,   40,   41,
+ /*   190 */    29,   27,    2,   29,    6,   39,   39,   41,   41,    9,
+ /*   200 */    39,   40,   41,   39,   13,   41,    1,   13,   20,   21,
+ /*   210 */    13,   20,   21,    8,   20,   21,   29,   20,   21,   32,
+ /*   220 */    33,    1,    7,   28,   29,   10,   28,   29,    8,   28,
+ /*   230 */    29,    1,    1,    1,    1,   16,   10,    3,    8,    8,
+ /*   240 */     8,    8,    3,    3,   10,    2,    2,   18,   42,   10,
+ /*   250 */    15,   16,   42,   15,   16,   13,   15,   16,   18,   13,
+ /*   260 */     9,   42,   42,   18,   42,   18,   18,
 };
-#define YY_SHIFT_USE_DFLT (-18)
-#define YY_SHIFT_COUNT (81)
-#define YY_SHIFT_MIN   (-17)
-#define YY_SHIFT_MAX   (266)
+#define YY_SHIFT_USE_DFLT (-12)
+#define YY_SHIFT_COUNT (76)
+#define YY_SHIFT_MIN   (-11)
+#define YY_SHIFT_MAX   (251)
 static const short yy_shift_ofst[] = {
- /*     0 */    26,   26,  118,  118,  118,  118,  118,  128,  118,  118,
- /*    10 */    93,   93,   93,  118,  118,  118,  118,  103,  124,  144,
- /*    20 */   198,  -17,  -17,  -17,  -17,  -17,  -17,  -17,  122,  122,
- /*    30 */   122,  165,  165,  165,    0,    0,    0,    0,    0,   82,
- /*    40 */   169,    0,  197,   73,   58,    4,  194,  247,  249,   83,
- /*    50 */   250,  251,  252,  119,  253,  127,  166,  170,  259,  189,
- /*    60 */   223,  149,  248,  255,  171,  192,  209,  206,  205,  215,
- /*    70 */   246,  220,  254,  263,  257,  256,  258,  260,  261,  262,
- /*    80 */   264,  266,
+ /*     0 */    26,   26,   72,   72,   72,   72,   72,  154,   72,   72,
+ /*    10 */   188,  188,  188,   72,   72,   72,   72,  191,   28,  194,
+ /*    20 */   197,   53,   53,   53,   53,   53,   53,   91,   91,   91,
+ /*    30 */    53,  103,  103,  103,  -11,  -11,  -11,  -11,  -11,  -11,
+ /*    40 */   153,   56,   -4,  168,  150,  205,  220,  215,  230,  231,
+ /*    50 */   232,   29,  233,  190,  234,   92,  239,   95,  235,  240,
+ /*    60 */   238,  241,   41,  119,  145,  162,  219,  243,  226,  242,
+ /*    70 */   246,  244,  251,  229,  245,  247,  248,
 };
-#define YY_REDUCE_USE_DFLT (-25)
-#define YY_REDUCE_COUNT (41)
-#define YY_REDUCE_MIN   (-24)
-#define YY_REDUCE_MAX   (207)
+#define YY_REDUCE_USE_DFLT (-26)
+#define YY_REDUCE_COUNT (39)
+#define YY_REDUCE_MIN   (-25)
+#define YY_REDUCE_MAX   (201)
 static const short yy_reduce_ofst[] = {
- /*     0 */   -24,  -16,   -8,    1,   14,   22,   30,   39,   47,   55,
- /*    10 */    70,   77,   90,  121,  138,  151,  159,  113,  142,  164,
- /*    20 */   113,  182,  185,  200,  204,  201,   64,  207,  126,  140,
- /*    30 */   202,  -22,    7,   28,   15,   19,   23,   38,   43,   67,
- /*    40 */    91,  117,
+ /*     0 */   -23,  -15,   -7,    2,   15,   23,   31,   39,   47,   55,
+ /*    10 */    71,   76,   89,   85,  102,  108,  116,   93,  121,  139,
+ /*    20 */    93,  142,  148,  157,  161,  164,  125,  -25,  107,  187,
+ /*    30 */   156,  195,  198,  201,  -24,   -9,   24,   60,   98,  100,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */   213,  212,  250,  250,  250,  250,  250,  243,  250,  250,
- /*    10 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  250,
- /*    20 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  250,
- /*    30 */   250,  250,  250,  250,  250,  250,  250,  250,  250,  250,
- /*    40 */   250,  250,  250,  242,  250,  250,  236,  238,  237,  250,
- /*    50 */   250,  216,  250,  250,  250,  242,  250,  250,  250,  206,
- /*    60 */   250,  250,  250,  250,  227,  225,  250,  218,  222,  250,
- /*    70 */   250,  250,  250,  233,  242,  250,  250,  205,  250,  250,
- /*    80 */   245,  250,
+ /*     0 */   201,  200,  234,  234,  234,  234,  234,  231,  234,  234,
+ /*    10 */   234,  234,  234,  234,  234,  234,  234,  234,  234,  234,
+ /*    20 */   234,  234,  234,  234,  234,  234,  234,  234,  234,  234,
+ /*    30 */   234,  234,  234,  234,  234,  234,  234,  234,  234,  234,
+ /*    40 */   234,  230,  234,  234,  224,  226,  225,  234,  234,  204,
+ /*    50 */   234,  234,  234,  230,  234,  234,  234,  194,  234,  234,
+ /*    60 */   234,  234,  215,  213,  234,  206,  210,  234,  234,  234,
+ /*    70 */   234,  221,  230,  234,  234,  193,  234,
 };
 /********** End of lemon-generated parsing tables *****************************/
 
@@ -464,13 +456,12 @@ static const char *const yyTokenName[] = {
   "DISJUNCTION",   "LBRACKET",      "RBRACKET",      "IMPLICATION", 
   "SORTS",         "NEGATION",      "WS",            "SEMI_COLON",  
   "DOT",           "OBJECTS",       "COLON",         "CONSTANTS",   
-  "STRING",        "NUMBER",        "MINUS",         "error",       
-  "start",         "prog",          "predicate",     "decl",        
-  "variables",     "sortdecl",      "string",        "objectdecl",  
-  "object",        "constantdecl",  "constant",      "rule",        
-  "body",          "bodydef",       "bodydef2",      "head",        
-  "number",        "literal",       "variable",      "lnumber",     
-  "rnumber",     
+  "STRING",        "NUMBER",        "error",         "start",       
+  "prog",          "predicate",     "decl",          "variables",   
+  "sortdecl",      "string",        "objectdecl",    "object",      
+  "constantdecl",  "constant",      "rule",          "body",        
+  "bodydef",       "bodydef2",      "head",          "number",      
+  "literal",       "variable",    
 };
 #endif /* NDEBUG */
 
@@ -534,10 +525,6 @@ static const char *const yyRuleName[] = {
  /*  53 */ "variable ::= number",
  /*  54 */ "string ::= STRING",
  /*  55 */ "number ::= NUMBER",
- /*  56 */ "number ::= NUMBER DOT NUMBER",
- /*  57 */ "number ::= MINUS lnumber DOT rnumber",
- /*  58 */ "lnumber ::= NUMBER",
- /*  59 */ "rnumber ::= NUMBER",
 };
 #endif /* NDEBUG */
 
@@ -866,66 +853,62 @@ static const struct {
   YYCODETYPE lhs;         /* Symbol on the left-hand side of the rule */
   unsigned char nrhs;     /* Number of right-hand side symbols in the rule */
 } yyRuleInfo[] = {
-  { 24, 1 },
-  { 25, 3 },
-  { 29, 3 },
-  { 29, 2 },
-  { 29, 2 },
-  { 25, 3 },
-  { 31, 3 },
-  { 31, 2 },
-  { 31, 2 },
-  { 32, 4 },
-  { 25, 3 },
-  { 33, 3 },
-  { 33, 2 },
-  { 33, 2 },
-  { 34, 7 },
-  { 34, 4 },
-  { 34, 1 },
-  { 34, 4 },
-  { 25, 3 },
-  { 25, 1 },
-  { 25, 3 },
-  { 25, 1 },
-  { 25, 2 },
-  { 25, 0 },
-  { 35, 3 },
-  { 35, 4 },
-  { 35, 4 },
-  { 35, 4 },
-  { 35, 4 },
-  { 35, 8 },
-  { 35, 6 },
-  { 36, 3 },
-  { 39, 3 },
-  { 39, 1 },
-  { 36, 1 },
-  { 37, 1 },
-  { 37, 2 },
-  { 37, 3 },
-  { 37, 5 },
-  { 37, 3 },
-  { 37, 4 },
-  { 37, 4 },
-  { 41, 6 },
-  { 41, 4 },
-  { 41, 1 },
-  { 26, 2 },
-  { 26, 2 },
-  { 26, 4 },
-  { 26, 3 },
-  { 26, 4 },
-  { 28, 1 },
+  { 23, 1 },
+  { 24, 3 },
   { 28, 3 },
-  { 42, 1 },
-  { 42, 1 },
-  { 30, 1 },
-  { 40, 1 },
-  { 40, 3 },
+  { 28, 2 },
+  { 28, 2 },
+  { 24, 3 },
+  { 30, 3 },
+  { 30, 2 },
+  { 30, 2 },
+  { 31, 4 },
+  { 24, 3 },
+  { 32, 3 },
+  { 32, 2 },
+  { 32, 2 },
+  { 33, 7 },
+  { 33, 4 },
+  { 33, 1 },
+  { 33, 4 },
+  { 24, 3 },
+  { 24, 1 },
+  { 24, 3 },
+  { 24, 1 },
+  { 24, 2 },
+  { 24, 0 },
+  { 34, 3 },
+  { 34, 4 },
+  { 34, 4 },
+  { 34, 4 },
+  { 34, 4 },
+  { 34, 8 },
+  { 34, 6 },
+  { 35, 3 },
+  { 38, 3 },
+  { 38, 1 },
+  { 35, 1 },
+  { 36, 1 },
+  { 36, 2 },
+  { 36, 3 },
+  { 36, 5 },
+  { 36, 3 },
+  { 36, 4 },
+  { 36, 4 },
+  { 40, 6 },
   { 40, 4 },
-  { 43, 1 },
-  { 44, 1 },
+  { 40, 1 },
+  { 25, 2 },
+  { 25, 2 },
+  { 25, 4 },
+  { 25, 3 },
+  { 25, 4 },
+  { 27, 1 },
+  { 27, 3 },
+  { 41, 1 },
+  { 41, 1 },
+  { 29, 1 },
+  { 39, 1 },
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -991,7 +974,7 @@ static void yy_reduce(
 		auto itr = tree->domainNamesList.find(yymsp[0].minor.yy0->toString());
 		if(itr != tree->domainNamesList.end()){
 			Domain* d  = new Domain(yymsp[0].minor.yy0->toString());
-			d->setVars(*yymsp[-3].minor.yy85);
+			d->setVars(*yymsp[-3].minor.yy43);
 			tree->domains.insert(*d);
 			for(auto& v : d->getVars()){
 				tree->domainList.insert(v);	
@@ -1023,14 +1006,14 @@ static void yy_reduce(
 	// 		va->setRhsDomain(*itr);
 	// 	}
 
-	// 	va->setVar(yymsp[-3].minor.yy85->at(0));
+	// 	va->setVar(yymsp[-3].minor.yy43->at(0));
 	// 	va->setPosMap(posMap);
 	// 	tree->variables.insert(*va);
 	// 	cout<<va->toString();
 	// 	delete va;
 			
 	// }
-	delete yymsp[-3].minor.yy85;
+	delete yymsp[-3].minor.yy43;
 }
         break;
       case 14: /* constant ::= string LBRACKET variables RBRACKET COLON COLON string */
@@ -1039,7 +1022,7 @@ static void yy_reduce(
 	std::map<int, Domain> posMap;
 	std::set<Domain>::iterator itr;
 	int i=0;
-	for(auto& v : *yymsp[-4].minor.yy85){
+	for(auto& v : *yymsp[-4].minor.yy43){
 		itr = tree->domains.find(*v);
 		if (itr == tree->domains.end()){
 			// std::cout<<"Error:Domain:"+ *v +" not found.\n";
@@ -1066,7 +1049,7 @@ static void yy_reduce(
 	tree->variables.insert(*va);
 	cout<<va->toString();
 	delete va;
-	delete yymsp[-4].minor.yy85;
+	delete yymsp[-4].minor.yy43;
 }
         break;
       case 15: /* constant ::= string LBRACKET variables RBRACKET */
@@ -1075,7 +1058,7 @@ static void yy_reduce(
 	std::map<int, Domain> posMap;
 	std::set<Domain>::iterator itr;
 	int i=0;
-	for(auto& v : *yymsp[-1].minor.yy85){
+	for(auto& v : *yymsp[-1].minor.yy43){
 		itr = tree->domains.find(*v);
 		if (itr == tree->domains.end()){
 			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
@@ -1089,7 +1072,7 @@ static void yy_reduce(
 	va->setPosMap(posMap);
 	tree->variables.insert(*va);
 	cout<<va->toString();
-	delete yymsp[-1].minor.yy85;
+	delete yymsp[-1].minor.yy43;
 	delete va;
 }
         break;
@@ -1128,213 +1111,213 @@ static void yy_reduce(
         break;
       case 18: /* prog ::= prog NEWLINE predicate */
 { 
-	if(yymsp[0].minor.yy42->needsToBeCompleted()){	
-		FactCompletion f(*yymsp[0].minor.yy42);
+	if(yymsp[0].minor.yy24->needsToBeCompleted()){	
+		FactCompletion f(*yymsp[0].minor.yy24);
 		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 
 	}	
-	delete yymsp[0].minor.yy42;
+	delete yymsp[0].minor.yy24;
 }
         break;
       case 19: /* prog ::= predicate */
 { 
-	if(yymsp[0].minor.yy42->needsToBeCompleted()){
-		FactCompletion f(*yymsp[0].minor.yy42);
+	if(yymsp[0].minor.yy24->needsToBeCompleted()){
+		FactCompletion f(*yymsp[0].minor.yy24);
 		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 	
 	}
-	delete yymsp[0].minor.yy42;
+	delete yymsp[0].minor.yy24;
 }
         break;
       case 20: /* prog ::= prog NEWLINE rule */
       case 21: /* prog ::= rule */ yytestcase(yyruleno==21);
 {
-	if((yymsp[0].minor.yy3->isHeadTop == false) && (yymsp[0].minor.yy3->toBeCompleted == true))
-		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy3->getHead().getVar(),*yymsp[0].minor.yy3));
-	delete yymsp[0].minor.yy3;
+	if((yymsp[0].minor.yy57->isHeadTop == false) && (yymsp[0].minor.yy57->toBeCompleted == true))
+		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy57->getHead().getVar(),*yymsp[0].minor.yy57));
+	delete yymsp[0].minor.yy57;
 }
         break;
       case 24: /* rule ::= REVERSE_IMPLICATION body DOT */
 {
-	yygotominor.yy3 = new RuleCompletion;
-	yygotominor.yy3->isHeadTop = true;
-	// yymsp[-1].minor.yy49->appendStr(yymsp[-1].minor.yy49->getPredicate().toString(),false,false,true);
-	std::cout<<"!("<<yymsp[-1].minor.yy49->toString()<<")."<<"\n";	
-	delete yymsp[-1].minor.yy49;
+	yygotominor.yy57 = new RuleCompletion;
+	yygotominor.yy57->isHeadTop = true;
+	// yymsp[-1].minor.yy73->appendStr(yymsp[-1].minor.yy73->getPredicate().toString(),false,false,true);
+	std::cout<<"!("<<yymsp[-1].minor.yy73->toString()<<")."<<"\n";	
+	delete yymsp[-1].minor.yy73;
 	// delete B1;
 }
         break;
       case 25: /* rule ::= head DISJUNCTION bodydef DOT */
 {
 	//Doing this 
-	yygotominor.yy3 = new RuleCompletion;
-	yygotominor.yy3->isHeadTop = true;
-	yymsp[-3].minor.yy65->addPredicate(yymsp[-1].minor.yy43->getPredicate());
-	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-3].minor.yy65,yymsp[-1].minor.yy43)
+	yygotominor.yy57 = new RuleCompletion;
+	yygotominor.yy57->isHeadTop = true;
+	yymsp[-3].minor.yy53->addPredicate(yymsp[-1].minor.yy72->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-3].minor.yy53,yymsp[-1].minor.yy72)
 	try{
-		RuleCompletion_HD_BT(yymsp[-3].minor.yy65,tree);
+		RuleCompletion_HD_BT(yymsp[-3].minor.yy53,tree);
 	}
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	yymsp[-3].minor.yy65->appendStr(yymsp[-1].minor.yy43->getPredicate().toString(),false,true,false);
-	std::cout<<yymsp[-3].minor.yy65->toString()<<"."<<"\n";
-	delete yymsp[-3].minor.yy65;
-	delete yymsp[-1].minor.yy43;
+	yymsp[-3].minor.yy53->appendStr(yymsp[-1].minor.yy72->getPredicate().toString(),false,true,false);
+	std::cout<<yymsp[-3].minor.yy53->toString()<<"."<<"\n";
+	delete yymsp[-3].minor.yy53;
+	delete yymsp[-1].minor.yy72;
 }
         break;
       case 26: /* rule ::= number head DISJUNCTION bodydef */
 {
 	//Doing this 
-	yygotominor.yy3 = new RuleCompletion;
-	yygotominor.yy3->isHeadTop = true;
-	yymsp[-2].minor.yy65->addPredicate(yymsp[0].minor.yy43->getPredicate());
-	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-2].minor.yy65,yymsp[0].minor.yy43)
+	yygotominor.yy57 = new RuleCompletion;
+	yygotominor.yy57->isHeadTop = true;
+	yymsp[-2].minor.yy53->addPredicate(yymsp[0].minor.yy72->getPredicate());
+	// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-2].minor.yy53,yymsp[0].minor.yy72)
 	try{
-		RuleCompletion_HD_BT(yymsp[-2].minor.yy65,tree);
+		RuleCompletion_HD_BT(yymsp[-2].minor.yy53,tree);
 	}
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	yymsp[-2].minor.yy65->appendStr(yymsp[0].minor.yy43->getPredicate().toString(),false,true,false);
-	std::cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[-2].minor.yy65->toString()<<"\n";
-	delete yymsp[-2].minor.yy65;
-	delete yymsp[0].minor.yy43;
+	yymsp[-2].minor.yy53->appendStr(yymsp[0].minor.yy72->getPredicate().toString(),false,true,false);
+	std::cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[-2].minor.yy53->toString()<<"\n";
+	delete yymsp[-2].minor.yy53;
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 27: /* rule ::= head REVERSE_IMPLICATION body DOT */
 {
-	yygotominor.yy3 = new RuleCompletion;
+	yygotominor.yy57 = new RuleCompletion;
 
-	if (yymsp[-3].minor.yy65->getDisjunction()){
-		// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-3].minor.yy65,yymsp[-1].minor.yy49)
-		yygotominor.yy3->isHeadTop = true;
-		RuleCompletion_HD_BC(yymsp[-3].minor.yy65,yymsp[-1].minor.yy49,true,tree);
-		std::cout<<yymsp[-1].minor.yy49->toString()<<" => "<<yymsp[-3].minor.yy65->toString()<<"."<<"\n";
+	if (yymsp[-3].minor.yy53->getDisjunction()){
+		// RULE_COMPLETION_HEAD_DIS_BODY_TOP(yymsp[-3].minor.yy53,yymsp[-1].minor.yy73)
+		yygotominor.yy57->isHeadTop = true;
+		RuleCompletion_HD_BC(yymsp[-3].minor.yy53,yymsp[-1].minor.yy73,true,tree);
+		std::cout<<yymsp[-1].minor.yy73->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"."<<"\n";
 		// std::cout << op;
 	}
 	else{
-		// RULE_COMPLETION_BH(yymsp[-1].minor.yy49,yymsp[-3].minor.yy65);
-		// yygotominor.yy3 = new RuleCompletion(yymsp[-3].minor.yy65->getPredicate(),predList, resultMap, varMap);
+		// RULE_COMPLETION_BH(yymsp[-1].minor.yy73,yymsp[-3].minor.yy53);
+		// yygotominor.yy57 = new RuleCompletion(yymsp[-3].minor.yy53->getPredicate(),predList, resultMap, varMap);
 		try{
-			yygotominor.yy3 = RuleCompletion_BH(yymsp[-1].minor.yy49,yymsp[-3].minor.yy65,tree);
+			yygotominor.yy57 = RuleCompletion_BH(yymsp[-1].minor.yy73,yymsp[-3].minor.yy53,tree);
 		}
 		catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 		}
-		std::cout<<yymsp[-1].minor.yy49->toString()<<" => "<<yymsp[-3].minor.yy65->toString()<<"."<<"\n";
+		std::cout<<yymsp[-1].minor.yy73->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"."<<"\n";
 	}
-	delete yymsp[-1].minor.yy49;
-	delete yymsp[-3].minor.yy65;
+	delete yymsp[-1].minor.yy73;
+	delete yymsp[-3].minor.yy53;
 }
         break;
       case 28: /* rule ::= number head REVERSE_IMPLICATION body */
 {
-	// RULE_COMPLETION_BH(yymsp[0].minor.yy49,yymsp[-2].minor.yy65);
-	// yygotominor.yy3 = new RuleCompletion(yymsp[-2].minor.yy65->getPredicate(),predList, resultMap, varMap);
+	// RULE_COMPLETION_BH(yymsp[0].minor.yy73,yymsp[-2].minor.yy53);
+	// yygotominor.yy57 = new RuleCompletion(yymsp[-2].minor.yy53->getPredicate(),predList, resultMap, varMap);
 	try{
-		yygotominor.yy3 = RuleCompletion_BH(yymsp[0].minor.yy49,yymsp[-2].minor.yy65,tree);
+		yygotominor.yy57 = RuleCompletion_BH(yymsp[0].minor.yy73,yymsp[-2].minor.yy53,tree);
 	}
 	catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	std::cout<< yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[0].minor.yy49->toString()<<" => "<<yymsp[-2].minor.yy65->toString()<<"\n";
-	delete yymsp[0].minor.yy49;
-	delete yymsp[-2].minor.yy65;
+	std::cout<< yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[0].minor.yy73->toString()<<" => "<<yymsp[-2].minor.yy53->toString()<<"\n";
+	delete yymsp[0].minor.yy73;
+	delete yymsp[-2].minor.yy53;
 }
         break;
       case 29: /* rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET */
 {
-	yygotominor.yy3 = new RuleCompletion;
-	yygotominor.yy3->isHeadTop = true;	
+	yygotominor.yy57 = new RuleCompletion;
+	yygotominor.yy57->isHeadTop = true;	
 	tree->statHasDblNeg = true;
-	std::cout<< yymsp[-7].minor.yy0->toString() << SPACE <<"!!("<<yymsp[-1].minor.yy49->toString()<<" => "<<yymsp[-3].minor.yy65->toString()<<"\n"; 
-	delete yymsp[-1].minor.yy49;
-	delete yymsp[-3].minor.yy65;
+	std::cout<< yymsp[-7].minor.yy0->toString() << SPACE <<"!!("<<yymsp[-1].minor.yy73->toString()<<" => "<<yymsp[-3].minor.yy53->toString()<<"\n"; 
+	delete yymsp[-1].minor.yy73;
+	delete yymsp[-3].minor.yy53;
 }
         break;
       case 30: /* rule ::= LPAREN head RPAREN REVERSE_IMPLICATION body DOT */
 {
 	
-	if (yymsp[-4].minor.yy65->getPredicate().checkEquality() != 0){
+	if (yymsp[-4].minor.yy53->getPredicate().checkEquality() != 0){
 		throw syntax_exception("Cannot have equality/Inequlity as a part of choice rule\n");
 	}
 
-	// RULE_COMPLETION_BH(yymsp[-1].minor.yy49,yymsp[-4].minor.yy65);
-	// yygotominor.yy3 = new RuleCompletion(yymsp[-4].minor.yy65->getPredicate(),predList, resultMap, varMap);
+	// RULE_COMPLETION_BH(yymsp[-1].minor.yy73,yymsp[-4].minor.yy53);
+	// yygotominor.yy57 = new RuleCompletion(yymsp[-4].minor.yy53->getPredicate(),predList, resultMap, varMap);
 	try{
-		yygotominor.yy3 = RuleCompletion_BH(yymsp[-1].minor.yy49,yymsp[-4].minor.yy65,tree);
+		yygotominor.yy57 = RuleCompletion_BH(yymsp[-1].minor.yy73,yymsp[-4].minor.yy53,tree);
 	}
 	catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	std::cout<<COMMENT<<yymsp[-1].minor.yy49->toString()<<" => "<<yymsp[-4].minor.yy65->toString()<<"\n";
-	delete yymsp[-1].minor.yy49;
-	delete yymsp[-4].minor.yy65;
+	std::cout<<COMMENT<<yymsp[-1].minor.yy73->toString()<<" => "<<yymsp[-4].minor.yy53->toString()<<"\n";
+	delete yymsp[-1].minor.yy73;
+	delete yymsp[-4].minor.yy53;
 }
         break;
       case 31: /* body ::= body CONJUNCTION bodydef */
 {
-	yygotominor.yy49 = yymsp[-2].minor.yy49;
-	yymsp[-2].minor.yy49->addPredicate(yymsp[0].minor.yy43->getPredicate());
-	yygotominor.yy49->appendStr(yymsp[0].minor.yy43->getPredicate().toString(),false,false,true);
-	delete yymsp[0].minor.yy43;
+	yygotominor.yy73 = yymsp[-2].minor.yy73;
+	yymsp[-2].minor.yy73->addPredicate(yymsp[0].minor.yy72->getPredicate());
+	yygotominor.yy73->appendStr(yymsp[0].minor.yy72->getPredicate().toString(),false,false,true);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 32: /* head ::= head DISJUNCTION bodydef */
 {
-	yygotominor.yy65 = yymsp[-2].minor.yy65;
-	yymsp[-2].minor.yy65->addPredicate(yymsp[0].minor.yy43->getPredicate());
-	yygotominor.yy65->appendStr(yymsp[0].minor.yy43->getPredicate().toString(),false,true,false);
-	yygotominor.yy65->setDisjunction(true);
-	delete yymsp[0].minor.yy43;
+	yygotominor.yy53 = yymsp[-2].minor.yy53;
+	yymsp[-2].minor.yy53->addPredicate(yymsp[0].minor.yy72->getPredicate());
+	yygotominor.yy53->appendStr(yymsp[0].minor.yy72->getPredicate().toString(),false,true,false);
+	yygotominor.yy53->setDisjunction(true);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 33: /* head ::= bodydef */
 {
-	yygotominor.yy65 = new Head(yymsp[0].minor.yy43->getPredicate());
-	// yygotominor.yy65->addPredicate(yymsp[0].minor.yy43->getPredicate());
-	yygotominor.yy65->appendStr(yymsp[0].minor.yy43->getPredicate().toString(),false,false,false);
-	delete yymsp[0].minor.yy43;
+	yygotominor.yy53 = new Head(yymsp[0].minor.yy72->getPredicate());
+	// yygotominor.yy53->addPredicate(yymsp[0].minor.yy72->getPredicate());
+	yygotominor.yy53->appendStr(yymsp[0].minor.yy72->getPredicate().toString(),false,false,false);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 34: /* body ::= bodydef */
 {
-	yygotominor.yy49 = new Body;
-	yygotominor.yy49->addPredicate(yymsp[0].minor.yy43->getPredicate());
-	yygotominor.yy49->appendStr(yymsp[0].minor.yy43->getPredicate().toString(),false,false,false);
-	delete yymsp[0].minor.yy43;
+	yygotominor.yy73 = new Body;
+	yygotominor.yy73->addPredicate(yymsp[0].minor.yy72->getPredicate());
+	yygotominor.yy73->appendStr(yymsp[0].minor.yy72->getPredicate().toString(),false,false,false);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 35: /* bodydef ::= literal */
 {	
-	yygotominor.yy43 = yymsp[0].minor.yy43;
+	yygotominor.yy72 = yymsp[0].minor.yy72;
 }
         break;
       case 36: /* bodydef ::= NEGATION literal */
 {	
-	yygotominor.yy43 = yymsp[0].minor.yy43;
-	Predicate p = yygotominor.yy43->getPredicate();
+	yygotominor.yy72 = yymsp[0].minor.yy72;
+	Predicate p = yygotominor.yy72->getPredicate();
 	p.setSingleNegation(true);
-	yygotominor.yy43->addPredicate(p);
-	// yygotominor.yy43->getPredicate().setSingleNegation(true);
+	yygotominor.yy72->addPredicate(p);
+	// yygotominor.yy72->getPredicate().setSingleNegation(true);
 }
         break;
       case 37: /* bodydef ::= NEGATION NEGATION literal */
 {	
-	yygotominor.yy43 = yymsp[0].minor.yy43;
+	yygotominor.yy72 = yymsp[0].minor.yy72;
 	tree->statHasDblNeg = true;
-	yygotominor.yy43->getPredicate().setDoubleNegation(true);
+	yygotominor.yy72->getPredicate().setDoubleNegation(true);
 }
         break;
       case 38: /* bodydef ::= LBRACKET NEGATION NEGATION literal RBRACKET */
 {	
-	yygotominor.yy43 = yymsp[-1].minor.yy43;
+	yygotominor.yy72 = yymsp[-1].minor.yy72;
 	tree->statHasDblNeg = true;
-	yygotominor.yy43->getPredicate().setDoubleNegation(true);
+	yygotominor.yy72->getPredicate().setDoubleNegation(true);
 }
         break;
       case 39: /* bodydef ::= string EQUAL string */
 {
-	yygotominor.yy43 = new BodyDef;
+	yygotominor.yy72 = new BodyDef;
 	auto itr = tree->variables.find(*(yymsp[-2].minor.yy0->token));
 	if (itr != tree->variables.end()){
 		/*Treat it as a bodydef with 1 variable*/
@@ -1354,10 +1337,10 @@ static void yy_reduce(
 		std::vector<std::string> vars;
 		vars.push_back(*(yymsp[0].minor.yy0->token));
 		Predicate p(yymsp[-2].minor.yy0->token, vars);
-		yygotominor.yy43->addPredicate(p);
+		yygotominor.yy72->addPredicate(p);
 		int expectedArgs = (tree->variables.find(*(yymsp[-2].minor.yy0->token)))->getSize();
 		if (expectedArgs != vars.size()){
-			delete yygotominor.yy43;
+			delete yygotominor.yy72;
 			throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-2].minor.yy0->token));
 		}
 	}
@@ -1365,7 +1348,7 @@ static void yy_reduce(
 	else{
 		Predicate p(yymsp[-2].minor.yy0->token,yymsp[0].minor.yy0->token);
 		p.setEquality();
-		yygotominor.yy43->addPredicate(p);
+		yygotominor.yy72->addPredicate(p);
 	}
 }
         break;
@@ -1375,12 +1358,12 @@ static void yy_reduce(
 	vars.push_back(yymsp[0].minor.yy0->toString());
 	Predicate p(yymsp[-2].minor.yy0->token, vars);
 	p.setSingleNegation(true);
-	yygotominor.yy43 = new BodyDef;
-	yygotominor.yy43->addPredicate(p);
+	yygotominor.yy72 = new BodyDef;
+	yygotominor.yy72->addPredicate(p);
 	// delete Ve;
 	int expectedArgs = (tree->variables.find(*(yymsp[-2].minor.yy0->token)))->getSize();
 	if (expectedArgs != vars.size()){
-		delete yygotominor.yy43;
+		delete yygotominor.yy72;
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-2].minor.yy0->token));
 	}
 }
@@ -1398,28 +1381,28 @@ static void yy_reduce(
 
 	Predicate p(yymsp[-3].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setInEquality();
-	yygotominor.yy43 = new BodyDef;
-	yygotominor.yy43->addPredicate(p);
+	yygotominor.yy72 = new BodyDef;
+	yygotominor.yy72->addPredicate(p);
 }
         break;
       case 42: /* literal ::= string LBRACKET variables RBRACKET EQUAL variable */
 {
 	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-3].minor.yy85)
+	for(auto& v : *yymsp[-3].minor.yy43)
 		vars.push_back(*v);
 	vars.push_back(*(yymsp[0].minor.yy0->token));
 	Predicate p(yymsp[-5].minor.yy0->token, vars);
-	yygotominor.yy43 = new BodyDef;
-	yygotominor.yy43->addPredicate(p);
+	yygotominor.yy72 = new BodyDef;
+	yygotominor.yy72->addPredicate(p);
 	auto itr = tree->variables.find(yymsp[-5].minor.yy0->toString());
 	if(itr == tree->variables.end()){
-		delete yygotominor.yy43;
+		delete yygotominor.yy72;
 		throw syntax_exception("Literal "+ yymsp[-5].minor.yy0->toString() + " not found.\n");
 	}
-	delete yymsp[-3].minor.yy85;
+	delete yymsp[-3].minor.yy43;
 	int expectedArgs = (tree->variables.find(yymsp[-5].minor.yy0->toString()))->getSize();
 	if (expectedArgs != vars.size()){
-		delete yygotominor.yy43;
+		delete yygotominor.yy72;
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-5].minor.yy0->token));
 	}
 }
@@ -1427,20 +1410,20 @@ static void yy_reduce(
       case 43: /* literal ::= string LBRACKET variables RBRACKET */
 {
 	std::vector<std::string> vars;
-	for(auto& v : *yymsp[-1].minor.yy85)
+	for(auto& v : *yymsp[-1].minor.yy43)
 		vars.push_back(*v);
 	Predicate p(yymsp[-3].minor.yy0->token, vars);
-	yygotominor.yy43 = new BodyDef;
-	yygotominor.yy43->addPredicate(p);
-	delete yymsp[-1].minor.yy85;
+	yygotominor.yy72 = new BodyDef;
+	yygotominor.yy72->addPredicate(p);
+	delete yymsp[-1].minor.yy43;
 	auto itr = tree->variables.find(yymsp[-3].minor.yy0->toString());
 	if(itr == tree->variables.end()){
-		delete yygotominor.yy43;
+		delete yygotominor.yy72;
 		throw syntax_exception("Literal "+ yymsp[-3].minor.yy0->toString() + " not found.\n");
 	}
 	int expectedArgs = itr->getSize();
 	if (expectedArgs != vars.size()){
-		delete yygotominor.yy43;
+		delete yygotominor.yy72;
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-3].minor.yy0->token));
 	}	
 }
@@ -1452,90 +1435,75 @@ static void yy_reduce(
 	// if(itr == tree->variables.end()){
 	// 	throw syntax_exception("Literal "+ yymsp[0].minor.yy0->toString() + " not found.\n");
 	// }
-	yygotominor.yy43 = new BodyDef;
-	yygotominor.yy43->addPredicate(p);
+	yygotominor.yy72 = new BodyDef;
+	yygotominor.yy72->addPredicate(p);
 }
         break;
       case 45: /* predicate ::= literal DOT */
 {
-	yygotominor.yy42 = new Predicate;
-	*yygotominor.yy42 = yymsp[-1].minor.yy43->getPredicate();
+	yygotominor.yy24 = new Predicate;
+	*yygotominor.yy24 = yymsp[-1].minor.yy72->getPredicate();
 	std::string s1;
-	cout<<yygotominor.yy42->toString(s1,true);
-	delete yymsp[-1].minor.yy43;
+	cout<<yygotominor.yy24->toString(s1,true);
+	delete yymsp[-1].minor.yy72;
 }
         break;
       case 46: /* predicate ::= number literal */
 {
-	yygotominor.yy42 = new Predicate;
-	*yygotominor.yy42 = yymsp[0].minor.yy43->getPredicate();
-	cout<<yygotominor.yy42->toString(yymsp[-1].minor.yy0->toString()+SPACE, false);
-	delete yymsp[0].minor.yy43;
+	yygotominor.yy24 = new Predicate;
+	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
+	cout<<yygotominor.yy24->toString(yymsp[-1].minor.yy0->toString()+SPACE, false);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 47: /* predicate ::= number NEGATION NEGATION literal */
 {
-	yygotominor.yy42 = new Predicate;
-	*yygotominor.yy42 = yymsp[0].minor.yy43->getPredicate();
-	yygotominor.yy42->notToBeCompleted();
+	yygotominor.yy24 = new Predicate;
+	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
+	yygotominor.yy24->notToBeCompleted();
 	tree->statHasDblNeg = true;
-	cout<<yygotominor.yy42->toString(yymsp[-3].minor.yy0->toString()+SPACE, false);
-	delete yymsp[0].minor.yy43;
+	cout<<yygotominor.yy24->toString(yymsp[-3].minor.yy0->toString()+SPACE, false);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 48: /* predicate ::= number NEGATION literal */
 {
-	yygotominor.yy42 = new Predicate;
-	*yygotominor.yy42 = yymsp[0].minor.yy43->getPredicate();
-	yygotominor.yy42->notToBeCompleted();
-	cout<<yygotominor.yy42->toString(yymsp[-2].minor.yy0->toString()+SPACE, false);
-	delete yymsp[0].minor.yy43;
+	yygotominor.yy24 = new Predicate;
+	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
+	yygotominor.yy24->notToBeCompleted();
+	cout<<yygotominor.yy24->toString(yymsp[-2].minor.yy0->toString()+SPACE, false);
+	delete yymsp[0].minor.yy72;
 }
         break;
       case 49: /* predicate ::= NEGATION NEGATION literal DOT */
 {
-	yygotominor.yy42 = new Predicate;
-	*yygotominor.yy42 = yymsp[-1].minor.yy43->getPredicate();
-	yygotominor.yy42->notToBeCompleted();
+	yygotominor.yy24 = new Predicate;
+	*yygotominor.yy24 = yymsp[-1].minor.yy72->getPredicate();
+	yygotominor.yy24->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	std::string s1; 
-	cout<<yygotominor.yy42->toString(s1, false);
-	delete yymsp[-1].minor.yy43;	
+	cout<<yygotominor.yy24->toString(s1, false);
+	delete yymsp[-1].minor.yy72;	
 }
         break;
       case 50: /* variables ::= variable */
 {
-	yygotominor.yy85 = new std::vector<std::string*>();
-	yygotominor.yy85->push_back(yymsp[0].minor.yy0->token);
+	yygotominor.yy43 = new std::vector<std::string*>();
+	yygotominor.yy43->push_back(yymsp[0].minor.yy0->token);
 }
         break;
       case 51: /* variables ::= variables COMMA variable */
 {
-	yygotominor.yy85 = yymsp[-2].minor.yy85;
-	yymsp[-2].minor.yy85->push_back(yymsp[0].minor.yy0->token);
+	yygotominor.yy43 = yymsp[-2].minor.yy43;
+	yymsp[-2].minor.yy43->push_back(yymsp[0].minor.yy0->token);
 }
         break;
       case 52: /* variable ::= string */
       case 53: /* variable ::= number */ yytestcase(yyruleno==53);
       case 54: /* string ::= STRING */ yytestcase(yyruleno==54);
-      case 55: /* number ::= NUMBER */ yytestcase(yyruleno==55);
 { yygotominor.yy0=yymsp[0].minor.yy0;}
         break;
-      case 56: /* number ::= NUMBER DOT NUMBER */
-{ 
-	// yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
-	yygotominor.yy0 = yymsp[-2].minor.yy0;
-	yygotominor.yy0->modifyToken(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
-}
-        break;
-      case 57: /* number ::= MINUS lnumber DOT rnumber */
-{
-	yygotominor.yy0 = yymsp[-2].minor.yy0;
-	yygotominor.yy0->modifyToken("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
-}
-        break;
-      case 58: /* lnumber ::= NUMBER */
-      case 59: /* rnumber ::= NUMBER */ yytestcase(yyruleno==59);
+      case 55: /* number ::= NUMBER */
 { yygotominor.yy0=yymsp[0].minor.yy0; }
         break;
       default:

@@ -82,6 +82,7 @@
 %nonassoc COMMA.
 %nonassoc LPAREN RPAREN.
 
+
 %right NEWLINE.
 %right CONJUNCTION.
 %right DISJUNCTION.
@@ -1108,21 +1109,8 @@ variable(V) ::= number(N). { V=N;}
 
 // variable(V) ::= PLUS string(S). { V=S;}  
 
-string(S) ::= STRING(S1). { S=S1;}
-number(N) ::= NUMBER(N1). { N=N1;}
+string(S) ::= STRING(S1).{ S=S1;}
 
-//Parses decimals
-number(N) ::= NUMBER(L) DOT NUMBER(R). { 
-	// N = new Token(*(L->token)+"."+*(R->token));
-	N = L;
-	N->modifyToken(*(L->token)+"."+*(R->token));
-}
 
-//Parses negative decimals
-number(N) ::= MINUS lnumber(L) DOT rnumber(R). {
-	N = L;
-	N->modifyToken("-"+*(L->token)+"."+*(R->token));
-}
-lnumber(L) ::= NUMBER(N). { L=N; }
-rnumber(R) ::= NUMBER(N). { R=N; }
+number(N) ::= NUMBER(N1).{ N=N1; }
 
