@@ -69,3 +69,42 @@ std::string Predicate::toString() const{
 
 	return str;
 }
+
+
+std::string Predicate::toNNFString() const{
+	std::string str;
+
+	if(isEquality){
+		str += "!(" + lVar + "=" + rVar + ")";
+		return str;
+	}
+
+	if(isInEquality){
+		str +=  "!(" + lVar + "!=" + rVar + ")";
+		return str;
+	}
+	
+
+
+	if(singleNegation) str += "";
+	else if(doubleNegation) str += "!";
+	else str += "!";
+
+	str += var;
+
+	if(tokens.size() != 0){
+		str += "(";
+
+		for (auto i = tokens.begin(); i != tokens.end(); ++i)
+		{
+			str += *i;
+			str += ",";
+		}
+
+		str = str.substr(0,str.size()-1);
+		str += ")";
+	}
+
+	return str;
+}
+

@@ -82,6 +82,7 @@ public:
 
 	/*Called bu bodyDef to print body*/
 	std::string toString() const;
+	std::string toNNFString() const;
 
 private:
 	std::string var;

@@ -5,6 +5,12 @@ temp(num,num)
 
 0.8536 (load(0,0) v step(0,1) v temp(1,1))
 //parsing complete!
-load(_a,_b) => (_a=0 ^ _b=0 ^ !step(0,1) ^ !temp(1,1)).
-step(_a,_b) => (_a=0 ^ _b=1 ^ !load(0,0) ^ !temp(1,1)).
-temp(_a,_b) => (_a=1 ^ _b=1 ^ !load(0,0) ^ !step(0,1)).
+aux_load_0(num,num)
+aux_load_0(_b,_a) <=> _a=0 ^ _b=0 ^ !step(0,1) ^ !temp(1,1).
+aux_step_0(num,num)
+aux_step_0(_b,_a) <=> _a=0 ^ _b=1 ^ !load(0,0) ^ !temp(1,1).
+aux_temp_0(num,num)
+aux_temp_0(_b,_a) <=> _a=1 ^ _b=1 ^ !load(0,0) ^ !step(0,1).
+load(_a,_b) => (aux_load_0(_b,_a)).
+step(_a,_b) => (aux_step_0(_b,_a)).
+temp(_a,_b) => (aux_temp_0(_b,_a)).

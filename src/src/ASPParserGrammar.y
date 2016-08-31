@@ -362,7 +362,7 @@ rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
 //B=>bottom
 ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 	R = new RuleCompletion;
-	B->appendStr(B1->getPredicate().toString(),false,false,true);
+	B->appendStr(B1->getPredicate(),false,false,true);
 	R->appendStr(B->toString());
 	R->setBodyType(BodyType::CONJUNCTION);
 	delete B;
@@ -535,7 +535,7 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B = B1;
 	B1->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate().toString(),false,false,true);
+	B->appendStr(Bd->getPredicate(),false,false,true);
 	delete Bd;
 }
 
@@ -564,7 +564,7 @@ head(H) ::= bodydef(Bd).{
 body(B) ::= bodydef(Bd).{
 	B = new Body;
 	B->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate().toString(),false,false,false);
+	B->appendStr(Bd->getPredicate(),false,false,false);
 	delete Bd;
 }
 

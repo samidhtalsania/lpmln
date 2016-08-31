@@ -3,5 +3,7 @@ load(num,num)
 step(num,num)
 load(0,0) => step(0,1).
 //parsing complete!
-step(_a,_b) => (_a=0 ^ _b=1 ^ load(0,0)).
+aux_step_0(num,num)
+aux_step_0(_b,_a) <=> _a=0 ^ _b=1 ^ load(0,0).
+step(_a,_b) => (aux_step_0(_b,_a)).
 !load(_a,_b).

@@ -591,13 +591,19 @@ prog ::= .
 //Parse Hard rule
 //<= B.
 //Test case covered
+//TODO Need to convert this into NNF
 rule(R) ::= REVERSE_IMPLICATION body(B) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	// B->appendStr(B->getPredicate().toString(),false,false,true);
-	std::cout<<"!("<<B->toString()<<")."<<"\n";	
+	std::cout<<B->toNNFString()<<"."<<"\n";
 	delete B;
-	// delete B1;
+}
+
+rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
+	R = new RuleCompletion;
+	R->isHeadTop = true;
+	std::cout<<N->toString()<<SPACE<<"("<<B->toNNFString()<<")"<<"\n";
+	delete B;
 }
 
 //Parse Hard rule
@@ -722,7 +728,7 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B = B1;
 	B1->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate().toString(),false,false,true);
+	B->appendStr(Bd->getPredicate(),false,false,true);
 	delete Bd;
 }
 
@@ -744,7 +750,7 @@ head(H) ::= bodydef(Bd).{
 body(B) ::= bodydef(Bd).{
 	B = new Body;
 	B->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate().toString(),false,false,false);
+	B->appendStr(Bd->getPredicate(),false,false,false);
 	delete Bd;
 }
 

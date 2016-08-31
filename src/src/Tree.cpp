@@ -334,16 +334,29 @@ void Tree::completeRules(){
 
 			strRhs = strRhs.substr(0,strRhs.size()-3);
 			strRhs.append(")");
+			// if(r.checkOrphan())
 			if(r.checkOrphan())
 			{
 				auxPos.second = strRhs.size()-1;
 				strRhs.append(")");
 			}
+			else{
+				// strRhs.append(")");
+				auxPos.second = strRhs.size()-1;
+			}
 			strRhs.append(" v ");
 			
 			//Add code for aux stuff
 			//Aux variables needed only in case of orphans
-			if(r.checkOrphan())
+			//Update: check out schedule example
+			//Better to use aux variables for all cases
+			// if(r.checkOrphan())
+			/*
+			TODO
+			Fix aux not working correclty when there are no orphan variables
+			*/
+
+			if(true)
 			{
 				std::string auxVar;
 				std::map<std::string,std::string> auxDeclMap;
@@ -388,7 +401,6 @@ void Tree::completeRules(){
 				ar1 = static_cast<size_t>(auxPos.first);
 				ar2 = static_cast<size_t>(auxPos.second-auxPos.first);
 				strRhs.replace(ar1,ar2, auxLhs);
-				
 				
 				std::cout << auxDecl << "\n";
 				std::cout << auxLhs << " <=> " << auxRhs << ".\n";

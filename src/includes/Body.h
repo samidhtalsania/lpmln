@@ -16,19 +16,29 @@ public:
 		return bodyStr;
 	}
 
-	void appendStr(std::string str, bool trim, bool disjunction, bool conjunction){
+	std::string toNNFString() const{
+		return NNFbodyStr;
+	}
+
+
+	void appendStr(Predicate pred, bool trim, bool disjunction, bool conjunction){
 
 		if(disjunction){
 			bodyStr += " v ";
+			NNFbodyStr += " ^ ";
 		}
 		else if(conjunction){
 			bodyStr += " ^ ";
+			NNFbodyStr += " v ";
 		}
 
-		bodyStr += str;
+
+		bodyStr += pred.toString();
+		NNFbodyStr += pred.toNNFString();
 		
 		if(trim){
 			bodyStr = bodyStr.substr(0,bodyStr.size()-3); 
+			NNFbodyStr = NNFbodyStr.substr(0,bodyStr.size()-3); 
 		}
 	}
 
@@ -42,4 +52,5 @@ private:
 	std::vector<Predicate> predList;
 	
 	std::string bodyStr;	
+	std::string NNFbodyStr;
 };

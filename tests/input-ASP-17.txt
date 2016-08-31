@@ -5,24 +5,19 @@ Boolean = {T,F}
 Constant = {CL2,CL3,CL4}
 Conditions = {1,2}
 
-
 Owner(Dice, Users)
 Roll(Dice, Number)
-
-
 InterveneRoll(Dice)
 PossAssProbRoll(Dice, Number)
-
 NumDefProbRoll(Dice, Constant)
 AssProbRoll(Dice,Number)
 PrApplied(Dice,Number,Conditions,Boolean)
 UnAssProbRoll(Dice,Boolean, Boolean)
 PossDefProbRoll(Dice,Number)
+
 Owner(D1, Mike).
 Owner(D2, John).
 
-//not Roll(d,n1) v not Roll(d,n2) v n1=n2. 
-//not Owner(d,p1) v not Owner(d,p2) v p1=p2.
 <= Roll(d,n1) ^ Roll(d,n2) ^ n1 != n2. 
 <= Owner(d,p1) ^ Owner(d,p2) ^ p1 != p2.
 
@@ -32,8 +27,11 @@ Roll(d,3) <= not InterveneRoll(d) ^ not Roll(d,2) ^ not Roll(d,1) ^ not Roll(d,4
 Roll(d,4) <= not InterveneRoll(d) ^ not Roll(d,2) ^ not Roll(d,3) ^ not Roll(d,1).
 
 PossDefProbRoll(d, n) <= not PossAssProbRoll(d,n) ^ not InterveneRoll(d).
+
 NumDefProbRoll(d, CL2) <= Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ n1 != n2.
+
 NumDefProbRoll(d, CL3) <= Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ n1 != n2 ^ n1 != n3 ^ n2 != n3.
+
 NumDefProbRoll(d, CL4) <= Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(d, n2) ^ PossDefProbRoll(d, n3) ^ PossDefProbRoll(d, n4) ^ n1 != n2 ^ n1 != n3 ^ n1 != n4 ^ n2 != n3 ^ n2 != n4 ^ n3 != n4.
 
 -0.6931 not not NumDefProbRoll(d, CL2)
@@ -43,11 +41,11 @@ NumDefProbRoll(d, CL4) <= Roll(d,n1) ^ PossDefProbRoll(d, n1) ^ PossDefProbRoll(
 //Translation of probabilistic information
 PossAssProbRoll(d,3) <= Owner(d, Mike) ^ not InterveneRoll(d).
 AssProbRoll(d,3) <= PossAssProbRoll(d,3) ^ Roll(d,3).
--1.3863 not not AssProbRoll(d,3)
+-0.6931 not not AssProbRoll(d,3)
 
 PossAssProbRoll(d,4) <= Owner(d, Mike) ^ not InterveneRoll(d).
 AssProbRoll(d,4) <= PossAssProbRoll(d,4) ^ Roll(d,4).
--1.6094 not not AssProbRoll(d,4)
+-2.3026 not not AssProbRoll(d,4)
 
 PrApplied(d,3,1,T) <= Owner(d,Mike).
 PrApplied(d,3,1,F) <= not PrApplied(d,3,1,T).
@@ -57,6 +55,6 @@ PrApplied(d,4,2,F) <= not PrApplied(d,4,2,T).
 
 UnAssProbRoll(d,b1, b2) <= Roll(d, n) ^ PossDefProbRoll(d, n) ^ PrApplied(d,3,1,b1) ^ PrApplied(d,4,2,b2).
 
--0.2231  not not UnAssProbRoll(d,F,T)
--0.2877  not not UnAssProbRoll(d,T,F)
--0.5978  not not UnAssProbRoll(d,T,T)
+-0.1054  not not UnAssProbRoll(d,F,T)
+-0.6931  not not UnAssProbRoll(d,T,F)
+-0.9163  not not UnAssProbRoll(d,T,T)
