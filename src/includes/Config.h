@@ -12,6 +12,7 @@ enum Error{
 	INVALID_A,
 	INVALID_M,
 	INVALID_FILE,
+	INAVLID_OPTIMIZATION_LEVEL,
 	NO_FILE,
 	EXPECTED_FILE,
 	UNREGONIZED_OPTION,
@@ -26,6 +27,12 @@ enum ParserType{
 	PARSER_NONE
 };
 
+enum OptimizationLevel{
+	ALL_CLAUSES_AUX,
+	ORPHAN_AUX,
+	OPTI_NONE
+};
+
 class Config
 {
 public:
@@ -34,6 +41,7 @@ public:
 
 	inline Translation getTranslation(){ return translation;}
 	inline ParserType getParser() { return parserType;}
+	inline OptimizationLevel getLevel() { return optimizationLevel;}
 	
 	inline std::string getExecutablePath() { return path; };
 	inline std::string getFile() { return file;}
@@ -54,6 +62,7 @@ public:
 private:
 	Translation translation = Translation::Translation_None;
 	ParserType parserType = ParserType::PARSER_NONE;
+	OptimizationLevel optimizationLevel = OptimizationLevel::ORPHAN_AUX;
 	std::string path;
 	std::string file;
 	bool errors = false;

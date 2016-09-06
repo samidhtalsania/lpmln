@@ -75,12 +75,12 @@ std::string Predicate::toNNFString() const{
 	std::string str;
 
 	if(isEquality){
-		str += "!(" + lVar + "=" + rVar + ")";
+		str += "(" + lVar + "!=" + rVar + ")";
 		return str;
 	}
 
 	if(isInEquality){
-		str +=  "!(" + lVar + "!=" + rVar + ")";
+		str +=  "(" + lVar + "=" + rVar + ")";
 		return str;
 	}
 	

@@ -83,6 +83,28 @@ Config::Config(int argc, char** argv){
 									return;
 								}
 
+		"-o0"					{
+									if(optimizationLevel == OptimizationLevel::ORPHAN_AUX)
+										optimizationLevel = OptimizationLevel::OPTI_NONE;
+									else
+										Config::showError(Error::INAVLID_OPTIMIZATION_LEVEL,i);
+									continue;
+								}
+
+		"-o1"					{
+									optimizationLevel = OptimizationLevel::ORPHAN_AUX;
+									continue;
+								}
+		
+		"-o2"					{
+									if(optimizationLevel == OptimizationLevel::ORPHAN_AUX)
+										optimizationLevel = OptimizationLevel::ALL_CLAUSES_AUX;
+									else
+										Config::showError(Error::INAVLID_OPTIMIZATION_LEVEL,i);
+									continue;
+								}
+			
+
 		[a-zA-Z_0-9/-.]+		{
 									if(i == 0){
 										path = argv[i];
@@ -145,6 +167,11 @@ void Config::showError(Error e, int i){
 			std::cerr << "File could not be opened \n"
 						"Check whether the file exists at location "<<file <<"\n";		
 			break;
+
+		case Error::INAVLID_OPTIMIZATION_LEVEL:
+			std::cerr << "Use only one optimation level. Check help for details \n";
+			break;
+
 
 		case Error::NO_FILE:
 			std::cerr << "No Input file provided.\n"

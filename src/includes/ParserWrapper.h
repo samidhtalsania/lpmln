@@ -24,6 +24,7 @@ private:
 	bool debug = true;
 	Translation translation;
 	ParserType parserType;
+	OptimizationLevel level;
 	std::string inputFile;
 	FILE* pFile;
 	Parser* parser;

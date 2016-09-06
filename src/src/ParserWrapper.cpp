@@ -30,12 +30,13 @@ ParserWrapper::ParserWrapper(Config c){
 	inputFile = c.getFile();
 	debug = c.getDebug();
   parserType = c.getParser();
+  level = c.getLevel();
 
-	tree = new Tree;
+	tree = new Tree(level);
 
-	// parser = ParseAlloc(malloc);
   parser = ParserFactory::getParser(c.getParser()); 
   lexer = LexerFactory::getLexer(c.getParser());
+  
   parser->ParseAlloc();
   if(c.getParser() == ParserType::FOL){
     isFOLlexer = true;

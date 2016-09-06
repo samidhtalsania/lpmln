@@ -1,7 +1,8 @@
 #include "Tree.h"
 
-Tree::Tree()
-{}
+Tree::Tree(OptimizationLevel _level){
+	level = _level;
+}
 
 Tree::~Tree()
 {}
@@ -356,7 +357,7 @@ void Tree::completeRules(){
 			Fix aux not working correclty when there are no orphan variables
 			*/
 
-			if(true)
+			if(useAux(r.checkOrphan()))
 			{
 				std::string auxVar;
 				std::map<std::string,std::string> auxDeclMap;

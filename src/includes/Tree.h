@@ -13,13 +13,15 @@
 #include "Variable.h"
 #include "RuleCompletion.h"
 
+#include "Config.h"
+
 #include "exceptions/undefined_key.h"
 #include "exceptions/invalid_arguments.h"
 
 class Tree
 {
 public:
-	Tree();
+	Tree(OptimizationLevel);
 	~Tree();
 
 	/* Required for MVSM parsing*/
@@ -44,6 +46,8 @@ public:
 	std::multimap<std::string, RuleCompletion> rules;
 
 	std::string uniqueVars[14] = {"_a","_b","_c","_d","_e","_f","_g","_h","_i","_j","_k","_l","_m","_n"};
+
+	OptimizationLevel level;
 
 
 	/* Required for MVSM Parsing */
@@ -86,4 +90,15 @@ public:
 	}
 
 
+	bool useAux(bool hasOrphan){
+		if (level == OptimizationLevel::OPTI_NONE){
+			return false;
+		}
+		else if (level == OptimizationLevel::ORPHAN_AUX){
+			return hasOrphan;
+		}
+		else{
+			return true;
+		}
+	}
 };
