@@ -31,8 +31,9 @@ ParserWrapper::ParserWrapper(Config c){
 	debug = c.getDebug();
   parserType = c.getParser();
   level = c.getLevel();
+  outputType = c.getOutputType();
 
-	tree = new Tree(level);
+	tree = new Tree(level, outputType);
 
   parser = ParserFactory::getParser(c.getParser()); 
   lexer = LexerFactory::getLexer(c.getParser());
@@ -83,7 +84,11 @@ int ParserWrapper::parse(){
 
           //If its a comment print it and go to next statement
           if(str.substr(0,2).compare("//") == 0){
-            cout<<str<<"\n";
+            //if output type is ASP then comment is different
+            if(outputType == OutputType::OUTPUT_ASP)
+              cout<<"%"<<str<<"\n";
+            else
+              cout<<str<<"\n";
             continue;
           }
 
@@ -132,7 +137,9 @@ int ParserWrapper::parse(){
       delete tok;
     
       //Do completion
-      ParserWrapper::parseComplete();
+      //only in case of MLN
+      if(outputType != OutputType::OUTPUT_ASP)
+        ParserWrapper::parseComplete();
       
     }
     catch(const syntax_exception& e){

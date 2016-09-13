@@ -19,6 +19,7 @@
 	#include "Head.h"
 	#include "Body.h"
 	#include "BodyDef.h"
+	#include "LanguageConstants.h"
 	
 
 	#include "exceptions/undefined_predicate.h"
@@ -131,55 +132,6 @@ sortdecl ::= string(S) DOT.{
 		tree->domainNamesList.insert(str);	
 }
 
-// prog ::= prog NEWLINE sort.
-
-// prog ::= sort.
-
-// sort ::= SORTS.{
-// 	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
-// 		tree->cdp = Tree::Current_Decl_Part::DECL_SORTS;
-// 	}
-// 	else{
-// 		throw syntax_exception("Expected Sorts.");
-// 	}
-// }
-
-// sort ::= string(S) DOT.{
-// 	if(tree->cdp == Tree::Current_Decl_Part::DECL_SORTS){
-// 		std::string str = S->toString();
-// 		auto it = tree->domainNamesList.find(str);
-// 		if(it != tree->domainNamesList.end())
-// 			throw syntax_exception("Redeclaration of sort "+S->toString()+"\n");
-// 		else
-// 			tree->domainNamesList.insert(str);	
-// 	}
-// 	else if (tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-// 		Variable* va = new Variable;
-// 		va->setVar(S->toString());
-// 		tree->variables.insert(*va);
-// 		cout<<va->toString()<<"\n";
-// 	}
-
-// 	tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
-// }
-
-// sort ::= string(S) SEMI_COLON.{
-// 	if(tree->cdp == Tree::Current_Decl_Part::DECL_SORTS){
-// 		std::string str = S->toString();
-// 		auto it = tree->domainNamesList.find(str);
-// 		if(it != tree->domainNamesList.end())
-// 			throw syntax_exception("Redeclaration of sort "+S->toString()+"\n");
-// 		else
-// 			tree->domainNamesList.insert(S->toString());
-// 	}
-// 	else if (tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-// 		Variable* va = new Variable;
-// 		va->setVar(S->toString());
-// 		tree->variables.insert(*va);
-// 		cout<<va->toString()<<"\n";	
-// 	}
-// }
-
 prog ::= prog OBJECTS objectdecl.
 
 objectdecl ::= object SEMI_COLON objectdecl.
@@ -187,19 +139,6 @@ objectdecl ::= object SEMI_COLON objectdecl.
 objectdecl ::= object DOT.
 
 objectdecl ::= NEWLINE objectdecl.
-
-// prog ::= prog NEWLINE object.
-
-// prog ::= object.
-
-// object ::= OBJECTS.{
-// 	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
-// 		tree->cdp = Tree::Current_Decl_Part::DECL_OBJECTS;
-// 	}
-// 	else{
-// 		throw syntax_exception("Expected Objects.\n");
-// 	}
-// }
 
 object ::= variables(Ve) COLON COLON string(S).{
 	// if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
@@ -217,94 +156,9 @@ object ::= variables(Ve) COLON COLON string(S).{
 		else{
 			throw syntax_exception("Domain " + S->toString() +" not declared.\n");
 		}
-	// }
-	/*For cases like 
-	male::bool;
-	which is a constant declaration but parsed as object since variables can also be a single string. 
-	*/
-	// else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-	// 	Variable* va = new Variable;
-	// 	std::map<int, Domain> posMap;
-	// 	std::set<Domain>::iterator itr;
-	// 	int i=0;
-		
-
-	// 	itr = tree->domains.find(S->toString());
-	// 	if (itr == tree->domains.end()){
-	// 		throw syntax_exception("Syntax Error - Domain " + S->toString() + " not found.\n");
-	// 	}
-	// 	else{
-	// 		posMap[i] = *itr;
-	// 		va->setRhsDomain(*itr);
-	// 	}
-
-	// 	va->setVar(Ve->at(0));
-	// 	va->setPosMap(posMap);
-	// 	tree->variables.insert(*va);
-	// 	cout<<va->toString();
-	// 	delete va;
-			
-	// }
+	
 	delete Ve;
 }
-
-// object ::= variables(Ve) COLON COLON string(S).{
-
-// 	if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
-// 		auto itr = tree->domainNamesList.find(S->toString());
-// 		if(itr != tree->domainNamesList.end()){
-// 			Domain* d  = new Domain(S->toString());
-// 			d->setVars(*Ve);
-// 			tree->domains.insert(*d);
-// 			for(auto& v : d->getVars()){
-// 				tree->domainList.insert(v);	
-// 			}
-// 			cout<<d->toString(false);
-// 			delete d;
-// 		}
-// 		else{
-// 			throw syntax_exception("Domain " + S->toString() +" not declared.\n");
-// 		}
-// 		tree->cdp = Tree::Current_Decl_Part::DECL_NONE;
-// 	}
-
-// 	else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-// 		Variable* va = new Variable;
-// 		std::map<int, Domain> posMap;
-// 		std::set<Domain>::iterator itr;
-// 		int i=0;
-		
-
-// 		itr = tree->domains.find(S->toString());
-// 		if (itr == tree->domains.end()){
-// 			throw syntax_exception("Syntax Error - Domain " + S->toString() + " not found.\n");
-// 		}
-// 		else{
-// 			posMap[i] = *itr;
-// 			va->setRhsDomain(*itr);
-// 		}
-
-// 		va->setVar(Ve->at(0));
-// 		va->setPosMap(posMap);
-// 		tree->variables.insert(*va);
-// 		cout<<va->toString();
-// 		delete va;
-// 	}
-// 	delete Ve;
-// }
-
-// prog ::= prog NEWLINE constant.
-
-// prog ::= constant.
-
-// constant ::= CONSTANTS.{
-// 	if (tree->cdp == Tree::Current_Decl_Part::DECL_NONE){
-// 		tree->cdp = Tree::Current_Decl_Part::DECL_CONSTANTS;
-// 	}
-// 	else{
-// 		throw syntax_exception("Expected Constants.");
-// 	}
-// }
 
 prog ::= prog CONSTANTS constantdecl.
 
@@ -344,7 +198,12 @@ constant ::= string(S) LBRACKET variables(Ve) RBRACKET COLON COLON string(S1).{
 	va->setVar(S->toString());
 	va->setPosMap(posMap);
 	tree->variables.insert(*va);
-	cout<<va->toString();
+	
+
+	/*for ASP output we do not print constants */
+	if(tree->outputType != OutputType::OUTPUT_ASP)
+		cout<<va->toString();
+
 	delete va;
 	delete Ve;
 }
@@ -403,7 +262,10 @@ constant ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	va->setVar(S->toString());
 	va->setPosMap(posMap);
 	tree->variables.insert(*va);
-	cout<<va->toString();
+
+	/*for ASP output we do not print constants */
+	if(tree->outputType != OutputType::OUTPUT_ASP)
+		cout<<va->toString();
 	delete Ve;
 	delete va;
 }
@@ -435,7 +297,10 @@ constant ::= string(S).{
 	Variable* va = new Variable;
 	va->setVar(S->toString());
 	tree->variables.insert(*va);
-	cout<<va->toString()<<"\n";
+	/*for ASP output we do not print constants */
+	if(tree->outputType != OutputType::OUTPUT_ASP)
+		cout<<va->toString()<<"\n";
+	
 	delete va;	
 }
 
@@ -458,7 +323,10 @@ constant ::= string(S) COLON COLON string(S1).{
 	va->setVar(S->toString());
 	va->setPosMap(posMap);
 	tree->variables.insert(*va);
-	cout<<va->toString();
+	/*for ASP output we do not print constants */
+	if(tree->outputType != OutputType::OUTPUT_ASP)
+		cout<<va->toString();
+	
 	delete va;	
 }
 
@@ -591,18 +459,46 @@ prog ::= .
 //Parse Hard rule
 //<= B.
 //Test case covered
-//TODO Need to convert this into NNF
 rule(R) ::= REVERSE_IMPLICATION body(B) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	std::cout<<B->toNNFString()<<"."<<"\n";
+	
+	if(tree->outputType != OutputType::OUTPUT_ASP){
+		std::cout<<"("
+					<<B->toNNFString()
+					<<")"
+					<<LanguageConstants::LINE_END
+					<<"\n";
+	}
+	else{
+		std::cout<<LanguageConstants::IMPL
+				<<B->toString()
+				<<LanguageConstants::LINE_END
+				<<"\n";
+	}
 	delete B;
 }
 
+/*Weighted Constraint. For ASP foolow rules from the paper*/
 rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
-	std::cout<<N->toString()<<SPACE<<"("<<B->toNNFString()<<")"<<"\n";
+	
+	if(tree->outputType != OutputType::OUTPUT_ASP){
+		std::cout<<"("
+					<<B->toNNFString()
+					<<")"
+					<<LanguageConstants::LINE_END
+					<<"\n";
+	}
+	else{
+		std::cout<<LanguageConstants::IMPL
+				<<B->toString()
+				<<LanguageConstants::LINE_END
+				<<"\n";
+	}
+
+	// std::cout<<N->toString()<<SPACE<<"("<<B->toNNFString()<<")"<<"\n";
 	delete B;
 }
 
@@ -658,7 +554,18 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 		// RULE_COMPLETION_HEAD_DIS_BODY_TOP(H,B)
 		R->isHeadTop = true;
 		RuleCompletion_HD_BC(H,B,true,tree);
-		std::cout<<B->toString()<<" => "<<H->toString()<<"."<<"\n";
+		if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+			std::cout<<B->toString()
+					<<" => "
+					<<H->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n";
+		if(tree->outputType == OutputType::OUTPUT_ASP)
+			std::cout<<H->toString()
+					<<" :- "
+					<<B->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n";
 		// std::cout << op;
 	}
 	else{
@@ -670,7 +577,18 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 		catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 		}
-		std::cout<<B->toString()<<" => "<<H->toString()<<"."<<"\n";
+		if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+			std::cout<<B->toString()
+					<<" => "
+					<<H->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n";
+		if(tree->outputType == OutputType::OUTPUT_ASP)
+			std::cout<<H->toString()
+					<<" :- "
+					<<B->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n";
 	}
 	delete B;
 	delete H;
@@ -688,7 +606,24 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 	catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	std::cout<< N->toString()<<SPACE<<B->toString()<<" => "<<H->toString()<<"\n";
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+		std::cout<< N->toString()
+				<<SPACE
+				<<B->toString()
+				<<" => "
+				<<H->toString()
+				<<"\n";
+	
+	if(tree->outputType == OutputType::OUTPUT_ASP)
+		std::cout<< N->toString()
+				<<SPACE
+				<<H->toString()
+				<<" :- "
+				<<B->toString()
+				<<LanguageConstants::LINE_END
+				<<"\n";
+
 	delete B;
 	delete H;
 }
@@ -700,7 +635,24 @@ rule(R) ::= number(N) NEGATION NEGATION LBRACKET head(H) REVERSE_IMPLICATION bod
 	R = new RuleCompletion;
 	R->isHeadTop = true;	
 	tree->statHasDblNeg = true;
-	std::cout<< N->toString() << SPACE <<"!!("<<B->toString()<<" => "<<H->toString()<<"\n"; 
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+		std::cout<< N->toString() 
+				<< SPACE 
+				<<"!!("
+				<<B->toString()
+				<<" => "
+				<<H->toString()
+				<<"\n"; 
+	if(tree->outputType == OutputType::OUTPUT_ASP)
+		std::cout<< N->toString() 
+				<< SPACE 
+				<<H->toString()
+				<<" :- "
+				<<B->toString()
+				<<LanguageConstants::LINE_END
+				<<"\n"; 
+	
 	delete B;
 	delete H;
 }
@@ -719,7 +671,11 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 	catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	std::cout<<COMMENT<<B->toString()<<" => "<<H->toString()<<"\n";
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+		std::cout<<COMMENT<<B->toString()<<" => "<<H->toString()<<"\n";
+	if(tree->outputType == OutputType::OUTPUT_ASP)
+		std::cout<<H->toString()<<" :- "<<B->toString()<<LanguageConstants::LINE_END<<"\n";
 	delete B;
 	delete H;
 }
@@ -917,6 +873,7 @@ predicate(P) ::= literal(L) DOT.{
 	cout<<P->toString(s1,true);
 	delete L;
 }
+
 predicate(P) ::= number(N) literal(L).{
 	P = new Predicate;
 	*P = L->getPredicate();
@@ -933,7 +890,6 @@ predicate(P) ::= number(N) NEGATION NEGATION literal(L).{
 	delete L;
 }
 
-
 predicate(P) ::= number(N) NEGATION literal(L).{
 	P = new Predicate;
 	*P = L->getPredicate();
@@ -941,7 +897,6 @@ predicate(P) ::= number(N) NEGATION literal(L).{
 	cout<<P->toString(N->toString()+SPACE, false);
 	delete L;
 }
-
 
 predicate(P) ::= NEGATION NEGATION literal(L) DOT.{
 	P = new Predicate;

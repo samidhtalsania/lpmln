@@ -25,12 +25,17 @@ private:
 	Translation translation;
 	ParserType parserType;
 	OptimizationLevel level;
+	OutputType outputType;
+
 	std::string inputFile;
+	
 	FILE* pFile;
 	Parser* parser;
 	Lexer* lexer;
 	Tree* tree;
+	
 	std::vector<Token*> v;
+	
 	/*TODO fix this*/
 	bool isFOLlexer;
 	

@@ -6,7 +6,7 @@ cd src/src
 #lemon  -m ASPParserGrammar.y
 #mv ASPParserGrammar.c ASPParserGrammar.cpp
 
-lemon -l -m MVSMParserGrammar.y
+lemon -m MVSMParserGrammar.y
 mv MVSMParserGrammar.c MVSMParserGrammar.cpp
 
 cd ..

@@ -9,12 +9,12 @@ public:
 	~Head();
 	Head(std::vector<Predicate> _predList):predList(_predList){}
 
-	Predicate getPredicate() {
+	inline Predicate getPredicate() {
 		return predList.at(0);	
 	}
 
 
-	std::vector<Predicate> getPredicateList() {
+	inline std::vector<Predicate> getPredicateList() {
 		return predList;	
 	}
 
@@ -22,32 +22,18 @@ public:
 		predList.push_back(_p);
 	}
 
-	std::string toString() const{
+	inline std::string toString() const{
 		// return predList.at(0).toString();
 		return headStr;
 	}
 
-	void appendStr(std::string str, bool trim, bool disjunction, bool conjunction){
+	void appendStr(std::string, bool, bool, bool);
 
-		if(disjunction){
-			headStr += " v ";
-		}
-		else if(conjunction){
-			headStr += " ^ ";
-		}
-
-		headStr += str;
-		
-		if(trim){
-			headStr = headStr.substr(0,headStr.size()-3); 
-		}
-	}
-
-	void setDisjunction(bool val){
+	inline void setDisjunction(bool val){
 		isDisjunction = val;
 	}
 
-	bool getDisjunction(){
+	inline bool getDisjunction(){
 		return isDisjunction;
 	}
 

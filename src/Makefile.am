@@ -30,4 +30,5 @@ ___lpmln_SOURCES = \
 			src/FOLLexer.cpp \
 			src/ASPLexer.cpp \
 			src/MVSMLexer.cpp \
-			src/LexerFactory.cpp
+			src/LexerFactory.cpp \
+			src/LanguageConstants.cpp

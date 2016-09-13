@@ -58,6 +58,32 @@ Config::Config(int argc, char** argv){
 										Config::showError(Error::INVALID_A,i);
 									continue;	
 								}
+		
+		"-A"					{
+									if(outputType == OutputType::OUTPUT_NONE)
+										outputType = OutputType::OUTPUT_ASP;
+									else
+										Config::showError(Error::INVALID_OA,i);
+									continue;	
+								}
+
+		"-M"					{
+									if(outputType == OutputType::OUTPUT_NONE)
+										outputType = OutputType::OUTPUT_ALCHEMY;
+									else
+										Config::showError(Error::INVALID_OM,i);
+									continue;	
+								}
+
+		"-T"					{
+									if(outputType == OutputType::OUTPUT_NONE)
+										outputType = OutputType::OUTPUT_TUFFY;
+									else
+										Config::showError(Error::INVALID_OT,i);
+									continue;	
+								}
+
+
 
 		"-p"					{
 									if(parserType == ParserType::PARSER_NONE)
@@ -189,6 +215,19 @@ void Config::showError(Error e, int i){
 		case Error::UNREGONIZED_OPTION:
 			std::cerr << "Unrecognized option "<<args[i] <<"\n";
 			break;
+
+		case Error::INVALID_OA:
+			std::cerr << "Invalid option -A \n";
+			break;
+
+		case Error::INVALID_OM:
+			std::cerr << "Invalid option -M \n";
+			break;
+
+		case Error::INVALID_OT:
+			std::cerr << "Invalid option -T \n";
+			break;
+
 
 		case Error::ERROR_NONE:				
 		default:

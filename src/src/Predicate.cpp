@@ -1,4 +1,5 @@
 #include "Predicate.h"
+#include "LanguageConstants.h"
 #include <set>
 #include <algorithm>
 #include <string>
@@ -49,7 +50,7 @@ std::string Predicate::toString() const{
 	
 
 
-	if(singleNegation) str += "!";
+	if(singleNegation) str += LanguageConstants::NOT;
 	// else if(doubleNegation) str += "!!";
 
 	str += var;
@@ -87,8 +88,8 @@ std::string Predicate::toNNFString() const{
 
 
 	if(singleNegation) str += "";
-	else if(doubleNegation) str += "!";
-	else str += "!";
+	else if(doubleNegation) str += LanguageConstants::NOT;
+	else str += LanguageConstants::NOT;
 
 	str += var;
 
@@ -105,6 +106,27 @@ std::string Predicate::toNNFString() const{
 		str += ")";
 	}
 
+	return str;
+}
+
+
+std::string Predicate::toString(const std::string& s, bool period) const{
+	std::string str;
+	str += s;
+	str += var;
+	if(tokens.size() != 0){
+		str += "(";
+		for(auto it=tokens.begin();it != tokens.end(); ++it){
+			str += *it;
+			str += ",";
+		}
+		str = str.substr(0, str.size()-1);
+		str += ")";
+	}
+	if(period || LanguageConstants::TYPE == OutputType::OUTPUT_ASP)
+		str += ".\n";
+	else
+		str += "\n";
 	return str;
 }
 

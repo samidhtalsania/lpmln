@@ -18,10 +18,11 @@
 #include "exceptions/undefined_key.h"
 #include "exceptions/invalid_arguments.h"
 
+
 class Tree
 {
 public:
-	Tree(OptimizationLevel);
+	Tree(OptimizationLevel,OutputType);
 	~Tree();
 
 	/* Required for MVSM parsing*/
@@ -48,7 +49,7 @@ public:
 	std::string uniqueVars[14] = {"_a","_b","_c","_d","_e","_f","_g","_h","_i","_j","_k","_l","_m","_n"};
 
 	OptimizationLevel level;
-
+	OutputType outputType;
 
 	/* Required for MVSM Parsing */
 	// std::set<std::string> sorts;

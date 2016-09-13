@@ -1,7 +1,10 @@
 #include "Tree.h"
+#include "LanguageConstants.h"
 
-Tree::Tree(OptimizationLevel _level){
+Tree::Tree(OptimizationLevel _level, OutputType _type){
 	level = _level;
+	outputType = _type;
+	LanguageConstants::init(_type);
 }
 
 Tree::~Tree()
@@ -454,7 +457,7 @@ void Tree::completeFacts(){
 					strRhs.append(uniqueVars[count++]);
 					strRhs.append("=");
 					strRhs.append(str);
-					strRhs.append(" ^ ");		
+					strRhs.append(LanguageConstants::CON);		
 				}
 				else{
 					count++;
@@ -467,7 +470,7 @@ void Tree::completeFacts(){
 				strRhs.clear();
 			}
 			else{
-				strRhs.append(" v ");
+				strRhs.append(LanguageConstants::DIS);
 			}
 		}
 		//if there is no strRhs the this rule was not supposed to be completed
@@ -490,21 +493,21 @@ void Tree::completeFacts(){
 		if(completedStr.empty())
 			completedLiterals[strLhs] = strRhs;
 		else
-			completedLiterals[strLhs] = completedLiterals[strLhs] + " v " + strRhs;
+			completedLiterals[strLhs] = completedLiterals[strLhs] + LanguageConstants::DIS + strRhs;
 		// std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
 	}
 }
 
 void Tree::completeDeclarations(){
 	for(auto itr = completedLiterals.begin(); itr != completedLiterals.end() ; ++itr)
-		std::cout << itr->first << " => " << itr->second << ".\n"; 
+		std::cout << itr->first << LanguageConstants::IMPL << itr->second << ".\n"; 
 
 	for(auto itr = variables.begin(); itr != variables.end(); ++itr){
 
 		if (!itr->isCompleted()){
 			//There is a declaration that is not completed. Complete it
 			std::string str;
-			str += "!";
+			str += LanguageConstants::NOT;
 			str += itr->getVar();
 			unsigned int varSize = itr->getPosMap().size();
 

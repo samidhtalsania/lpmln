@@ -48,26 +48,7 @@ public:
 source = true : Request comes from toString method of Variables
 source = false : Request comes from toString method of Parser
 */
-	std::string toString(bool source) const{
-		if(!source){
-			std::string str;
-			str += domainVar;
-			str += "=";
-			str += "{";
-
-			for(auto it=vars.begin();it!= vars.end();++it){
-				str += *it;
-				str += ",";
-			}
-			str = str.substr(0,str.size()-1);
-			str += "}\n";
-			return str;
-		}
-		else{
-			return domainVar;
-		}
-	}
-	
+	std::string toString(bool source) const;
 private :
 	/*
 	TODO Make this vector as set? 

@@ -41,7 +41,7 @@ public:
 			return 0;
 	}
 
-	void insertToken(std::string str){
+	inline void insertToken(std::string str){
 		tokens.push_back(str);
 	}
 
@@ -60,28 +60,12 @@ public:
 	void notToBeCompleted() { toBeCompleted = false;} 
 	
 	/*Called by parser to print facts*/
-	std::string toString(const std::string& s, bool period) const{
-		std::string str;
-		str += s;
-		str += var;
-		if(tokens.size() != 0){
-			str += "(";
-			for(auto it=tokens.begin();it != tokens.end(); ++it){
-				str += *it;
-				str += ",";
-			}
-			str = str.substr(0, str.size()-1);
-			str += ")";
-		}
-		if(period)
-			str += ".\n";
-		else
-			str += "\n";
-		return str;
-	}
+	std::string toString(const std::string& s, bool period) const;
 
-	/*Called bu bodyDef to print body*/
+	/*Called by bodyDef to print body*/
 	std::string toString() const;
+
+	/*Prints Negation Normal Form String*/
 	std::string toNNFString() const;
 
 private:
