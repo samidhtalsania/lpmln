@@ -2,7 +2,7 @@ INCLUDE = $(PROJECT_ROOT)/src/includes
 AM_CPPFLAGS = -I $(INCLUDE)
 AM_CFLAGS = -I $(INCLUDE)
 AM_CXXFLAGS = -I $(INCLUDE)
-bin_PROGRAMS = ../lpmln
+bin_PROGRAMS = ../lpmln  lpexec
 
 ___lpmln_SOURCES = \
 			main.cpp \
@@ -32,3 +32,8 @@ ___lpmln_SOURCES = \
 			src/MVSMLexer.cpp \
 			src/LexerFactory.cpp \
 			src/LanguageConstants.cpp
+
+lpexec_LDADD = -luuid
+
+lpexec_SOURCES = \
+		lpexec_src/lpexec.cpp

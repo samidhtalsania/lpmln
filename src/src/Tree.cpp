@@ -43,7 +43,7 @@ void Tree::completeRules(){
 
 		ret = rules.equal_range(key.first);
 		
-		//Based on key, from varaibles set find out its domains.
+		//Based on key, from variables set find out its domains.
 		//Assign a variable to each of the domain of the key.
 		//Use this variable in constructing strLhs and strRhs 
 		std::set<Variable>::iterator itrV = variables.find(key.first);
@@ -526,4 +526,22 @@ void Tree::completeDeclarations(){
 			std::cout<<str;
 		}
 	}
+}
+
+void Tree::printASPRuleHB(Head* H, Body* B){
+	// std::set<std::string> intermediateConstantSet = H->getConstantSet();
+	/*TODO add in body the names of domains for those only present in head.*/
+	std::string str;
+	if(B->bodyHasNegation()){
+		std::string s = B->getExtra(variables);
+		if(s.length() > 0)
+			str += "," + B->getExtra(variables);
+	}
+
+	std::cout<<H->toString()
+					<<" :- "
+					<<B->toString()
+					<<str
+					<<LanguageConstants::LINE_END
+					<<"\n";	
 }

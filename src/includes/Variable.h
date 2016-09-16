@@ -18,6 +18,7 @@ public:
 	
 	void insertPos(const int i, const Domain d) { pos[i] = d ;}
 	
+	/*int is the position of that domain in that predicate*/
 	std::map<int,Domain> getPosMap() const { return pos;}
 	
 	void setPosMap(std::map<int,Domain> _pos) { 

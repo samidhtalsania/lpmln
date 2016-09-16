@@ -24,7 +24,7 @@
 */
 #include <stdio.h>
 /************ Begin %include sections from the grammar ************************/
-#line 2 "MVSMParserGrammar.y"
+#line 4 "MVSMParserGrammar.y"
 
 	#include <iostream>
 	#include <assert.h> 
@@ -957,7 +957,7 @@ static void yy_reduce(
   */
 /********** Begin reduce actions **********************************************/
       case 2: /* sortdecl ::= string SEMI_COLON sortdecl */
-#line 115 "MVSMParserGrammar.y"
+#line 120 "MVSMParserGrammar.y"
 {
 	std::string str = yymsp[-2].minor.yy0->toString();
 	auto it = tree->domainNamesList.find(str);
@@ -969,7 +969,7 @@ static void yy_reduce(
 #line 970 "MVSMParserGrammar.c"
         break;
       case 4: /* sortdecl ::= string DOT */
-#line 126 "MVSMParserGrammar.y"
+#line 131 "MVSMParserGrammar.y"
 {
 	std::string str = yymsp[-1].minor.yy0->toString();
 	auto it = tree->domainNamesList.find(str);
@@ -981,7 +981,7 @@ static void yy_reduce(
 #line 982 "MVSMParserGrammar.c"
         break;
       case 9: /* object ::= variables COLON COLON string */
-#line 205 "MVSMParserGrammar.y"
+#line 148 "MVSMParserGrammar.y"
 {
 	// if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
 		auto itr = tree->domainNamesList.find(yymsp[0].minor.yy0->toString());
@@ -998,40 +998,13 @@ static void yy_reduce(
 		else{
 			throw syntax_exception("Domain " + yymsp[0].minor.yy0->toString() +" not declared.\n");
 		}
-	// }
-	/*For cases like 
-	male::bool;
-	which is a constant declaration but parsed as object since variables can also be a single string. 
-	*/
-	// else if(tree->cdp == Tree::Current_Decl_Part::DECL_CONSTANTS){
-	// 	Variable* va = new Variable;
-	// 	std::map<int, Domain> posMap;
-	// 	std::set<Domain>::iterator itr;
-	// 	int i=0;
-		
-
-	// 	itr = tree->domains.find(yymsp[0].minor.yy0->toString());
-	// 	if (itr == tree->domains.end()){
-	// 		throw syntax_exception("Syntax Error - Domain " + yymsp[0].minor.yy0->toString() + " not found.\n");
-	// 	}
-	// 	else{
-	// 		posMap[i] = *itr;
-	// 		va->setRhsDomain(*itr);
-	// 	}
-
-	// 	va->setVar(yymsp[-3].minor.yy43->at(0));
-	// 	va->setPosMap(posMap);
-	// 	tree->variables.insert(*va);
-	// 	cout<<va->toString();
-	// 	delete va;
-			
-	// }
+	
 	delete yymsp[-3].minor.yy43;
 }
-#line 1032 "MVSMParserGrammar.c"
+#line 1005 "MVSMParserGrammar.c"
         break;
       case 14: /* constant ::= string LBRACKET variables RBRACKET COLON COLON string */
-#line 318 "MVSMParserGrammar.y"
+#line 176 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
@@ -1071,10 +1044,10 @@ static void yy_reduce(
 	delete va;
 	delete yymsp[-4].minor.yy43;
 }
-#line 1075 "MVSMParserGrammar.c"
+#line 1048 "MVSMParserGrammar.c"
         break;
       case 15: /* constant ::= string LBRACKET variables RBRACKET */
-#line 394 "MVSMParserGrammar.y"
+#line 216 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
@@ -1100,10 +1073,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy43;
 	delete va;
 }
-#line 1104 "MVSMParserGrammar.c"
+#line 1077 "MVSMParserGrammar.c"
         break;
       case 16: /* constant ::= string */
-#line 443 "MVSMParserGrammar.y"
+#line 242 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	va->setVar(yymsp[0].minor.yy0->toString());
@@ -1114,10 +1087,10 @@ static void yy_reduce(
 	
 	delete va;	
 }
-#line 1118 "MVSMParserGrammar.c"
+#line 1091 "MVSMParserGrammar.c"
         break;
       case 17: /* constant ::= string COLON COLON string */
-#line 454 "MVSMParserGrammar.y"
+#line 253 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
@@ -1143,10 +1116,10 @@ static void yy_reduce(
 	
 	delete va;	
 }
-#line 1147 "MVSMParserGrammar.c"
+#line 1120 "MVSMParserGrammar.c"
         break;
       case 18: /* prog ::= prog NEWLINE predicate */
-#line 481 "MVSMParserGrammar.y"
+#line 280 "MVSMParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy24->needsToBeCompleted()){	
 		FactCompletion f(*yymsp[0].minor.yy24);
@@ -1154,10 +1127,10 @@ static void yy_reduce(
 	}	
 	delete yymsp[0].minor.yy24;
 }
-#line 1158 "MVSMParserGrammar.c"
+#line 1131 "MVSMParserGrammar.c"
         break;
       case 19: /* prog ::= predicate */
-#line 489 "MVSMParserGrammar.y"
+#line 288 "MVSMParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy24->needsToBeCompleted()){
 		FactCompletion f(*yymsp[0].minor.yy24);
@@ -1165,20 +1138,20 @@ static void yy_reduce(
 	}
 	delete yymsp[0].minor.yy24;
 }
-#line 1169 "MVSMParserGrammar.c"
+#line 1142 "MVSMParserGrammar.c"
         break;
       case 20: /* prog ::= prog NEWLINE rule */
       case 21: /* prog ::= rule */ yytestcase(yyruleno==21);
-#line 497 "MVSMParserGrammar.y"
+#line 296 "MVSMParserGrammar.y"
 {
 	if((yymsp[0].minor.yy57->isHeadTop == false) && (yymsp[0].minor.yy57->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy57->getHead().getVar(),*yymsp[0].minor.yy57));
 	delete yymsp[0].minor.yy57;
 }
-#line 1179 "MVSMParserGrammar.c"
+#line 1152 "MVSMParserGrammar.c"
         break;
       case 24: /* rule ::= REVERSE_IMPLICATION body DOT */
-#line 609 "MVSMParserGrammar.y"
+#line 329 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;
@@ -1198,10 +1171,10 @@ static void yy_reduce(
 	}
 	delete yymsp[-1].minor.yy73;
 }
-#line 1202 "MVSMParserGrammar.c"
+#line 1175 "MVSMParserGrammar.c"
         break;
       case 25: /* rule ::= number REVERSE_IMPLICATION body */
-#line 630 "MVSMParserGrammar.y"
+#line 350 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;
@@ -1223,10 +1196,10 @@ static void yy_reduce(
 	// std::cout<<yymsp[-2].minor.yy0->toString()<<SPACE<<"("<<yymsp[0].minor.yy73->toNNFString()<<")"<<"\n";
 	delete yymsp[0].minor.yy73;
 }
-#line 1227 "MVSMParserGrammar.c"
+#line 1200 "MVSMParserGrammar.c"
         break;
       case 26: /* rule ::= head DISJUNCTION bodydef DOT */
-#line 655 "MVSMParserGrammar.y"
+#line 375 "MVSMParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy57 = new RuleCompletion;
@@ -1244,10 +1217,10 @@ static void yy_reduce(
 	delete yymsp[-3].minor.yy53;
 	delete yymsp[-1].minor.yy72;
 }
-#line 1248 "MVSMParserGrammar.c"
+#line 1221 "MVSMParserGrammar.c"
         break;
       case 27: /* rule ::= number head DISJUNCTION bodydef */
-#line 676 "MVSMParserGrammar.y"
+#line 396 "MVSMParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy57 = new RuleCompletion;
@@ -1265,10 +1238,10 @@ static void yy_reduce(
 	delete yymsp[-2].minor.yy53;
 	delete yymsp[0].minor.yy72;
 }
-#line 1269 "MVSMParserGrammar.c"
+#line 1242 "MVSMParserGrammar.c"
         break;
       case 28: /* rule ::= head REVERSE_IMPLICATION body DOT */
-#line 697 "MVSMParserGrammar.y"
+#line 419 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 
@@ -1283,12 +1256,7 @@ static void yy_reduce(
 					<<LanguageConstants::LINE_END
 					<<"\n";
 		if(tree->outputType == OutputType::OUTPUT_ASP)
-			std::cout<<yymsp[-3].minor.yy53->toString()
-					<<" :- "
-					<<yymsp[-1].minor.yy73->toString()
-					<<LanguageConstants::LINE_END
-					<<"\n";
-		// std::cout << op;
+			tree->printASPRuleHB(yymsp[-3].minor.yy53,yymsp[-1].minor.yy73);
 	}
 	else{
 		// RULE_COMPLETION_BH(yymsp[-1].minor.yy73,yymsp[-3].minor.yy53);
@@ -1306,19 +1274,15 @@ static void yy_reduce(
 					<<LanguageConstants::LINE_END
 					<<"\n";
 		if(tree->outputType == OutputType::OUTPUT_ASP)
-			std::cout<<yymsp[-3].minor.yy53->toString()
-					<<" :- "
-					<<yymsp[-1].minor.yy73->toString()
-					<<LanguageConstants::LINE_END
-					<<"\n";
+			tree->printASPRuleHB(yymsp[-3].minor.yy53,yymsp[-1].minor.yy73);
 	}
 	delete yymsp[-1].minor.yy73;
 	delete yymsp[-3].minor.yy53;
 }
-#line 1319 "MVSMParserGrammar.c"
+#line 1283 "MVSMParserGrammar.c"
         break;
       case 29: /* rule ::= number head REVERSE_IMPLICATION body */
-#line 747 "MVSMParserGrammar.y"
+#line 460 "MVSMParserGrammar.y"
 {
 	// RULE_COMPLETION_BH(yymsp[0].minor.yy73,yymsp[-2].minor.yy53);
 	// yygotominor.yy57 = new RuleCompletion(yymsp[-2].minor.yy53->getPredicate(),predList, resultMap, varMap);
@@ -1349,10 +1313,10 @@ static void yy_reduce(
 	delete yymsp[0].minor.yy73;
 	delete yymsp[-2].minor.yy53;
 }
-#line 1353 "MVSMParserGrammar.c"
+#line 1317 "MVSMParserGrammar.c"
         break;
       case 30: /* rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET */
-#line 781 "MVSMParserGrammar.y"
+#line 494 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;	
@@ -1378,10 +1342,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy73;
 	delete yymsp[-3].minor.yy53;
 }
-#line 1382 "MVSMParserGrammar.c"
+#line 1346 "MVSMParserGrammar.c"
         break;
       case 31: /* rule ::= LPAREN head RPAREN REVERSE_IMPLICATION body DOT */
-#line 807 "MVSMParserGrammar.y"
+#line 520 "MVSMParserGrammar.y"
 {
 	
 	if (yymsp[-4].minor.yy53->getPredicate().checkEquality() != 0){
@@ -1404,20 +1368,20 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy73;
 	delete yymsp[-4].minor.yy53;
 }
-#line 1408 "MVSMParserGrammar.c"
+#line 1372 "MVSMParserGrammar.c"
         break;
       case 32: /* body ::= body CONJUNCTION bodydef */
-#line 831 "MVSMParserGrammar.y"
+#line 544 "MVSMParserGrammar.y"
 {
 	yygotominor.yy73 = yymsp[-2].minor.yy73;
 	yymsp[-2].minor.yy73->addPredicate(yymsp[0].minor.yy72->getPredicate());
 	yygotominor.yy73->appendStr(yymsp[0].minor.yy72->getPredicate(),false,false,true);
 	delete yymsp[0].minor.yy72;
 }
-#line 1418 "MVSMParserGrammar.c"
+#line 1382 "MVSMParserGrammar.c"
         break;
       case 33: /* head ::= head DISJUNCTION bodydef */
-#line 838 "MVSMParserGrammar.y"
+#line 551 "MVSMParserGrammar.y"
 {
 	yygotominor.yy53 = yymsp[-2].minor.yy53;
 	yymsp[-2].minor.yy53->addPredicate(yymsp[0].minor.yy72->getPredicate());
@@ -1425,37 +1389,37 @@ static void yy_reduce(
 	yygotominor.yy53->setDisjunction(true);
 	delete yymsp[0].minor.yy72;
 }
-#line 1429 "MVSMParserGrammar.c"
+#line 1393 "MVSMParserGrammar.c"
         break;
       case 34: /* head ::= bodydef */
-#line 846 "MVSMParserGrammar.y"
+#line 559 "MVSMParserGrammar.y"
 {
 	yygotominor.yy53 = new Head(yymsp[0].minor.yy72->getPredicate());
 	// yygotominor.yy53->addPredicate(yymsp[0].minor.yy72->getPredicate());
 	yygotominor.yy53->appendStr(yymsp[0].minor.yy72->getPredicate().toString(),false,false,false);
 	delete yymsp[0].minor.yy72;
 }
-#line 1439 "MVSMParserGrammar.c"
+#line 1403 "MVSMParserGrammar.c"
         break;
       case 35: /* body ::= bodydef */
-#line 853 "MVSMParserGrammar.y"
+#line 566 "MVSMParserGrammar.y"
 {
 	yygotominor.yy73 = new Body;
 	yygotominor.yy73->addPredicate(yymsp[0].minor.yy72->getPredicate());
 	yygotominor.yy73->appendStr(yymsp[0].minor.yy72->getPredicate(),false,false,false);
 	delete yymsp[0].minor.yy72;
 }
-#line 1449 "MVSMParserGrammar.c"
+#line 1413 "MVSMParserGrammar.c"
         break;
       case 36: /* bodydef ::= literal */
-#line 863 "MVSMParserGrammar.y"
+#line 576 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy72 = yymsp[0].minor.yy72;
 }
-#line 1456 "MVSMParserGrammar.c"
+#line 1420 "MVSMParserGrammar.c"
         break;
       case 37: /* bodydef ::= NEGATION literal */
-#line 868 "MVSMParserGrammar.y"
+#line 581 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy72 = yymsp[0].minor.yy72;
 	Predicate p = yygotominor.yy72->getPredicate();
@@ -1463,28 +1427,28 @@ static void yy_reduce(
 	yygotominor.yy72->addPredicate(p);
 	// yygotominor.yy72->getPredicate().setSingleNegation(true);
 }
-#line 1467 "MVSMParserGrammar.c"
+#line 1431 "MVSMParserGrammar.c"
         break;
       case 38: /* bodydef ::= NEGATION NEGATION literal */
-#line 877 "MVSMParserGrammar.y"
+#line 590 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy72 = yymsp[0].minor.yy72;
 	tree->statHasDblNeg = true;
 	yygotominor.yy72->getPredicate().setDoubleNegation(true);
 }
-#line 1476 "MVSMParserGrammar.c"
+#line 1440 "MVSMParserGrammar.c"
         break;
       case 39: /* bodydef ::= LBRACKET NEGATION NEGATION literal RBRACKET */
-#line 886 "MVSMParserGrammar.y"
+#line 599 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy72 = yymsp[-1].minor.yy72;
 	tree->statHasDblNeg = true;
 	yygotominor.yy72->getPredicate().setDoubleNegation(true);
 }
-#line 1485 "MVSMParserGrammar.c"
+#line 1449 "MVSMParserGrammar.c"
         break;
       case 40: /* bodydef ::= string EQUAL string */
-#line 893 "MVSMParserGrammar.y"
+#line 606 "MVSMParserGrammar.y"
 {
 	yygotominor.yy72 = new BodyDef;
 	auto itr = tree->variables.find(*(yymsp[-2].minor.yy0->token));
@@ -1497,15 +1461,11 @@ static void yy_reduce(
 		Why? It could be a variable also which is not a part of the domain. 
 		Not required in this case.
 		*/
-
-		// Domain d = itr->getRhsDomain();
-
-		// if(std::find(d.getVars().begin(),d.getVars().end(),*(yymsp[0].minor.yy0->token)) == d.getVars().end())
-		// 	throw syntax_exception("The value on RHS does not belong to the Domain "+ d.getDomainVar() + ".\n");	
 		
 		std::vector<std::string> vars;
 		vars.push_back(*(yymsp[0].minor.yy0->token));
-		Predicate p(yymsp[-2].minor.yy0->token, vars);
+		Predicate p(yymsp[-2].minor.yy0->token);
+		p.setTokens(vars, tree->domainList);
 		yygotominor.yy72->addPredicate(p);
 		int expectedArgs = (tree->variables.find(*(yymsp[-2].minor.yy0->token)))->getSize();
 		if (expectedArgs != vars.size()){
@@ -1520,14 +1480,15 @@ static void yy_reduce(
 		yygotominor.yy72->addPredicate(p);
 	}
 }
-#line 1524 "MVSMParserGrammar.c"
+#line 1484 "MVSMParserGrammar.c"
         break;
       case 41: /* bodydef ::= NEGATION string EQUAL string */
-#line 930 "MVSMParserGrammar.y"
+#line 639 "MVSMParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	vars.push_back(yymsp[0].minor.yy0->toString());
-	Predicate p(yymsp[-2].minor.yy0->token, vars);
+	Predicate p(yymsp[-2].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	p.setSingleNegation(true);
 	yygotominor.yy72 = new BodyDef;
 	yygotominor.yy72->addPredicate(p);
@@ -1538,10 +1499,10 @@ static void yy_reduce(
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-2].minor.yy0->token));
 	}
 }
-#line 1542 "MVSMParserGrammar.c"
+#line 1503 "MVSMParserGrammar.c"
         break;
       case 42: /* bodydef ::= string NEGATION EQUAL string */
-#line 945 "MVSMParserGrammar.y"
+#line 655 "MVSMParserGrammar.y"
 {
 	
 	/*check if yymsp[-3].minor.yy0 is declared in constant section
@@ -1557,16 +1518,17 @@ static void yy_reduce(
 	yygotominor.yy72 = new BodyDef;
 	yygotominor.yy72->addPredicate(p);
 }
-#line 1561 "MVSMParserGrammar.c"
+#line 1522 "MVSMParserGrammar.c"
         break;
       case 43: /* literal ::= string LBRACKET variables RBRACKET EQUAL variable */
-#line 964 "MVSMParserGrammar.y"
+#line 674 "MVSMParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-3].minor.yy43)
 		vars.push_back(*v);
 	vars.push_back(*(yymsp[0].minor.yy0->token));
-	Predicate p(yymsp[-5].minor.yy0->token, vars);
+	Predicate p(yymsp[-5].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	yygotominor.yy72 = new BodyDef;
 	yygotominor.yy72->addPredicate(p);
 	auto itr = tree->variables.find(yymsp[-5].minor.yy0->toString());
@@ -1581,15 +1543,16 @@ static void yy_reduce(
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-5].minor.yy0->token));
 	}
 }
-#line 1585 "MVSMParserGrammar.c"
+#line 1547 "MVSMParserGrammar.c"
         break;
       case 44: /* literal ::= string LBRACKET variables RBRACKET */
-#line 985 "MVSMParserGrammar.y"
+#line 696 "MVSMParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy43)
 		vars.push_back(*v);
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	Predicate p(yymsp[-3].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	yygotominor.yy72 = new BodyDef;
 	yygotominor.yy72->addPredicate(p);
 	delete yymsp[-1].minor.yy43;
@@ -1604,105 +1567,134 @@ static void yy_reduce(
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-3].minor.yy0->token));
 	}	
 }
-#line 1608 "MVSMParserGrammar.c"
+#line 1571 "MVSMParserGrammar.c"
         break;
       case 45: /* literal ::= variable */
-#line 1005 "MVSMParserGrammar.y"
+#line 717 "MVSMParserGrammar.y"
 {
 	Predicate p(yymsp[0].minor.yy0->token);
 	auto itr = tree->variables.find(yymsp[0].minor.yy0->toString());
-	// if(itr == tree->variables.end()){
-	// 	throw syntax_exception("Literal "+ yymsp[0].minor.yy0->toString() + " not found.\n");
-	// }
 	yygotominor.yy72 = new BodyDef;
 	yygotominor.yy72->addPredicate(p);
 }
-#line 1621 "MVSMParserGrammar.c"
+#line 1581 "MVSMParserGrammar.c"
         break;
       case 46: /* predicate ::= literal DOT */
-#line 1016 "MVSMParserGrammar.y"
+#line 725 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[-1].minor.yy72->getPredicate();
 	std::string s1;
+	
 	cout<<yygotominor.yy24->toString(s1,true);
+
 	delete yymsp[-1].minor.yy72;
 }
-#line 1632 "MVSMParserGrammar.c"
+#line 1594 "MVSMParserGrammar.c"
         break;
       case 47: /* predicate ::= number literal */
-#line 1023 "MVSMParserGrammar.y"
+#line 735 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
+	/*TODO for ASP translation throw an error. This is not valid asp syntax*/
 	cout<<yygotominor.yy24->toString(yymsp[-1].minor.yy0->toString()+SPACE, false);
+	
 	delete yymsp[0].minor.yy72;
 }
-#line 1642 "MVSMParserGrammar.c"
+#line 1606 "MVSMParserGrammar.c"
         break;
       case 48: /* predicate ::= number NEGATION NEGATION literal */
-#line 1030 "MVSMParserGrammar.y"
+#line 744 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
 	yygotominor.yy24->notToBeCompleted();
-	tree->statHasDblNeg = true;
-	cout<<yygotominor.yy24->toString(yymsp[-3].minor.yy0->toString()+SPACE, false);
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+		tree->statHasDblNeg = true;
+		cout<<yygotominor.yy24->toString(yymsp[-3].minor.yy0->toString()+SPACE, false);	
+	}
+	else if(tree->outputType == OutputType::OUTPUT_ASP){
+		std::string str = yygotominor.yy24->toString(":~ not ", false);		
+		str += " [" + std::to_string((int)(std::stof(yymsp[-3].minor.yy0->toString())* 10000)) + "," + std::to_string(tree->weak_constraint_counter++) + "]\n";
+		cout<<str;
+	}
+	
 	delete yymsp[0].minor.yy72;
 }
-#line 1654 "MVSMParserGrammar.c"
+#line 1627 "MVSMParserGrammar.c"
         break;
       case 49: /* predicate ::= number NEGATION literal */
-#line 1040 "MVSMParserGrammar.y"
+#line 762 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
 	yygotominor.yy24->notToBeCompleted();
-	cout<<yygotominor.yy24->toString(yymsp[-2].minor.yy0->toString()+SPACE, false);
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+		cout<<yygotominor.yy24->toString(yymsp[-2].minor.yy0->toString()+SPACE, false);
+	}
+	else if(tree->outputType == OutputType::OUTPUT_ASP){
+		std::string str = yygotominor.yy24->toString(":~ ", false);		
+		str += " [" + std::to_string((int)(std::stof(yymsp[-2].minor.yy0->toString())* 10000)) + "," + std::to_string(tree->weak_constraint_counter++) + "]\n";
+		cout<<str;
+	}
+
+	
 	delete yymsp[0].minor.yy72;
 }
-#line 1665 "MVSMParserGrammar.c"
+#line 1648 "MVSMParserGrammar.c"
         break;
       case 50: /* predicate ::= NEGATION NEGATION literal DOT */
-#line 1049 "MVSMParserGrammar.y"
+#line 780 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[-1].minor.yy72->getPredicate();
 	yygotominor.yy24->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	std::string s1; 
-	cout<<yygotominor.yy24->toString(s1, false);
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+		cout<<yygotominor.yy24->toString(s1, false);
+	}
+	else if(tree->outputType == OutputType::OUTPUT_ASP){
+		cout<<yygotominor.yy24->toString(":- not ", true);		
+	}
+
+
+	
 	delete yymsp[-1].minor.yy72;	
+}
+#line 1670 "MVSMParserGrammar.c"
+        break;
+      case 51: /* variables ::= variable */
+#line 800 "MVSMParserGrammar.y"
+{
+	yygotominor.yy43 = new std::vector<std::string*>();	
+	yygotominor.yy43->push_back(yymsp[0].minor.yy0->token);
 }
 #line 1678 "MVSMParserGrammar.c"
         break;
-      case 51: /* variables ::= variable */
-#line 1206 "MVSMParserGrammar.y"
-{
-	yygotominor.yy43 = new std::vector<std::string*>();
-	yygotominor.yy43->push_back(yymsp[0].minor.yy0->token);
-}
-#line 1686 "MVSMParserGrammar.c"
-        break;
       case 52: /* variables ::= variables COMMA variable */
-#line 1211 "MVSMParserGrammar.y"
+#line 805 "MVSMParserGrammar.y"
 {
 	yygotominor.yy43 = yymsp[-2].minor.yy43;
 	yymsp[-2].minor.yy43->push_back(yymsp[0].minor.yy0->token);
 }
-#line 1694 "MVSMParserGrammar.c"
+#line 1686 "MVSMParserGrammar.c"
         break;
       case 53: /* variable ::= string */
       case 54: /* variable ::= number */ yytestcase(yyruleno==54);
       case 55: /* string ::= STRING */ yytestcase(yyruleno==55);
-#line 1216 "MVSMParserGrammar.y"
+#line 810 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
-#line 1701 "MVSMParserGrammar.c"
+#line 1693 "MVSMParserGrammar.c"
         break;
       case 56: /* number ::= NUMBER */
-#line 1224 "MVSMParserGrammar.y"
+#line 818 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
-#line 1706 "MVSMParserGrammar.c"
+#line 1698 "MVSMParserGrammar.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -1765,11 +1757,11 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
-#line 60 "MVSMParserGrammar.y"
+#line 65 "MVSMParserGrammar.y"
 
     std::cout<<"Giving up.Parser is lost...\n";
 
-#line 1773 "MVSMParserGrammar.c"
+#line 1765 "MVSMParserGrammar.c"
 /************ End %parse_failure code *****************************************/
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1786,7 +1778,7 @@ static void yy_syntax_error(
   MVSMParserGrammarARG_FETCH;
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
-#line 65 "MVSMParserGrammar.y"
+#line 70 "MVSMParserGrammar.y"
 
 	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
@@ -1801,7 +1793,7 @@ static void yy_syntax_error(
     }
     throw syntax_exception("Parsing Failed. Unexpected sequence of tokens\n");
     
-#line 1805 "MVSMParserGrammar.c"
+#line 1797 "MVSMParserGrammar.c"
 /************ End %syntax_error code ******************************************/
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1822,10 +1814,13 @@ static void yy_accept(
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
 /*********** Begin %parse_accept code *****************************************/
-#line 55 "MVSMParserGrammar.y"
+#line 57 "MVSMParserGrammar.y"
 
-    std::cout<<("//parsing complete!\n");
-#line 1829 "MVSMParserGrammar.c"
+	if (tree->outputType == OutputType::OUTPUT_ASP)
+		std::cout<<("%parsing complete!\n");
+	else
+    	std::cout<<("//parsing complete!\n");
+#line 1824 "MVSMParserGrammar.c"
 /*********** End %parse_accept code *******************************************/
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

@@ -576,7 +576,8 @@ bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	B = new BodyDef;
 	B->addPredicate(p);
 	delete Ve;
@@ -602,7 +603,8 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setSingleNegation(true);
 	B = new BodyDef;
 	B->addPredicate(p);
@@ -628,7 +630,8 @@ bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setDoubleNegation(true);
 	B = new BodyDef;
 	B->addPredicate(p);
@@ -657,7 +660,8 @@ bodydef(B) ::= LBRACKET NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRAC
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setDoubleNegation(true);
 	tree->statHasDblNeg = true;
 	B = new BodyDef;
@@ -751,7 +755,7 @@ decl(D) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 predicate(P) ::= string(S) LBRACKET variables(Ve) RBRACKET DOT. {
 	P = new Predicate;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	std::string s1;
 	cout<<P->toString(s1,true);
 	delete Ve;
@@ -761,7 +765,7 @@ predicate(P) ::= string(S) LBRACKET variables(Ve) RBRACKET DOT. {
 predicate(P) ::= number(N) string(S) LBRACKET variables(Ve) RBRACKET. {
 	P = new Predicate;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	cout<<P->toString(N->toString()+SPACE, false);
 	delete Ve;
 }
@@ -773,7 +777,7 @@ predicate(P) ::= number(N) NEGATION NEGATION string(S) LBRACKET variables(Ve) RB
 	P->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	cout<<P->toString(N->toString()+SPACE, false);
 	delete Ve;
 }
@@ -783,7 +787,7 @@ predicate(P) ::= number(N) NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
 	P = new Predicate;
 	P->notToBeCompleted();
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	cout<<P->toString(N->toString()+SPACE+"!", false);
 	delete Ve;
 }
@@ -793,7 +797,7 @@ predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET DOT
 	P->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	std::string s1; 
 	cout<<P->toString(s1, false);
 	delete Ve;

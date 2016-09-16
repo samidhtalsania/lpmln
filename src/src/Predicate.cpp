@@ -1,8 +1,10 @@
 #include "Predicate.h"
+#include "Util.h"
 #include "LanguageConstants.h"
 #include <set>
 #include <algorithm>
 #include <string>
+
 
 bool Predicate::operator< (const Predicate &right) const
 {
@@ -35,16 +37,48 @@ Predicate::~Predicate()
 {
 }
 
-std::string Predicate::toString() const{
+std::string Predicate::toString() const {
 	std::string str;
 
 	if(isEquality){
-		str += lVar + "=" + rVar;
+		std::string left = lVar;
+		std::string right = rVar;
+		if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+			
+			if(constantLocation.find(left) != constantLocation.end())
+				Util::toLower(left);
+			else
+				Util::toUpper(left);
+			
+			if(constantLocation.find(right) != constantLocation.end())
+				Util::toLower(right);
+			else
+				Util::toUpper(right);
+				
+			
+		}	
+		str += left + "=" + right;
 		return str;
 	}
 
 	if(isInEquality){
-		str += lVar + "!=" + rVar;
+		std::string left = lVar;
+		std::string right = rVar;
+		if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+			
+			if(constantLocation.find(left) != constantLocation.end())
+				Util::toLower(left);
+			else
+				Util::toUpper(left);
+			
+			if(constantLocation.find(right) != constantLocation.end())
+				Util::toLower(right);
+			else
+				Util::toUpper(right);
+				
+			
+		}	
+		str += left + "!=" + right;
 		return str;
 	}
 	
@@ -53,15 +87,34 @@ std::string Predicate::toString() const{
 	if(singleNegation) str += LanguageConstants::NOT;
 	// else if(doubleNegation) str += "!!";
 
-	str += var;
+	std::string tempStr = var;
+	if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+		Util::toLower(tempStr);
+	}
+	str += tempStr;
 
 	if(tokens.size() != 0){
 		str += "(";
-
+		int count = 0;
 		for (auto i = tokens.begin(); i != tokens.end(); ++i)
 		{
-			str += *i;
-			str += ",";
+			tempStr = *i;
+			
+			if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+				if(constantLocation.find(*i) != constantLocation.end())
+					Util::toLower(tempStr);
+				else{
+					/*This is a variable. 
+					Its' component would be added to extraASPString*/
+					Util::toUpper(tempStr);
+
+				}
+				
+			}
+			
+			str += tempStr;
+			str += ",";	
+			count++;
 		}
 
 		str = str.substr(0,str.size()-1);
@@ -113,20 +166,74 @@ std::string Predicate::toNNFString() const{
 std::string Predicate::toString(const std::string& s, bool period) const{
 	std::string str;
 	str += s;
-	str += var;
+
+	std::string tempStr = var;
+	if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+		Util::toLower(tempStr);
+	}
+
+	str += tempStr;
 	if(tokens.size() != 0){
 		str += "(";
 		for(auto it=tokens.begin();it != tokens.end(); ++it){
-			str += *it;
+
+			tempStr = *it;
+			
+			if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+				if(constantLocation.find(*it) != constantLocation.end())
+					Util::toLower(tempStr);
+				else{
+					/*This is a variable. 
+					Its' component would be added to extraASPString*/
+					Util::toUpper(tempStr);
+				}
+			}
+
+			str += tempStr;
 			str += ",";
 		}
 		str = str.substr(0, str.size()-1);
 		str += ")";
 	}
-	if(period || LanguageConstants::TYPE == OutputType::OUTPUT_ASP)
-		str += ".\n";
-	else
-		str += "\n";
+
+	if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+		if(period)
+			str += ".\n";
+		else
+			str += ".";
+	}
+
+	if(LanguageConstants::TYPE == OutputType::OUTPUT_ALCHEMY){
+		if(period)
+			str += ".\n";
+		else 
+			str += "\n";	
+	}
+	
+	return str;
+}
+
+std::string  Predicate::getExtra(const std::set<Variable>& variable){
+	auto itr = variable.find(var);
+	std::string str;
+	int count = 0;
+	for (auto i = tokens.begin(); i != tokens.end(); ++i){
+		std::string tempStr = *i;
+		if(constantLocation.find(*i) == constantLocation.end()){
+			auto itr2 = itr->getPosMap().find(count);
+			std::string t = itr2->second.getDomainVar();
+			Util::toLower(t);
+			str += t;
+			str += "(";
+			Util::toUpper(tempStr);
+			str += tempStr;
+			str += ")";
+			str += " , ";
+		}
+		count++;
+	}
+
+	str = str.substr(0,str.size()-3);
 	return str;
 }
 

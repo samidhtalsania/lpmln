@@ -1,3 +1,4 @@
+#pragma once
 #include "Predicate.h"
 
 class Head
@@ -35,6 +36,18 @@ public:
 
 	inline bool getDisjunction(){
 		return isDisjunction;
+	}
+
+	std::set<std::string> getConstantSet(){
+		std::set<std::string> intermediateSet;
+		for (unsigned int i = 0; i < predList.size(); ++i){
+			if(!predList.at(i).getConstants().empty()){
+				for(auto it : predList.at(i).getConstants()){
+					intermediateSet.insert(it);
+				}		
+			}
+		}
+		return intermediateSet;
 	}
 
 private:

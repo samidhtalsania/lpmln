@@ -12,6 +12,8 @@
 #include "Predicate.h"
 #include "Variable.h"
 #include "RuleCompletion.h"
+#include "Head.h"
+#include "Body.h"
 
 #include "Config.h"
 
@@ -42,6 +44,10 @@ public:
 	std::set<std::string> domainNamesList;
 	
 	std::set<std::string> domainList;
+	/*ASP requires domain to be in lower cse exactly opposite of what Alchemy requires.
+	So in the case of ASP parsing, we keep one more set of domain non capitalized*/
+	// std::set<std::string> domainList;
+
 	std::set<Variable> variables;
 
 	std::multimap<std::string, RuleCompletion> rules;
@@ -102,4 +108,7 @@ public:
 			return true;
 		}
 	}
+
+	int weak_constraint_counter = 1;
+	void printASPRuleHB(Head*, Body*);
 };

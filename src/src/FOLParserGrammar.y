@@ -405,7 +405,8 @@ bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	B = new BodyDef;
 	B->addPredicate(p);
 	delete Ve;
@@ -417,7 +418,8 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setSingleNegation(true);
 	B = new BodyDef;
 	B->addPredicate(p);
@@ -430,7 +432,8 @@ bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setDoubleNegation(true);
 	B = new BodyDef;
 	B->addPredicate(p);
@@ -446,7 +449,8 @@ bodydef(B) ::= LBRACKET NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRAC
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setDoubleNegation(true);
 	tree->statHasDblNeg = true;
 	B = new BodyDef;
@@ -495,7 +499,8 @@ headdef(H) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	H = new Head(p);
 	// H->addPredicate(p);
 	delete Ve;
@@ -507,7 +512,8 @@ headdef(H) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	for(auto& v : *Ve)
 		vars.push_back(*v);
 	
-	Predicate p(S->token, vars);
+	Predicate p(S->token);
+	p.setTokens(vars, tree->domainList);
 	p.setSingleNegation(true);
 	H = new Head(p);
 	H->addPredicate(p);
@@ -541,7 +547,7 @@ decl(D) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 predicate(P) ::= string(S) LBRACKET variables(Ve) RBRACKET DOT. {
 	P = new Predicate;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	delete Ve;
 }
 
@@ -549,7 +555,7 @@ predicate(P) ::= string(S) LBRACKET variables(Ve) RBRACKET DOT. {
 predicate(P) ::= number string(S) LBRACKET variables(Ve) RBRACKET. {
 	P = new Predicate;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	delete Ve;
 }
 
@@ -575,7 +581,7 @@ predicate(P) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET. {
 	P->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	P->setVar(S->token);
-	P->setTokens(*Ve);
+	P->setTokens(*Ve,tree->domainList);
 	delete Ve;
 }
 

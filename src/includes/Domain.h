@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "LanguageConstants.h"
+#include "Util.h"
+#include <algorithm>
 
 class Domain
 {
@@ -14,8 +17,9 @@ public:
 	}
 
 	void setVars(std::vector<std::string*> domainVariables){
-		for(auto& v: domainVariables)
+		for(auto& v: domainVariables){
 			vars.push_back(*v);
+		}
 
 		// vars = domainVariables;
 	}

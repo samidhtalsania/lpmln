@@ -1,4 +1,6 @@
+#pragma once
 #include <set>
+#include "Variable.h"
 #include "Predicate.h"
 
 class Body
@@ -12,19 +14,26 @@ public:
 		predList.push_back(p);
 	}
 
-	inline std::string toString() const{
+	std::string toString() const{
 		return bodyStr;
 	}
 
-	inline std::string toNNFString() const{
+	std::string toNNFString() const{
 		return NNFbodyStr;
 	}
 
 
 	void appendStr(Predicate, bool, bool, bool);
 
+	bool bodyHasNegation(){
+		return bodyNegation;
+	}
+
+	std::string getExtra(); 
 
 	inline std::vector<Predicate> getPredicate(){ return predList; } 
+
+	std::string getExtra(const std::set<Variable>& variable);
 
 private:
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;
@@ -33,4 +42,6 @@ private:
 	
 	std::string bodyStr;	
 	std::string NNFbodyStr;
+
+	bool bodyNegation = false;
 };

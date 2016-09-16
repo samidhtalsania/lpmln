@@ -1188,7 +1188,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-1].minor.yy36)
 		vars.push_back(*v);
 	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	Predicate p(yymsp[-3].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	yygotominor.yy12 = new BodyDef;
 	yygotominor.yy12->addPredicate(p);
 	delete yymsp[-1].minor.yy36;
@@ -1200,7 +1201,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-1].minor.yy36)
 		vars.push_back(*v);
 	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	Predicate p(yymsp[-3].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	p.setSingleNegation(true);
 	yygotominor.yy12 = new BodyDef;
 	yygotominor.yy12->addPredicate(p);
@@ -1213,7 +1215,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-1].minor.yy36)
 		vars.push_back(*v);
 	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	Predicate p(yymsp[-3].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	p.setDoubleNegation(true);
 	yygotominor.yy12 = new BodyDef;
 	yygotominor.yy12->addPredicate(p);
@@ -1227,7 +1230,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-2].minor.yy36)
 		vars.push_back(*v);
 	
-	Predicate p(yymsp[-4].minor.yy0->token, vars);
+	Predicate p(yymsp[-4].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	p.setDoubleNegation(true);
 	tree->statHasDblNeg = true;
 	yygotominor.yy12 = new BodyDef;
@@ -1262,7 +1266,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-1].minor.yy36)
 		vars.push_back(*v);
 	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	Predicate p(yymsp[-3].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	yygotominor.yy53 = new Head(p);
 	// yygotominor.yy53->addPredicate(p);
 	delete yymsp[-1].minor.yy36;
@@ -1274,7 +1279,8 @@ static void yy_reduce(
 	for(auto& v : *yymsp[-1].minor.yy36)
 		vars.push_back(*v);
 	
-	Predicate p(yymsp[-3].minor.yy0->token, vars);
+	Predicate p(yymsp[-3].minor.yy0->token);
+	p.setTokens(vars, tree->domainList);
 	p.setSingleNegation(true);
 	yygotominor.yy53 = new Head(p);
 	yygotominor.yy53->addPredicate(p);
@@ -1308,7 +1314,7 @@ static void yy_reduce(
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->setVar(yymsp[-4].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-2].minor.yy36);
+	yygotominor.yy52->setTokens(*yymsp[-2].minor.yy36,tree->domainList);
 	delete yymsp[-2].minor.yy36;
 }
         break;
@@ -1316,7 +1322,7 @@ static void yy_reduce(
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36,tree->domainList);
 	delete yymsp[-1].minor.yy36;
 }
         break;
@@ -1342,7 +1348,7 @@ static void yy_reduce(
 	yygotominor.yy52->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
-	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36);
+	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36,tree->domainList);
 	delete yymsp[-1].minor.yy36;
 }
         break;
