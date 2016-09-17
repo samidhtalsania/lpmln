@@ -356,7 +356,6 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 					<<"("
 					<<B->toNNFString()
 					<<")"
-					<<LanguageConstants::LINE_END
 					<<"\n";
 	}
 	else{
