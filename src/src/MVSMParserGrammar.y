@@ -346,13 +346,14 @@ rule(R) ::= REVERSE_IMPLICATION body(B) DOT.{
 	delete B;
 }
 
-/*Weighted Constraint. For ASP follow rules from the paper*/
+/*TODO? Weighted Constraint. For ASP follow rules from the paper*/
 rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
 	
 	if(tree->outputType != OutputType::OUTPUT_ASP){
-		std::cout<<"("
+		std::cout<<N->toString()<<SPACE
+					<<"("
 					<<B->toNNFString()
 					<<")"
 					<<LanguageConstants::LINE_END
