@@ -1584,28 +1584,38 @@ static void yy_reduce(
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[-1].minor.yy72->getPredicate();
-	std::string s1;
+	yygotominor.yy24->notToBeCompleted();
+	auto itr = tree->variables.find(yygotominor.yy24->getVar());
+	if(itr != tree->variables.end()){
+		itr->setCompleted();
+	}
 	
+	std::string s1;
 	cout<<yygotominor.yy24->toString(s1,true);
 
 	delete yymsp[-1].minor.yy72;
 }
-#line 1594 "MVSMParserGrammar.c"
+#line 1599 "MVSMParserGrammar.c"
         break;
       case 47: /* predicate ::= number literal */
-#line 735 "MVSMParserGrammar.y"
+#line 740 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
+	yygotominor.yy24->notToBeCompleted();
+	auto itr = tree->variables.find(yygotominor.yy24->getVar());
+	if(itr != tree->variables.end()){
+		itr->setCompleted();
+	}
 	/*TODO for ASP translation throw an error. This is not valid asp syntax*/
 	cout<<yygotominor.yy24->toString(yymsp[-1].minor.yy0->toString()+SPACE, false);
 	
 	delete yymsp[0].minor.yy72;
 }
-#line 1606 "MVSMParserGrammar.c"
+#line 1616 "MVSMParserGrammar.c"
         break;
       case 48: /* predicate ::= number NEGATION NEGATION literal */
-#line 744 "MVSMParserGrammar.y"
+#line 754 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
@@ -1623,10 +1633,10 @@ static void yy_reduce(
 	
 	delete yymsp[0].minor.yy72;
 }
-#line 1627 "MVSMParserGrammar.c"
+#line 1637 "MVSMParserGrammar.c"
         break;
       case 49: /* predicate ::= number NEGATION literal */
-#line 762 "MVSMParserGrammar.y"
+#line 772 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[0].minor.yy72->getPredicate();
@@ -1644,10 +1654,10 @@ static void yy_reduce(
 	
 	delete yymsp[0].minor.yy72;
 }
-#line 1648 "MVSMParserGrammar.c"
+#line 1658 "MVSMParserGrammar.c"
         break;
       case 50: /* predicate ::= NEGATION NEGATION literal DOT */
-#line 780 "MVSMParserGrammar.y"
+#line 790 "MVSMParserGrammar.y"
 {
 	yygotominor.yy24 = new Predicate;
 	*yygotominor.yy24 = yymsp[-1].minor.yy72->getPredicate();
@@ -1666,35 +1676,35 @@ static void yy_reduce(
 	
 	delete yymsp[-1].minor.yy72;	
 }
-#line 1670 "MVSMParserGrammar.c"
+#line 1680 "MVSMParserGrammar.c"
         break;
       case 51: /* variables ::= variable */
-#line 800 "MVSMParserGrammar.y"
+#line 810 "MVSMParserGrammar.y"
 {
 	yygotominor.yy43 = new std::vector<std::string*>();	
 	yygotominor.yy43->push_back(yymsp[0].minor.yy0->token);
 }
-#line 1678 "MVSMParserGrammar.c"
+#line 1688 "MVSMParserGrammar.c"
         break;
       case 52: /* variables ::= variables COMMA variable */
-#line 805 "MVSMParserGrammar.y"
+#line 815 "MVSMParserGrammar.y"
 {
 	yygotominor.yy43 = yymsp[-2].minor.yy43;
 	yymsp[-2].minor.yy43->push_back(yymsp[0].minor.yy0->token);
 }
-#line 1686 "MVSMParserGrammar.c"
+#line 1696 "MVSMParserGrammar.c"
         break;
       case 53: /* variable ::= string */
       case 54: /* variable ::= number */ yytestcase(yyruleno==54);
       case 55: /* string ::= STRING */ yytestcase(yyruleno==55);
-#line 810 "MVSMParserGrammar.y"
+#line 820 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
-#line 1693 "MVSMParserGrammar.c"
+#line 1703 "MVSMParserGrammar.c"
         break;
       case 56: /* number ::= NUMBER */
-#line 818 "MVSMParserGrammar.y"
+#line 828 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
-#line 1698 "MVSMParserGrammar.c"
+#line 1708 "MVSMParserGrammar.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -1761,7 +1771,7 @@ static void yy_parse_failed(
 
     std::cout<<"Giving up.Parser is lost...\n";
 
-#line 1765 "MVSMParserGrammar.c"
+#line 1775 "MVSMParserGrammar.c"
 /************ End %parse_failure code *****************************************/
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1793,7 +1803,7 @@ static void yy_syntax_error(
     }
     throw syntax_exception("Parsing Failed. Unexpected sequence of tokens\n");
     
-#line 1797 "MVSMParserGrammar.c"
+#line 1807 "MVSMParserGrammar.c"
 /************ End %syntax_error code ******************************************/
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1820,7 +1830,7 @@ static void yy_accept(
 		std::cout<<("%parsing complete!\n");
 	else
     	std::cout<<("//parsing complete!\n");
-#line 1824 "MVSMParserGrammar.c"
+#line 1834 "MVSMParserGrammar.c"
 /*********** End %parse_accept code *******************************************/
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

@@ -725,8 +725,13 @@ literal(L) ::= variable(V).{
 predicate(P) ::= literal(L) DOT.{
 	P = new Predicate;
 	*P = L->getPredicate();
-	std::string s1;
+	P->notToBeCompleted();
+	auto itr = tree->variables.find(P->getVar());
+	if(itr != tree->variables.end()){
+		itr->setCompleted();
+	}
 	
+	std::string s1;
 	cout<<P->toString(s1,true);
 
 	delete L;
@@ -735,6 +740,11 @@ predicate(P) ::= literal(L) DOT.{
 predicate(P) ::= number(N) literal(L).{
 	P = new Predicate;
 	*P = L->getPredicate();
+	P->notToBeCompleted();
+	auto itr = tree->variables.find(P->getVar());
+	if(itr != tree->variables.end()){
+		itr->setCompleted();
+	}
 	/*TODO for ASP translation throw an error. This is not valid asp syntax*/
 	cout<<P->toString(N->toString()+SPACE, false);
 	
