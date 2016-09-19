@@ -718,6 +718,8 @@ literal(L) ::= variable(V).{
 	Predicate p(V->token);
 	auto itr = tree->variables.find(V->toString());
 	L = new BodyDef;
+	/*Special Case: BodyDef does not have variables*/
+	L->setHasVariables();
 	L->addPredicate(p);
 }
 
@@ -725,7 +727,11 @@ literal(L) ::= variable(V).{
 predicate(P) ::= literal(L) DOT.{
 	P = new Predicate;
 	*P = L->getPredicate();
-	P->notToBeCompleted();
+	if(L->getHasVariables() == false){
+		/*Its a special case*/
+		P->notToBeCompleted();	
+	}
+	
 	auto itr = tree->variables.find(P->getVar());
 	if(itr != tree->variables.end()){
 		itr->setCompleted();
@@ -740,7 +746,12 @@ predicate(P) ::= literal(L) DOT.{
 predicate(P) ::= number(N) literal(L).{
 	P = new Predicate;
 	*P = L->getPredicate();
-	P->notToBeCompleted();
+
+	if(L->getHasVariables() == false){
+		/*Its a special case*/
+		P->notToBeCompleted();	
+	}
+	
 	auto itr = tree->variables.find(P->getVar());
 	if(itr != tree->variables.end()){
 		itr->setCompleted();

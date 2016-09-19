@@ -19,6 +19,17 @@ public:
 		return p.toString();
 	}
 
+	bool getHasVariables(){
+		return hasVariables;
+	}
+
+	/*Special cases where BodyDef does not have variables*/
+	void setHasVariables(){
+		hasVariables = false;
+	}
+
 private:
-	Predicate p;	
+	Predicate p;
+	/*By default every BodyDef is assumed to have variables */
+	bool hasVariables = true;	
 };
