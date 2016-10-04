@@ -359,10 +359,18 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 					<<"\n";
 	}
 	else{
-		std::cout<<LanguageConstants::IMPL
+		std::cout<<":~"
 				<<B->toString()
 				<<LanguageConstants::LINE_END
+				<<" "
+				<<"["
+				<< std::to_string((int)(std::stof(N->toString())* 10000))
+				<< ","
+				<< tree->unsatCount
+				<<"]"
 				<<"\n";
+
+		tree->unsatCount++;
 	}
 
 	// std::cout<<N->toString()<<SPACE<<"("<<B->toNNFString()<<")"<<"\n";
@@ -455,7 +463,7 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 }
 
 //Parse soft rules
-//0.8536 B => H
+//0.8536 H <= B
 //Test case covered
 rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 	// RULE_COMPLETION_BH(B,H);
@@ -475,14 +483,42 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 				<<H->toString()
 				<<"\n";
 	
-	if(tree->outputType == OutputType::OUTPUT_ASP)
-		std::cout<< N->toString()
-				<<SPACE
-				<<H->toString()
-				<<" :- "
-				<<B->toString()
-				<<LanguageConstants::LINE_END
-				<<"\n";
+	if(tree->outputType == OutputType::OUTPUT_ASP){
+
+		std::cout << "unsat(" << tree->unsatCount << ")"
+					<< " :- "
+					<< B->toString()
+					<< " , "
+					<< "not "
+					<< H->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n"; 
+
+		std::cout << H->toString()
+					<< " :- "
+					<< B->toString()
+					<< " , "
+					<< "not "
+					<< "unsat(" << tree->unsatCount << ")"
+					<<LanguageConstants::LINE_END
+					<<"\n"; 
+
+	
+		std::cout   << " :~ "
+					<< "unsat(" << tree->unsatCount << ")"
+					<< ". "
+					<< "["
+					<< std::to_string((int)(std::stof(N->toString())* 10000))
+					<<","
+					<< tree->unsatCount
+					<< "]"
+					<<"\n";
+
+		tree->unsatCount++; 
+
+
+	}
+
 
 	delete B;
 	delete H;
@@ -756,9 +792,40 @@ predicate(P) ::= number(N) literal(L).{
 	if(itr != tree->variables.end()){
 		itr->setCompleted();
 	}
-	/*TODO for ASP translation throw an error. This is not valid asp syntax*/
-	cout<<P->toString(N->toString()+SPACE, false);
+
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+		cout<<P->toString(N->toString()+SPACE, false);
+	}
+	if(tree->outputType == OutputType::OUTPUT_ASP){
+
+		std::cout << "unsat(" << tree->unsatCount << ")"
+					<< " :- "
+					<< "not "
+					<< P->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n"; 
+
+		std::cout << P->toString()
+					<< " :- "
+					<< "not "
+					<< "unsat(" << tree->unsatCount << ")"
+					<<LanguageConstants::LINE_END
+					<<"\n"; 
+
 	
+		std::cout   << " :~ "
+					<< "unsat(" << tree->unsatCount << ")"
+					<< ". "
+					<< "["
+					<< std::to_string((int)(std::stof(N->toString())* 10000))
+					<<","
+					<< tree->unsatCount
+					<< "]"
+					<<"\n";
+
+		tree->unsatCount++; 
+
+	}	
 	delete L;
 }
 
