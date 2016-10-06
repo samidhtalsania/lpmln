@@ -281,7 +281,9 @@ prog ::= prog NEWLINE predicate(P). {
 	if(P->needsToBeCompleted()){	
 		FactCompletion f(*P);
 		tree->facts.insert(std::pair<std::string,FactCompletion>(f.getHead().getVar(),f)); 
-	}	
+	}
+
+			
 	delete P;
 }
 
@@ -359,20 +361,29 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 					<<"\n";
 	}
 	else{
-		std::cout<<":~"
-				<<B->toString()
-				<<LanguageConstants::LINE_END
-				<<" "
-				<<"["
-				<< std::to_string((int)(std::stof(N->toString())* 10000))
-				<< ","
-				<< tree->unsatCount
-				<<"]"
-				<<"\n";
+		std::string str = ":~"
+				+ B->toString()
+				+ " , "
+				+ B->getExtra(tree->variables) 
+				+ LanguageConstants::LINE_END
+				+ " "
+				+ "["
+				+  std::to_string((int)(std::stof(N->toString())* 10000))
+				+  ","
+				+  std::to_string(tree->weak_constraint_counter);
 
-		tree->unsatCount++;
+		std::string temp = B->getExtraConstants();
+		if(temp.length() > 0){
+			str += ","
+				+ temp;
+		}
+				
+		str += std::string("]") + std::string("\n");
+
+		cout << str;
+		tree->weak_constraint_counter++;
+	
 	}
-
 	// std::cout<<N->toString()<<SPACE<<"("<<B->toNNFString()<<")"<<"\n";
 	delete B;
 }
@@ -392,8 +403,22 @@ rule(R) ::= head(B) DISJUNCTION bodydef(B1) DOT.{
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
+	
 	B->appendStr(B1->getPredicate().toString(),false,true,false);
-	std::cout<<B->toString()<<"."<<"\n";
+	
+	std::string temp;
+	if(tree->outputType == OutputType::OUTPUT_ASP){
+		temp = B->getExtra(tree->variables);
+		if(temp.length() > 0){
+			temp = B->toString() + ":-" + temp;
+		}
+		else{
+			temp = B->toString();
+		}
+	}
+	
+	std::cout<<temp<<"."<<"\n";
+	
 	delete B;
 	delete B1;
 }
@@ -485,12 +510,12 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 	
 	if(tree->outputType == OutputType::OUTPUT_ASP){
 
-		std::cout << "unsat(" << tree->unsatCount << ")"
+		std::cout << "unsat(" << tree->weak_constraint_counter << ")"
 					<< " :- "
 					<< B->toString()
 					<< " , "
-					<< "not "
-					<< H->toString()
+					/*Change this to NNF String*/
+					<< H->toNNFString()
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
@@ -499,22 +524,22 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 					<< B->toString()
 					<< " , "
 					<< "not "
-					<< "unsat(" << tree->unsatCount << ")"
+					<< "unsat(" << tree->weak_constraint_counter << ")"
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
 	
 		std::cout   << " :~ "
-					<< "unsat(" << tree->unsatCount << ")"
+					<< "unsat(" << tree->weak_constraint_counter << ")"
 					<< ". "
 					<< "["
 					<< std::to_string((int)(std::stof(N->toString())* 10000))
 					<<","
-					<< tree->unsatCount
+					<< tree->weak_constraint_counter
 					<< "]"
 					<<"\n";
 
-		tree->unsatCount++; 
+		tree->weak_constraint_counter++; 
 
 
 	}
@@ -772,9 +797,28 @@ predicate(P) ::= literal(L) DOT.{
 	if(itr != tree->variables.end()){
 		itr->setCompleted();
 	}
+
+	std::string s1,s2;
 	
-	std::string s1;
-	cout<<P->toString(s1,true);
+
+	if(tree->outputType == OutputType::OUTPUT_ASP){
+		s2 = P->getExtra(tree->variables);
+
+		if(s2.length() > 0){
+			s1 = P->toString(s1,false);
+			s1 += ":-";
+			s1 += s2;
+			s1 += ".\n";
+		}
+		else{
+			s1 = P->toString(s1,true);
+		}
+			
+
+		
+	}
+
+	cout<<s1;
 
 	delete L;
 }
@@ -798,7 +842,7 @@ predicate(P) ::= number(N) literal(L).{
 	}
 	if(tree->outputType == OutputType::OUTPUT_ASP){
 
-		std::cout << "unsat(" << tree->unsatCount << ")"
+		std::cout << "unsat(" << tree->weak_constraint_counter << ")"
 					<< " :- "
 					<< "not "
 					<< P->toString()
@@ -808,22 +852,22 @@ predicate(P) ::= number(N) literal(L).{
 		std::cout << P->toString()
 					<< " :- "
 					<< "not "
-					<< "unsat(" << tree->unsatCount << ")"
+					<< "unsat(" << tree->weak_constraint_counter << ")"
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
 	
 		std::cout   << " :~ "
-					<< "unsat(" << tree->unsatCount << ")"
+					<< "unsat(" << tree->weak_constraint_counter << ")"
 					<< ". "
 					<< "["
 					<< std::to_string((int)(std::stof(N->toString())* 10000))
 					<<","
-					<< tree->unsatCount
+					<< tree->weak_constraint_counter
 					<< "]"
 					<<"\n";
 
-		tree->unsatCount++; 
+		tree->weak_constraint_counter++; 
 
 	}	
 	delete L;
@@ -839,8 +883,19 @@ predicate(P) ::= number(N) NEGATION NEGATION literal(L).{
 		cout<<P->toString(N->toString()+SPACE, false);	
 	}
 	else if(tree->outputType == OutputType::OUTPUT_ASP){
-		std::string str = P->toString(":~ not ", false);		
-		str += " [" + std::to_string((int)(std::stof(N->toString())* 10000)) + "," + std::to_string(tree->weak_constraint_counter++) + "]\n";
+		std::string str = P->toString(":~ not ", false);
+		std::string temp  = P->getExtra(tree->variables);	
+		if(temp.length() > 0)
+			str += ",";
+		str += temp;
+		str += LanguageConstants::LINE_END;
+		str += " [" + 
+				std::to_string((int)(std::stof(N->toString())* 10000)) + 
+				"," + 
+				std::to_string(tree->weak_constraint_counter++) + 
+				"," +
+				P->getExtraConstants()+
+				"]\n";
 		cout<<str;
 	}
 	
@@ -857,7 +912,16 @@ predicate(P) ::= number(N) NEGATION literal(L).{
 	}
 	else if(tree->outputType == OutputType::OUTPUT_ASP){
 		std::string str = P->toString(":~ ", false);		
-		str += " [" + std::to_string((int)(std::stof(N->toString())* 10000)) + "," + std::to_string(tree->weak_constraint_counter++) + "]\n";
+		std::string temp  = P->getExtra(tree->variables);	
+		if(temp.length() > 0)
+			str += ",";
+		str += " [" + 
+		std::to_string((int)(std::stof(N->toString())* 10000)) + 
+		"," + 
+		std::to_string(tree->weak_constraint_counter++) + 
+		"," +
+		P->getExtraConstants() + 
+		"]\n";
 		cout<<str;
 	}
 

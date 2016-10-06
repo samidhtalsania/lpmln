@@ -57,9 +57,7 @@ public:
 	OptimizationLevel level;
 	OutputType outputType;
 
-	/*Required for turning weighted programs into clingo*/
-	int unsatCount = 0;
-
+	
 	/* Required for MVSM Parsing */
 	// std::set<std::string> sorts;
 	Current_Decl_Part cdp = Current_Decl_Part::DECL_NONE;
@@ -113,5 +111,8 @@ public:
 	}
 
 	int weak_constraint_counter = 1;
+	/*Required for turning weighted programs into clingo*/
+	// int unsatCount = 0;
+
 	void printASPRuleHB(Head*, Body*);
 };

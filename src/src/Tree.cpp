@@ -538,6 +538,11 @@ void Tree::printASPRuleHB(Head* H, Body* B){
 			str += "," + B->getExtra(variables);
 	}
 
+	std::string temp = H->getExtra(variables);
+	if(temp.length() > 0){
+		str += "," + temp;
+	}
+
 	std::cout<<H->toString()
 					<<" :- "
 					<<B->toString()

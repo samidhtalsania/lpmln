@@ -69,6 +69,7 @@ public:
 	bool isNegated(){
 		if(singleNegation || doubleNegation)
 			return true;
+		return false;
 	}
 
 	bool isSingleNegated() { return singleNegation; }
@@ -91,6 +92,7 @@ public:
 	std::string toNNFString() const;
 
 	std::string  getExtra(const std::set<Variable>& variable);
+	std::string  getExtraConstants() const;
 
 private:
 	std::string var;
@@ -102,6 +104,8 @@ private:
 	std::vector<std::string> tokens;
 	std::set<std::string> constantLocation;
 	std::set<int> variableLocation;
+
+	std::set<std::string> extraConstants;
 
 	bool isEquality = false;
 	bool isInEquality = false;

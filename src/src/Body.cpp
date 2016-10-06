@@ -33,6 +33,11 @@ std::string Body::getExtra(const std::set<Variable>& variable){
 	std::string str;
 	for (std::vector<Predicate>::iterator i = predList.begin(); i != predList.end(); ++i){
 		std::string s = i->getExtra(variable);
+
+		std::string temp = i->getExtraConstants();
+		if(temp.length() > 0){
+			extraConstants += temp + " , ";
+		}
 		if(s.length() != 0){
 			str += s;
 			str += " , ";
@@ -41,4 +46,11 @@ std::string Body::getExtra(const std::set<Variable>& variable){
 	if(str.length() > 3)
 		str = str.substr(0,str.size()-3);
 	return str;
+}
+
+std::string Body::getExtraConstants(){
+	if(extraConstants.length() > 0){
+		extraConstants = extraConstants.substr(0,extraConstants.size()-3);
+	}
+	return extraConstants;
 }

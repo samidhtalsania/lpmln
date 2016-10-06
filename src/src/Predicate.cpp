@@ -199,8 +199,8 @@ std::string Predicate::toString(const std::string& s, bool period) const{
 	if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
 		if(period)
 			str += ".\n";
-		else
-			str += ".";
+		// else
+		// 	str += ".";
 	}
 
 	if(LanguageConstants::TYPE == OutputType::OUTPUT_ALCHEMY){
@@ -229,10 +229,23 @@ std::string  Predicate::getExtra(const std::set<Variable>& variable){
 			str += tempStr;
 			str += ")";
 			str += " , ";
+
+			/*We need this set to put into weight in ASP*/
+			extraConstants.insert(tempStr);
 		}
 		count++;
 	}
 
+	str = str.substr(0,str.size()-3);
+	return str;
+}
+
+std::string Predicate::getExtraConstants() const{
+	std::string str;
+	for (auto it=extraConstants.begin(); it!=extraConstants.end(); ++it){
+			str += *it;
+			str += " , ";
+	}
 	str = str.substr(0,str.size()-3);
 	return str;
 }

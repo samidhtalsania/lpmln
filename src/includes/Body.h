@@ -35,10 +35,13 @@ public:
 
 	std::string getExtra(const std::set<Variable>& variable);
 
+	std::string getExtraConstants();
+
 private:
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;
 	std::set<std::pair<std::string,std::string>> orphanVarsHeadMap;
 	std::vector<Predicate> predList;
+	std::string extraConstants;
 	
 	std::string bodyStr;	
 	std::string NNFbodyStr;
