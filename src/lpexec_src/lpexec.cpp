@@ -11,7 +11,8 @@
 
 using namespace std;
 
-
+void runProcess(string);
+void printHelp();
 
 void runProcess(string command){
    FILE *fpipe;
@@ -29,7 +30,7 @@ void runProcess(string command){
    }
    pclose(fpipe);
 
-};
+}
 
 void printHelp(){
 
@@ -67,7 +68,7 @@ void printHelp(){
                "Clingo Options:\n"
                "Call clingo -h from command prompt.\n"
                "\n";
-};
+}
 
 
 int main(int argc, char **argv)
@@ -109,9 +110,11 @@ int main(int argc, char **argv)
    uuid_unparse ( uuid, s );
 
    string fileName = string(s);
+   
    bool isEvidenceUsed = false;   
 
    alchemy += " -i " + string("/tmp/") + fileName + " -r " + string("/tmp/") + fileName + string(".res") ;
+   clingo += string("/tmp/") + fileName + " ";
 
    if(argc == 1){
       printHelp();
@@ -190,6 +193,7 @@ int main(int argc, char **argv)
    }
 
    if(execute_cli == true){
+
       runProcess(clingo);
    }
 
