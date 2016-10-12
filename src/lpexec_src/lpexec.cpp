@@ -34,21 +34,21 @@ void runProcess(string command){
 
 void printHelp(){
 
-   std::cout << "lpexec v1.0\n"
+   std::cout << "lpmln v1.0\n"
                "\n"
                "Usage:\n"
-               "lpexec [LPMLN Options] [FILE] -[mln|clingo] [Alchemy/clingo Options]\n"
+               "lpmln [LPMLN Options] [FILE] -[mln|clingo] [Alchemy/clingo Options]\n"
                "\n"
-               "LPEXEC Options:\n"
+               "LPMLN Options:\n"
                "  -h Show this message\n"
                "  -mln Invoke alchemy for solving. All the options after this would be passed to alchemy. \n"
                "  -clingo Invoke clingo for solving. All the options after this would be passed to clingo.\n"
                "\n"
                "Options:\n"
                "\n"
-               "LPMLN Options:\n"
+               "LPMLN-Compiler Options:\n"
                "\n"
-               "Usage: lpmln [options] [file]\n"
+               "Usage: lpmlncompiler [options] [file]\n"
                "Options:\n"
                "   \n"
                "   -A Compile for Clingo 4\n"
@@ -85,15 +85,15 @@ int main(int argc, char **argv)
    Region region = NONE;
   
    
-   string lpmln = "lpmln ";
+   string lpmln = "lpmlncompiler ";
    string alchemy = "infer ";
    string clingo = "clingo ";
    string tuffy = "tuffy ";
 
    string help = "-h";
 
-   string lpexec = "lpexec";
-   string lpexec2 = "./lpexec";
+   // string lpmln = "lpmln";
+   // string lpmln2 = "./lpmln";
    
    string alch = "-mln";
    string cli = "-clingo";
