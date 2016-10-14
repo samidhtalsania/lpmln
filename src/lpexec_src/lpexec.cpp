@@ -4,15 +4,24 @@
 #include <stdio.h>
 #include <cstring> 
 #include <uuid/uuid.h>
+#include <map>
+#include <string>
+#include <set>
+#include <fstream>
+
+#include "FileConfig.h"
 
 #define SPACE " "
 
 // Requires sudo apt-get install uuid-dev
 
+#define DEBUG
+
 using namespace std;
 
 void runProcess(string);
 void printHelp();
+void printVersion();
 
 void runProcess(string command){
    FILE *fpipe;
@@ -70,40 +79,43 @@ void printHelp(){
                "\n";
 }
 
+void printVersion(){
+   std::cout<< "lpmln v 1.0\n";
+}
+
 
 int main(int argc, char **argv)
 {
-
-   enum Region{
-      NONE,
-      LPMLN,
-      ALCH,
-      TUFFY,
-      CLINGO
-   };
-
    Region region = NONE;
-  
-   
+
+   FileConfig cf;
+
+   map<string, string> loptions;
+   loptions = cf.getloptions();
+   map<string, string> aoptions = cf.getaoptions();
+   map<string, string> coptions = cf.getcoptions();
+     
    string lpmln = "lpmlncompiler ";
    string alchemy = "infer ";
    string clingo = "clingo ";
    string tuffy = "tuffy ";
 
    string help = "-h";
+   string version = "-v";
 
-   // string lpmln = "lpmln";
-   // string lpmln2 = "./lpmln";
-   
    string alch = "-mln";
    string cli = "-clingo";
    string tuf = "-tuffy";
 
-   bool execute_alch = false;
-   bool execute_cli = false;
+   // Execute cli is true by default
+   bool execute_alch = cf.getExecuteAlch();
+   bool execute_cli = cf.getExecuteCli();
    bool execute_tuf = false;
 
-   
+   set<string> lpset;
+   set<string> alchset;
+   set<string> clingoset;
+
    uuid_t uuid;
    uuid_generate_random ( uuid );
    char s[37];
@@ -121,6 +133,9 @@ int main(int argc, char **argv)
       exit(0);
    }
 
+   string inputFileName;
+
+   int count = 0;
    for(int i=0 ; i < argc ; i++){
 
       string arg = string(argv[i]);
@@ -129,6 +144,13 @@ int main(int argc, char **argv)
          printHelp();
          exit(0);
       }
+
+      if(arg.compare(version) == 0){
+         printVersion();
+         exit(0);
+      }
+
+
 
       if(i == 0){
          region = LPMLN;
@@ -155,25 +177,126 @@ int main(int argc, char **argv)
 
       switch(region){
          case LPMLN:
-            lpmln += SPACE + string(argv[i]) + SPACE;
+            {
+               
+               if(arg.compare("-A") == 0 || arg.compare("-M") == 0){
+                  lpset.insert("solver");
+                  lpmln += SPACE + string(argv[i]) + SPACE;
+               }
+
+               else if(arg.compare("-a") == 0 || arg.compare("-m") == 0 || arg.compare("-p") == 0){
+                  lpset.insert("input");
+                  lpmln += SPACE + string(argv[i]) + SPACE;
+               }
+               
+               else if(arg.compare("-o0") == 0 || arg.compare("-o1") == 0 || arg.compare("-o2") == 0){
+                  lpset.insert("optimization");
+                  lpmln += SPACE + string(argv[i]) + SPACE;
+               }
+               else{
+                  // Its the input file
+                  inputFileName = string(argv[i]);
+               }
+            }
             break;
+
          case ALCH:
-            if(arg.compare("-e") == 0)
-               isEvidenceUsed = true;
-            alchemy  += SPACE + string(argv[i]) + SPACE;
+            {
+               if(arg.compare("-e") == 0){
+                  isEvidenceUsed = true;
+                  // alchemyoptions.insert(argv[i]);
+                  alchset.insert("evidence");
+               }
+               if(arg.compare("-q") == 0){
+                  // isEvidenceUsed = true;
+                  alchset.insert("query");
+               }
+               alchemy  += SPACE + string(argv[i]) + SPACE;
+            }
             break;
+
          case TUFFY:
             tuffy  += SPACE + string(argv[i]) + SPACE;
             break;
+
          case CLINGO:
-            clingo += SPACE + string(argv[i]) + SPACE;
+            {
+               int temp = 0;
+               try{
+                  temp = std::stoi(argv[i]);
+                  clingoset.insert("solutions");
+               }
+               catch(...){}
+               clingo += SPACE + string(argv[i]) + SPACE;
+            }
             break;
+
          default:
             break;
       }
    }
 
+
+   for (auto it=loptions.begin(); it!=loptions.end(); ++it){
+      string str ;
+      auto itr = lpset.find(it->first);
+      if(itr == lpset.end()){
+         if (it->first.compare("solver") == 0){
+            if(it->second.compare("clingo") == 0){
+               str = "-A";
+            }
+            if(it->second.compare("alchemy") == 0){
+               str = "-M";
+            }
+         }
+         if(it->first.compare("input") == 0){
+            if(it->second.compare("mvsm") == 0){
+               str = "-p";
+            }
+            if(it->second.compare("asp") == 0){
+               str = "-a";
+            }
+            if(it->second.compare("fol") == 0){
+               str = "-m";
+            }
+         }
+         if(it->first.compare("optimization") == 0){
+            str = it->second;
+         }
+
+         lpmln += SPACE + str + SPACE;
+      }
+   }
+
+   lpmln += inputFileName;
+
+
+   for (auto it=aoptions.begin(); it!=aoptions.end(); ++it){
+      string str = it->first;
+      string first;
+      auto itr = alchset.find(str);
+      if(itr == alchset.end()){
+         if(str.compare("evidence") == 0){
+            first = " -e ";
+            isEvidenceUsed = true;
+         }
+         else if(str.compare("query") == 0)
+            first = " -q ";
+
+         alchemy += first + SPACE + it->second + SPACE;
+      }
+   }
+
+   for (auto it=coptions.begin(); it!=coptions.end(); ++it){
+      string str = it->first;
+      auto itr = lpset.find(str);
+      if(itr == lpset.end()){
+         clingo += SPACE + it->second + SPACE;
+      }
+   }
+
    lpmln += SPACE + string(">") + SPACE + string("/tmp/") + fileName;
+   std::cout<<lpmln;
 
    if(!isEvidenceUsed){
       //Make empty db
@@ -182,11 +305,12 @@ int main(int argc, char **argv)
       runProcess(str);
    }
 
+
+
    runProcess(lpmln);
-   
-   // cout <<alchemy<<endl;
 
    if(execute_alch == true){
+      // std::cout<<alchemy;
       runProcess(alchemy);
       string str = "cat /tmp/" + fileName + ".res";
       runProcess(str);
@@ -202,6 +326,18 @@ int main(int argc, char **argv)
       runProcess(tuffy);
    }
 
+   
+   std::string revInputFileName(inputFileName.rbegin(), inputFileName.rend());
+   std::size_t found = revInputFileName.find("/");
+   string destination = inputFileName.substr(0,found);
+
+   std::ifstream  src("/tmp/"+fileName, std::ios::binary);
+   std::ofstream  dst(destination+"/.lpmln-output",   std::ios::binary);
+   
+   dst << src.rdbuf();
+
+   src.close();
+   dst.close();
    return 0;
 }
 
