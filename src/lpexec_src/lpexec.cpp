@@ -88,13 +88,9 @@ int main(int argc, char **argv)
 {
    Region region = NONE;
 
-   FileConfig cf;
+   bool pickUpFromCommandLine = false;
 
-   map<string, string> loptions;
-   loptions = cf.getloptions();
-   map<string, string> aoptions = cf.getaoptions();
-   map<string, string> coptions = cf.getcoptions();
-     
+
    string lpmln = "lpmlncompiler ";
    string alchemy = "infer ";
    string clingo = "clingo ";
@@ -107,14 +103,36 @@ int main(int argc, char **argv)
    string cli = "-clingo";
    string tuf = "-tuffy";
 
-   // Execute cli is true by default
-   bool execute_alch = cf.getExecuteAlch();
-   bool execute_cli = cf.getExecuteCli();
-   bool execute_tuf = false;
+
+   map<string, string> loptions ;
+   map<string, string> aoptions ;
+   map<string, string> coptions ;
+
+   bool execute_alch ;
+   bool execute_cli ;
+   bool execute_tuf ;
 
    set<string> lpset;
    set<string> alchset;
    set<string> clingoset;
+
+   try{
+      FileConfig cf;
+
+      loptions = cf.getloptions();
+      aoptions = cf.getaoptions();
+      coptions = cf.getcoptions();
+        
+
+      // Execute cli is true by default
+      execute_alch = cf.getExecuteAlch();
+      execute_cli = cf.getExecuteCli();
+      execute_tuf = false;
+   }
+   catch(...){
+      // No solver is specified in the config file. Need to pick it up from command line.
+      pickUpFromCommandLine = true;
+   }
 
    uuid_t uuid;
    uuid_generate_random ( uuid );
@@ -160,12 +178,18 @@ int main(int argc, char **argv)
       if(arg.compare(alch) == 0){
          region = ALCH;
          execute_alch = true;
+         execute_cli = false;
+         // loptions
+         loptions["solver"] = "alchemy";
          continue;
       }
 
       if(arg.compare(cli) == 0){
          region = CLINGO;
          execute_cli = true;
+         execute_alch = false;
+         // loptions.insert(pair<string,string>("solver","clingo"));
+         loptions["solver"] = "clingo";
          continue;
       }
 
@@ -182,6 +206,14 @@ int main(int argc, char **argv)
                if(arg.compare("-A") == 0 || arg.compare("-M") == 0){
                   lpset.insert("solver");
                   lpmln += SPACE + string(argv[i]) + SPACE;
+                  if(arg.compare("-A") == 0){
+                     execute_cli = true;
+                     execute_alch = false;
+                  }
+                  else{
+                     execute_alch = true;
+                     execute_cli = false;
+                  }
                }
 
                else if(arg.compare("-a") == 0 || arg.compare("-m") == 0 || arg.compare("-p") == 0){
@@ -289,16 +321,18 @@ int main(int argc, char **argv)
 
    for (auto it=coptions.begin(); it!=coptions.end(); ++it){
       string str = it->first;
-      auto itr = lpset.find(str);
-      if(itr == lpset.end()){
+      auto itr = clingoset.find(str);
+      if(itr == clingoset.end()){
          clingo += SPACE + it->second + SPACE;
       }
    }
 
    lpmln += SPACE + string(">") + SPACE + string("/tmp/") + fileName;
-   std::cout<<lpmln;
+   std::cout<<"Lpmln Executed with Command:\n"+lpmln+"\n";
+   runProcess(lpmln);
+   // std::cout<<lpmln;
 
-   if(!isEvidenceUsed){
+   if(!isEvidenceUsed && execute_alch == true){
       //Make empty db
       alchemy += string(" -e ") + string("/tmp/")+ fileName + string(".db ");
       string str = "touch /tmp/" + fileName + ".db";
@@ -307,17 +341,19 @@ int main(int argc, char **argv)
 
 
 
-   runProcess(lpmln);
+  
 
    if(execute_alch == true){
       // std::cout<<alchemy;
+      std::cout<<"Alchemy Executed with Command:\n"+alchemy+"\n";
       runProcess(alchemy);
       string str = "cat /tmp/" + fileName + ".res";
       runProcess(str);
    }
 
    if(execute_cli == true){
-
+      clingo += " --warn=no-atom-undefined";
+      std::cout<<"Clingo Executed with Command:\n"+clingo+"\n";
       runProcess(clingo);
    }
 

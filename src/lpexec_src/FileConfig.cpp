@@ -37,7 +37,7 @@ FileConfig::FileConfig(){
 	// Set defaults
 	//Default for lpmln: Solver is MLN, Input is MVSM
 	loptions.insert(pair<string,string>("input","mvsm"));
-	//Compile for Alchemy
+	//Compile for Clingo
 	loptions.insert(pair<string,string>("solver","clingo"));
 	//max number of solutions for clingo
 	coptions.insert(pair<string,string>("solutions","0"));
@@ -119,8 +119,13 @@ FileConfig::FileConfig(){
 
 					if(region == Region::LPMLN){
 						if(equalsIgnoreCase("solver",lhs)){
-							if(equalsIgnoreCase("alchemy",rhs))
+							if(equalsIgnoreCase("alchemy",rhs)){
 								aoptions.insert(pair<string,string>("region","alch"));
+								execute_alch = true;
+							}
+							else if(equalsIgnoreCase("clingo",rhs)){
+								execute_cli = true;	
+							}
 
 							loptions["solver"] = rhs;
 						}
@@ -177,6 +182,10 @@ FileConfig::FileConfig(){
 				}
 			}
 		}
+	}
+
+	if(!execute_alch && !execute_cli){
+		throw;
 	}
 
 	//Parsing done
