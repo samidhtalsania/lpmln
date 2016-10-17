@@ -10,6 +10,7 @@
 #include <fstream>
 
 #include "FileConfig.h"
+#include "exceptions/NoLanguageSelectedException.h"
 
 #define SPACE " "
 
@@ -129,9 +130,21 @@ int main(int argc, char **argv)
       execute_cli = cf.getExecuteCli();
       execute_tuf = false;
    }
-   catch(...){
+   catch(NoLanguageSelectedException ex){
       // No solver is specified in the config file. Need to pick it up from command line.
+
+      //Default for lpmln: Solver is MLN, Input is MVSM
+      loptions.insert(pair<string,string>("input","mvsm"));
+      //Compile for Clingo
+      loptions.insert(pair<string,string>("solver","clingo"));
+      //max number of solutions for clingo
+      coptions.insert(pair<string,string>("solutions","0"));
+
       pickUpFromCommandLine = true;
+
+      execute_cli = true;
+
+      
    }
 
    uuid_t uuid;
@@ -181,6 +194,7 @@ int main(int argc, char **argv)
          execute_cli = false;
          // loptions
          loptions["solver"] = "alchemy";
+         pickUpFromCommandLine = false;
          continue;
       }
 
@@ -190,6 +204,7 @@ int main(int argc, char **argv)
          execute_alch = false;
          // loptions.insert(pair<string,string>("solver","clingo"));
          loptions["solver"] = "clingo";
+         pickUpFromCommandLine = false;
          continue;
       }
 
@@ -302,6 +317,10 @@ int main(int argc, char **argv)
 
    lpmln += inputFileName;
 
+   if(pickUpFromCommandLine){
+      std::cout<<"No input language and solver specified in command line and config file.\nUsing ASP Solver.\n";
+   }
+
 
    for (auto it=aoptions.begin(); it!=aoptions.end(); ++it){
       string str = it->first;
@@ -330,7 +349,6 @@ int main(int argc, char **argv)
    lpmln += SPACE + string(">") + SPACE + string("/tmp/") + fileName;
    std::cout<<"Lpmln Executed with Command:\n"+lpmln+"\n";
    runProcess(lpmln);
-   // std::cout<<lpmln;
 
    if(!isEvidenceUsed && execute_alch == true){
       //Make empty db

@@ -37,4 +37,5 @@ lpmln_LDADD = -luuid
 
 lpmln_SOURCES = \
 		lpexec_src/lpexec.cpp \
-		lpexec_src/FileConfig.cpp
+		lpexec_src/FileConfig.cpp \
+		lpexec_src/NoLanguageSelectedException.cpp

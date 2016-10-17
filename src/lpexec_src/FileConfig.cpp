@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#include "exceptions/NoLanguageSelectedException.h"
+
 using namespace std;
 
 FileConfig::FileConfig(){
@@ -16,6 +18,7 @@ FileConfig::FileConfig(){
 	ifstream configFile;
 
 	const char *homedir;
+	bool fileCouldNotBeOpened = false;
 
 	if ((homedir = getenv("HOME")) == NULL) {
 	    homedir = getpwuid(getuid())->pw_dir;
@@ -29,9 +32,10 @@ FileConfig::FileConfig(){
 		#ifdef DEBUG
 		cout<<"Cannot read from config file\n";
 		#endif
-		ofstream file;
-		file.open(filename);
-		file.close();
+		// ofstream file;
+		// file.open(filename);
+		// file.close();
+		fileCouldNotBeOpened = true;
 	}
 
 	// Set defaults
@@ -184,8 +188,8 @@ FileConfig::FileConfig(){
 		}
 	}
 
-	if(!execute_alch && !execute_cli){
-		throw;
+	if(!execute_alch && !execute_cli || fileCouldNotBeOpened){
+		throw NoLanguageSelectedException("No language selected from config File. Check to see if config file has the right syntax.");
 	}
 
 	//Parsing done
