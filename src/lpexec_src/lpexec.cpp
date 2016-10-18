@@ -109,9 +109,9 @@ int main(int argc, char **argv)
    map<string, string> aoptions ;
    map<string, string> coptions ;
 
-   bool execute_alch ;
-   bool execute_cli ;
-   bool execute_tuf ;
+   bool execute_alch = false;
+   bool execute_cli = false;
+   bool execute_tuf = false;
 
    set<string> lpset;
    set<string> alchset;
@@ -124,13 +124,12 @@ int main(int argc, char **argv)
       aoptions = cf.getaoptions();
       coptions = cf.getcoptions();
         
-
       // Execute cli is true by default
       execute_alch = cf.getExecuteAlch();
       execute_cli = cf.getExecuteCli();
       execute_tuf = false;
    }
-   catch(NoLanguageSelectedException ex){
+   catch(...){
       // No solver is specified in the config file. Need to pick it up from command line.
 
       //Default for lpmln: Solver is MLN, Input is MVSM

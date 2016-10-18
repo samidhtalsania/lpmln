@@ -29,12 +29,9 @@ FileConfig::FileConfig(){
 	configFile.open(filename);
 
 	if(!configFile.is_open()){
-		#ifdef DEBUG
-		cout<<"Cannot read from config file\n";
-		#endif
-		// ofstream file;
-		// file.open(filename);
-		// file.close();
+		ofstream file;
+		file.open(filename);
+		file.close();
 		fileCouldNotBeOpened = true;
 	}
 
