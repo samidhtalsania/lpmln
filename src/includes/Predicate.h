@@ -94,6 +94,11 @@ public:
 	std::string  getExtra(const std::set<Variable>& variable);
 	std::string  getExtraConstants() const;
 
+	std::string setString(std::string s){
+		aggregateString = s;
+		isAggregate = true;
+	}
+
 private:
 	std::string var;
 	std::string lVar;
@@ -107,11 +112,14 @@ private:
 
 	std::set<std::string> extraConstants;
 
+	std::string aggregateString;
+
 	bool isEquality = false;
 	bool isInEquality = false;
 	bool toBeCompleted = true;
 	bool singleNegation = false;
 	bool doubleNegation = false; 
+	bool isAggregate = false;
 
 	void checkConstant(std::string str,  const std::set<std::string>& domainList){
 		auto it = domainList.find(str);

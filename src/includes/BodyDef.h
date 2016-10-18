@@ -1,4 +1,5 @@
 #include "Predicate.h"
+#include "Util.h"
 
 class BodyDef
 {
@@ -16,8 +17,19 @@ public:
 	}
 
 	std::string toString(){
-		return p.toString();
+		if(!aggregateString){
+			if(!hasVariables){
+				std::string s = p.toString();
+				Util::toUpper(s);
+				return s;
+			}
+			return p.toString();
+		}
+		else
+			return str;
 	}
+
+
 
 	bool getHasVariables(){
 		return hasVariables;
@@ -28,8 +40,20 @@ public:
 		hasVariables = false;
 	}
 
+
+	std::string setString(std::string s){
+		str = s;
+		aggregateString = true;
+	}
+
 private:
 	Predicate p;
 	/*By default every BodyDef is assumed to have variables */
-	bool hasVariables = true;	
+	bool hasVariables = true;
+
+	/*Used by aggregates to store strings*/
+	std::string str;
+	bool aggregateString = false;
+
+
 };

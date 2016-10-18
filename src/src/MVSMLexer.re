@@ -30,7 +30,8 @@ int MVSMLexer::Tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 		"("						{ return MVSM_PARSE_TOKEN_LBRACKET; }
 		")"						{ return MVSM_PARSE_TOKEN_RBRACKET; }
 		","						{ return MVSM_PARSE_TOKEN_COMMA; }
-		"^"|","					{ return MVSM_PARSE_TOKEN_CONJUNCTION; }
+		"^"						{ return MVSM_PARSE_TOKEN_CONJUNCTION; }
+		"#count"				{ return MVSM_PARSE_TOKEN_COUNT;}
 		WS+ "v"{1} WS+ 			{
 									while(*(lexeme->start) != 'v') lexeme->start++;
 									while(*(lexeme->current) != 'v') lexeme->current--;
@@ -38,7 +39,7 @@ int MVSMLexer::Tokenize(const char * YYCURSOR, int len , lexeme_t* lexeme)
 									return MVSM_PARSE_TOKEN_DISJUNCTION;
 								}
 
-		"-"						{ return MVSM_PARSE_TOKEN_MINUS;}
+		
 		
 		"!"						{ return MVSM_PARSE_TOKEN_NEGATION;}
 

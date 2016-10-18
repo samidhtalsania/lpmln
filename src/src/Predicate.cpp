@@ -38,6 +38,11 @@ Predicate::~Predicate()
 }
 
 std::string Predicate::toString() const {
+
+	if (isAggregate){
+		return aggregateString;
+	}
+
 	std::string str;
 
 	if(isEquality){

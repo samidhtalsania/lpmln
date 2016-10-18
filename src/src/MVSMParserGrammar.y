@@ -22,6 +22,7 @@
 	#include "Body.h"
 	#include "BodyDef.h"
 	#include "LanguageConstants.h"
+	#include "Util.h"
 	
 
 	#include "exceptions/undefined_predicate.h"
@@ -635,6 +636,7 @@ body(B) ::= bodydef(Bd).{
 
 // BodyDef without negation in front
 bodydef(B) ::= literal(L).{	
+
 	B = L;
 }
 
@@ -782,6 +784,66 @@ literal(L) ::= variable(V).{
 	/*Special Case: BodyDef does not have variables*/
 	L->setHasVariables();
 	L->addPredicate(p);
+}
+
+literal(L) ::= string(S) EQUAL COUNT LPAREN aggregateCum(A) RPAREN.{
+	Predicate p;
+
+	L = new BodyDef;
+	std::string s = (*S).toString();
+	// std::string s1 = (*S1).toString();
+	Util::toUpper(s);
+	// Util::toUpper(s1);
+
+	std::string str = s + "= #count{" + A->toString() + "}";
+	p.setString(str);
+
+	L->addPredicate(p);
+}
+
+
+aggregate(A) ::= string(S1) COLON literal(L1).{
+	A = new Token(*(S1->token));
+	std::string s1 = A->toString();
+	Util::toUpper(s1);
+	std::string str = s1 + ":" + L1->toString();
+	A->modifyToken(str);
+}
+
+aggregate(A) ::= number(S1) COLON literal(L1).{
+	A = new Token(*(S1->token));
+	std::string s1 = A->toString();
+	// Util::toUpper(s1);
+	std::string str = s1 + ":" + L1->toString();
+	A->modifyToken(str);
+}
+
+aggregate(A) ::= string(S1) COMMA literal(L2) COLON literal(L1).{
+	A = new Token(*(S1->token));
+	std::string s1 = (*S1).toString();
+	Util::toUpper(s1);
+	std::string str = s1 + "," + L2->toString() + ":" + L1->toString();
+	A->modifyToken(str);
+}
+
+
+aggregate(A) ::= number(S1) COMMA literal(L2) COLON literal(L1).{
+	A = new Token(*(S1->token));
+	std::string s1 = (*S1).toString();
+	// Util::toUpper(s1);
+	std::string str = s1 + "," + L2->toString()+ ":" + L1->toString();
+	A->modifyToken(str);
+}
+
+aggregateCum(A) ::= aggregate(A1).{
+	A = new Token(*(A1->token));
+	delete A1;
+}
+
+aggregateCum(A) ::= aggregateCum(A1) SEMI_COLON aggregate(A2).{
+	A = A1;
+	A->modifyToken(A1->toString() + ";" + A2->toString());
+	delete A2;
 }
 
 
