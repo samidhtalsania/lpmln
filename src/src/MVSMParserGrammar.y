@@ -627,8 +627,9 @@ head(H) ::= bodydef(Bd).{
 
 body(B) ::= bodydef(Bd).{
 	B = new Body;
-	B->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate(),false,false,false);
+	Predicate p = Bd->getPredicate();
+	B->addPredicate(p);
+	B->appendStr(p,false,false,false);
 	delete Bd;
 }
 
@@ -636,7 +637,6 @@ body(B) ::= bodydef(Bd).{
 
 // BodyDef without negation in front
 bodydef(B) ::= literal(L).{	
-
 	B = L;
 }
 
@@ -787,18 +787,14 @@ literal(L) ::= variable(V).{
 }
 
 literal(L) ::= string(S) EQUAL COUNT LPAREN aggregateCum(A) RPAREN.{
-	Predicate p;
-
-	L = new BodyDef;
 	std::string s = (*S).toString();
-	// std::string s1 = (*S1).toString();
 	Util::toUpper(s);
-	// Util::toUpper(s1);
-
-	std::string str = s + "= #count{" + A->toString() + "}";
-	p.setString(str);
-
+	s = s + "= #count{" + A->toString() + "}";
+	Predicate p(S->token);
+	p.setString(s);
+	L = new BodyDef;
 	L->addPredicate(p);
+	delete A;
 }
 
 
@@ -806,24 +802,25 @@ aggregate(A) ::= string(S1) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = A->toString();
 	Util::toUpper(s1);
-	std::string str = s1 + ":" + L1->toString();
-	A->modifyToken(str);
+	s1 = s1 + ":" + L1->toString();
+	A->modifyToken(s1);
+	delete L1;
 }
 
 aggregate(A) ::= number(S1) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = A->toString();
-	// Util::toUpper(s1);
-	std::string str = s1 + ":" + L1->toString();
-	A->modifyToken(str);
+	s1 = s1 + ":" + L1->toString();
+	A->modifyToken(s1);
+	delete L1;
 }
 
 aggregate(A) ::= string(S1) COMMA literal(L2) COLON literal(L1).{
 	A = new Token(*(S1->token));
-	std::string s1 = (*S1).toString();
+	std::string s1 = A->toString();
 	Util::toUpper(s1);
-	std::string str = s1 + "," + L2->toString() + ":" + L1->toString();
-	A->modifyToken(str);
+	s1 = s1 + "," + L2->toString() + ":" + L1->toString();
+	A->modifyToken(s1);
 }
 
 
@@ -831,8 +828,8 @@ aggregate(A) ::= number(S1) COMMA literal(L2) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = (*S1).toString();
 	// Util::toUpper(s1);
-	std::string str = s1 + "," + L2->toString()+ ":" + L1->toString();
-	A->modifyToken(str);
+	s1 = s1 + "," + L2->toString()+ ":" + L1->toString();
+	A->modifyToken(s1);
 }
 
 aggregateCum(A) ::= aggregate(A1).{

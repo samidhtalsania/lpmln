@@ -1450,14 +1450,14 @@ static void yy_reduce(
       case 35: /* body ::= bodydef */
 {
 	yygotominor.yy49 = new Body;
-	yygotominor.yy49->addPredicate(yymsp[0].minor.yy43->getPredicate());
-	yygotominor.yy49->appendStr(yymsp[0].minor.yy43->getPredicate(),false,false,false);
+	Predicate p = yymsp[0].minor.yy43->getPredicate();
+	yygotominor.yy49->addPredicate(p);
+	yygotominor.yy49->appendStr(p,false,false,false);
 	delete yymsp[0].minor.yy43;
 }
         break;
       case 36: /* bodydef ::= literal */
 {	
-
 	yygotominor.yy43 = yymsp[0].minor.yy43;
 }
         break;
@@ -1608,18 +1608,14 @@ static void yy_reduce(
         break;
       case 46: /* literal ::= string EQUAL COUNT LPAREN aggregateCum RPAREN */
 {
-	Predicate p;
-
-	yygotominor.yy43 = new BodyDef;
 	std::string s = (*yymsp[-5].minor.yy0).toString();
-	// std::string s1 = (*S1).toString();
 	Util::toUpper(s);
-	// Util::toUpper(s1);
-
-	std::string str = s + "= #count{" + yymsp[-1].minor.yy0->toString() + "}";
-	p.setString(str);
-
+	s = s + "= #count{" + yymsp[-1].minor.yy0->toString() + "}";
+	Predicate p(yymsp[-5].minor.yy0->token);
+	p.setString(s);
+	yygotominor.yy43 = new BodyDef;
 	yygotominor.yy43->addPredicate(p);
+	delete yymsp[-1].minor.yy0;
 }
         break;
       case 47: /* aggregate ::= string COLON literal */
@@ -1627,26 +1623,27 @@ static void yy_reduce(
 	yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token));
 	std::string s1 = yygotominor.yy0->toString();
 	Util::toUpper(s1);
-	std::string str = s1 + ":" + yymsp[0].minor.yy43->toString();
-	yygotominor.yy0->modifyToken(str);
+	s1 = s1 + ":" + yymsp[0].minor.yy43->toString();
+	yygotominor.yy0->modifyToken(s1);
+	delete yymsp[0].minor.yy43;
 }
         break;
       case 48: /* aggregate ::= number COLON literal */
 {
 	yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token));
 	std::string s1 = yygotominor.yy0->toString();
-	// Util::toUpper(s1);
-	std::string str = s1 + ":" + yymsp[0].minor.yy43->toString();
-	yygotominor.yy0->modifyToken(str);
+	s1 = s1 + ":" + yymsp[0].minor.yy43->toString();
+	yygotominor.yy0->modifyToken(s1);
+	delete yymsp[0].minor.yy43;
 }
         break;
       case 49: /* aggregate ::= string COMMA literal COLON literal */
 {
 	yygotominor.yy0 = new Token(*(yymsp[-4].minor.yy0->token));
-	std::string s1 = (*yymsp[-4].minor.yy0).toString();
+	std::string s1 = yygotominor.yy0->toString();
 	Util::toUpper(s1);
-	std::string str = s1 + "," + yymsp[-2].minor.yy43->toString() + ":" + yymsp[0].minor.yy43->toString();
-	yygotominor.yy0->modifyToken(str);
+	s1 = s1 + "," + yymsp[-2].minor.yy43->toString() + ":" + yymsp[0].minor.yy43->toString();
+	yygotominor.yy0->modifyToken(s1);
 }
         break;
       case 50: /* aggregate ::= number COMMA literal COLON literal */
@@ -1654,8 +1651,8 @@ static void yy_reduce(
 	yygotominor.yy0 = new Token(*(yymsp[-4].minor.yy0->token));
 	std::string s1 = (*yymsp[-4].minor.yy0).toString();
 	// Util::toUpper(s1);
-	std::string str = s1 + "," + yymsp[-2].minor.yy43->toString()+ ":" + yymsp[0].minor.yy43->toString();
-	yygotominor.yy0->modifyToken(str);
+	s1 = s1 + "," + yymsp[-2].minor.yy43->toString()+ ":" + yymsp[0].minor.yy43->toString();
+	yygotominor.yy0->modifyToken(s1);
 }
         break;
       case 51: /* aggregateCum ::= aggregate */

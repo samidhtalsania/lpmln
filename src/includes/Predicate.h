@@ -94,7 +94,7 @@ public:
 	std::string  getExtra(const std::set<Variable>& variable);
 	std::string  getExtraConstants() const;
 
-	std::string setString(std::string s){
+	void setString(std::string s){
 		aggregateString = s;
 		isAggregate = true;
 	}

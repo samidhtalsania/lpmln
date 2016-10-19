@@ -41,7 +41,7 @@ public:
 	}
 
 
-	std::string setString(std::string s){
+	void setString(std::string s){
 		str = s;
 		aggregateString = true;
 	}
