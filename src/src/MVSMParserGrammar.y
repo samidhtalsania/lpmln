@@ -362,10 +362,13 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 					<<"\n";
 	}
 	else{
+		std::string extra = B->getExtra(tree->variables);
+		if(extra.length() != 0){
+			extra = "," + extra; 
+		}
 		std::string str = ":~"
 				+ B->toString()
-				+ " , "
-				+ B->getExtra(tree->variables) 
+				+ extra 
 				+ LanguageConstants::LINE_END
 				+ " "
 				+ "["
@@ -405,7 +408,7 @@ rule(R) ::= head(B) DISJUNCTION bodydef(B1) DOT.{
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
 	
-	B->appendStr(B1->getPredicate().toString(),false,true,false);
+	B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);
 	
 	std::string temp;
 	if(tree->outputType == OutputType::OUTPUT_ASP){
@@ -439,7 +442,7 @@ rule(R) ::= number(N) head(B) DISJUNCTION bodydef(B1).{
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	B->appendStr(B1->getPredicate().toString(),false,true,false);
+	B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);
 	std::cout<<N->toString()<<SPACE<<B->toString()<<"\n";
 	delete B;
 	delete B1;
@@ -516,7 +519,7 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 					<< B->toString()
 					<< " , "
 					/*Change this to NNF String*/
-					<< H->toNNFString()
+					<< H->toNNFString(tree->domainList)
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
@@ -606,14 +609,14 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B = B1;
 	B1->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate(),false,false,true);
+	B->appendStr(Bd->getPredicate(),false,false,true,tree->domainList);
 	delete Bd;
 }
 
 head(H) ::= head(H1) DISJUNCTION bodydef(Hd).{
 	H = H1;
 	H1->addPredicate(Hd->getPredicate());
-	H->appendStr(Hd->getPredicate().toString(),false,true,false);
+	H->appendStr(Hd->getPredicate().toString(tree->domainList),false,true,false);
 	H->setDisjunction(true);
 	delete Hd;
 }
@@ -621,7 +624,7 @@ head(H) ::= head(H1) DISJUNCTION bodydef(Hd).{
 head(H) ::= bodydef(Bd).{
 	H = new Head(Bd->getPredicate());
 	// H->addPredicate(Bd->getPredicate());
-	H->appendStr(Bd->getPredicate().toString(),false,false,false);
+	H->appendStr(Bd->getPredicate().toString(tree->domainList),false,false,false);
 	delete Bd;
 }
 
@@ -629,7 +632,7 @@ body(B) ::= bodydef(Bd).{
 	B = new Body;
 	Predicate p = Bd->getPredicate();
 	B->addPredicate(p);
-	B->appendStr(p,false,false,false);
+	B->appendStr(p,false,false,false,tree->domainList);
 	delete Bd;
 }
 
@@ -684,7 +687,7 @@ bodydef(B) ::= string(S) EQUAL string(S1).{
 		Predicate p(S->token);
 		p.setTokens(vars, tree->domainList);
 		B->addPredicate(p);
-		int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
+		unsigned int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
 		if (expectedArgs != vars.size()){
 			delete B;
 			throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -708,7 +711,7 @@ bodydef(B) ::= NEGATION string(S) EQUAL string(S1).{
 	B = new BodyDef;
 	B->addPredicate(p);
 	// delete Ve;
-	int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
+	unsigned int expectedArgs = (tree->variables.find(*(S->token)))->getSize();
 	if (expectedArgs != vars.size()){
 		delete B;
 		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -749,7 +752,7 @@ literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET EQUAL variable(R).{
 		throw syntax_exception("Literal "+ S->toString() + " not found.\n");
 	}
 	delete Ve;
-	int expectedArgs = (tree->variables.find(S->toString()))->getSize();
+	unsigned int expectedArgs = (tree->variables.find(S->toString()))->getSize();
 	if (expectedArgs != vars.size()){
 		delete L;
 		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -770,7 +773,7 @@ literal(L) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 		delete L;
 		throw syntax_exception("Literal "+ S->toString() + " not found.\n");
 	}
-	int expectedArgs = itr->getSize();
+	unsigned int expectedArgs = itr->getSize();
 	if (expectedArgs != vars.size()){
 		delete L;
 		throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -797,12 +800,23 @@ literal(L) ::= string(S) EQUAL COUNT LPAREN aggregateCum(A) RPAREN.{
 	delete A;
 }
 
+literal(L) ::= string(S) EQUAL SUM LPAREN aggregateCum(A) RPAREN.{
+	std::string s = (*S).toString();
+	Util::toUpper(s);
+	s = s + "= #sum{" + A->toString() + "}";
+	Predicate p(S->token);
+	p.setString(s);
+	L = new BodyDef;
+	L->addPredicate(p);
+	delete A;
+}
+
 
 aggregate(A) ::= string(S1) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = A->toString();
 	Util::toUpper(s1);
-	s1 = s1 + ":" + L1->toString();
+	s1 = s1 + ":" + L1->toString(tree->domainList);
 	A->modifyToken(s1);
 	delete L1;
 }
@@ -810,7 +824,7 @@ aggregate(A) ::= string(S1) COLON literal(L1).{
 aggregate(A) ::= number(S1) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = A->toString();
-	s1 = s1 + ":" + L1->toString();
+	s1 = s1 + ":" + L1->toString(tree->domainList);
 	A->modifyToken(s1);
 	delete L1;
 }
@@ -819,7 +833,7 @@ aggregate(A) ::= string(S1) COMMA literal(L2) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = A->toString();
 	Util::toUpper(s1);
-	s1 = s1 + "," + L2->toString() + ":" + L1->toString();
+	s1 = s1 + "," + L2->toString(tree->domainList) + ":" + L1->toString(tree->domainList);
 	A->modifyToken(s1);
 }
 
@@ -828,7 +842,7 @@ aggregate(A) ::= number(S1) COMMA literal(L2) COLON literal(L1).{
 	A = new Token(*(S1->token));
 	std::string s1 = (*S1).toString();
 	// Util::toUpper(s1);
-	s1 = s1 + "," + L2->toString()+ ":" + L1->toString();
+	s1 = s1 + "," + L2->toString(tree->domainList)+ ":" + L1->toString(tree->domainList);
 	A->modifyToken(s1);
 }
 
@@ -904,11 +918,11 @@ predicate(P) ::= number(N) literal(L).{
 		std::cout << "unsat(" << tree->weak_constraint_counter << ")"
 					<< " :- "
 					<< "not "
-					<< P->toString()
+					<< P->toString(tree->domainList)
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
-		std::cout << P->toString()
+		std::cout << P->toString(tree->domainList)
 					<< " :- "
 					<< "not "
 					<< "unsat(" << tree->weak_constraint_counter << ")"

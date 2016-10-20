@@ -86,7 +86,7 @@ public:
 	std::string toString(const std::string& s, bool period) const;
 
 	/*Called by bodyDef to print body*/
-	std::string toString() const;
+	std::string toString(const std::set<std::string>& domainList) const;
 
 	/*Prints Negation Normal Form String*/
 	std::string toNNFString() const;

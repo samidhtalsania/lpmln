@@ -37,7 +37,7 @@ Predicate::~Predicate()
 {
 }
 
-std::string Predicate::toString() const {
+std::string Predicate::toString(const std::set<std::string>& domainList) const {
 
 	if (isAggregate){
 		return aggregateString;
@@ -50,12 +50,12 @@ std::string Predicate::toString() const {
 		std::string right = rVar;
 		if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
 			
-			if(constantLocation.find(left) != constantLocation.end())
+			if(domainList.find(left) != domainList.end())
 				Util::toLower(left);
 			else
 				Util::toUpper(left);
 			
-			if(constantLocation.find(right) != constantLocation.end())
+			if(domainList.find(right) != domainList.end())
 				Util::toLower(right);
 			else
 				Util::toUpper(right);
@@ -71,12 +71,12 @@ std::string Predicate::toString() const {
 		std::string right = rVar;
 		if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
 			
-			if(constantLocation.find(left) != constantLocation.end())
+			if(domainList.find(left) != domainList.end())
 				Util::toLower(left);
 			else
 				Util::toUpper(left);
 			
-			if(constantLocation.find(right) != constantLocation.end())
+			if(domainList.find(right) != domainList.end())
 				Util::toLower(right);
 			else
 				Util::toUpper(right);

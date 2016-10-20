@@ -24,6 +24,7 @@
 */
 #include <stdio.h>
 /************ Begin %include sections from the grammar ************************/
+#line 2 "FOLParserGrammar.y"
 
 	#include <iostream>
 	#include <assert.h> 
@@ -56,6 +57,7 @@
 			return left.first < right.first;
 		}
 	};
+#line 102 "FOLParserGrammar.y"
 
 #define RULE_COMPLETION_BH(B,H) \
 	std::set<std::pair<std::string,std::string>> orphanVarsMap;  \
@@ -127,6 +129,7 @@
 		delete R1; \
 	} 
 
+#line 133 "FOLParserGrammar.c"
 #include "FOLParserGrammar.h"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
@@ -1010,6 +1013,7 @@ static void yy_reduce(
 /********** Begin reduce actions **********************************************/
       case 1: /* prog ::= prog NEWLINE domain */
       case 2: /* prog ::= domain */ yytestcase(yyruleno==2);
+#line 177 "FOLParserGrammar.y"
 { 
 	tree->domains.insert(*yymsp[0].minor.yy63); 
 	tree->domainNamesList.insert(yymsp[0].minor.yy63->getDomainVar());
@@ -1018,8 +1022,10 @@ static void yy_reduce(
 	}
 	delete yymsp[0].minor.yy63;
 }
+#line 1026 "FOLParserGrammar.c"
         break;
       case 3: /* prog ::= prog NEWLINE predicate */
+#line 194 "FOLParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy52->needsToBeCompleted()){	
 		FactCompletion f(*yymsp[0].minor.yy52);
@@ -1027,8 +1033,10 @@ static void yy_reduce(
 	}	
 	delete yymsp[0].minor.yy52;
 }
+#line 1037 "FOLParserGrammar.c"
         break;
       case 4: /* prog ::= predicate */
+#line 202 "FOLParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy52->needsToBeCompleted()){
 		FactCompletion f(*yymsp[0].minor.yy52);
@@ -1036,30 +1044,38 @@ static void yy_reduce(
 	}
 	delete yymsp[0].minor.yy52;
 }
+#line 1048 "FOLParserGrammar.c"
         break;
       case 5: /* prog ::= prog NEWLINE decl */
       case 6: /* prog ::= decl */ yytestcase(yyruleno==6);
+#line 210 "FOLParserGrammar.y"
 {
 	tree->variables.insert(*yymsp[0].minor.yy1);
 	delete yymsp[0].minor.yy1;
 }
+#line 1057 "FOLParserGrammar.c"
         break;
       case 7: /* prog ::= prog NEWLINE rule */
+#line 219 "FOLParserGrammar.y"
 {
 	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->getHead().getVar(),*yymsp[0].minor.yy9));
 	delete yymsp[0].minor.yy9;
 }
+#line 1066 "FOLParserGrammar.c"
         break;
       case 8: /* prog ::= rule */
+#line 224 "FOLParserGrammar.y"
 {
 	if((yymsp[0].minor.yy9->isHeadTop == false) && (yymsp[0].minor.yy9->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy9->getHead().getVar(),*yymsp[0].minor.yy9));
 
 	delete yymsp[0].minor.yy9;
 }
+#line 1076 "FOLParserGrammar.c"
         break;
       case 11: /* rule ::= number NEGATION LBRACKET ruleU RBRACKET */
+#line 254 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = yymsp[-1].minor.yy9;
 	yygotominor.yy9->toBeCompleted = false;
@@ -1067,8 +1083,10 @@ static void yy_reduce(
 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
 	}
 }
+#line 1087 "FOLParserGrammar.c"
         break;
       case 12: /* rule ::= number LBRACKET ruleU RBRACKET */
+#line 262 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = yymsp[-1].minor.yy9;
 	yygotominor.yy9->toBeCompleted = false;
@@ -1076,8 +1094,10 @@ static void yy_reduce(
 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
 	}
 }
+#line 1098 "FOLParserGrammar.c"
         break;
       case 13: /* rule ::= NEGATION LBRACKET ruleU RBRACKET DOT */
+#line 272 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = yymsp[-2].minor.yy9;
 	yymsp[-2].minor.yy9->toBeCompleted = false;
@@ -1085,8 +1105,10 @@ static void yy_reduce(
 		throw syntax_exception("Unexpected DISJUNCTION in BODY of RULE.\n");
 	}
 }
+#line 1109 "FOLParserGrammar.c"
         break;
       case 14: /* rule ::= LBRACKET ruleU RBRACKET DOT */
+#line 282 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = yymsp[-2].minor.yy9;
 	yygotominor.yy9->toBeCompleted = false;
@@ -1094,16 +1116,20 @@ static void yy_reduce(
 		throw syntax_exception("Unexpected CONJUNCTION in HEAD of RULE.\n");
 	}
 }
+#line 1120 "FOLParserGrammar.c"
         break;
       case 15: /* ruleU ::= body CONJUNCTION bodydef */
+#line 292 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = new RuleCompletion;
 	yygotominor.yy9->setBodyType(BodyType::CONJUNCTION);
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy12;
 }
+#line 1130 "FOLParserGrammar.c"
         break;
       case 16: /* ruleU ::= body DISJUNCTION bodydef */
+#line 300 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = new RuleCompletion;	
 	yygotominor.yy9->isHeadTop = true;
@@ -1112,16 +1138,20 @@ static void yy_reduce(
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy12;
 }
+#line 1142 "FOLParserGrammar.c"
         break;
       case 17: /* rule ::= body CONJUNCTION bodydef DOT */
+#line 312 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = new RuleCompletion;
 	yygotominor.yy9->isHeadTop = true;	
 	delete yymsp[-3].minor.yy45;
 	delete yymsp[-1].minor.yy12;
 }
+#line 1152 "FOLParserGrammar.c"
         break;
       case 18: /* rule ::= body DISJUNCTION bodydef DOT */
+#line 322 "FOLParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy9 = new RuleCompletion;
@@ -1130,8 +1160,10 @@ static void yy_reduce(
 	delete yymsp[-3].minor.yy45;
 	delete yymsp[-1].minor.yy12;
 }
+#line 1164 "FOLParserGrammar.c"
         break;
       case 19: /* rule ::= number body DISJUNCTION bodydef */
+#line 334 "FOLParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy9 = new RuleCompletion;
@@ -1140,8 +1172,10 @@ static void yy_reduce(
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy12;
 }
+#line 1176 "FOLParserGrammar.c"
         break;
       case 20: /* rule ::= body IMPLICATION head DOT */
+#line 346 "FOLParserGrammar.y"
 {
 	
 	RULE_COMPLETION_BH(yymsp[-3].minor.yy45,yymsp[-1].minor.yy53);
@@ -1149,16 +1183,20 @@ static void yy_reduce(
 	delete yymsp[-3].minor.yy45;
 	delete yymsp[-1].minor.yy53;
 }
+#line 1187 "FOLParserGrammar.c"
         break;
       case 21: /* rule ::= number body IMPLICATION head */
+#line 357 "FOLParserGrammar.y"
 {
 	RULE_COMPLETION_BH(yymsp[-2].minor.yy45,yymsp[0].minor.yy53);
 	yygotominor.yy9 = new RuleCompletion(yymsp[0].minor.yy53->getPredicate(),predList, resultMap, varMap);
 	delete yymsp[-2].minor.yy45;
 	delete yymsp[0].minor.yy53;
 }
+#line 1197 "FOLParserGrammar.c"
         break;
       case 22: /* rule ::= number NEGATION NEGATION LBRACKET body IMPLICATION head RBRACKET */
+#line 376 "FOLParserGrammar.y"
 {
 	yygotominor.yy9 = new RuleCompletion;
 	yygotominor.yy9->isHeadTop = true;	
@@ -1166,23 +1204,29 @@ static void yy_reduce(
 	delete yymsp[-3].minor.yy45;
 	delete yymsp[-1].minor.yy53;
 }
+#line 1208 "FOLParserGrammar.c"
         break;
       case 23: /* body ::= body CONJUNCTION bodydef */
       case 24: /* body ::= body DISJUNCTION bodydef */ yytestcase(yyruleno==24);
+#line 385 "FOLParserGrammar.y"
 {
 	yygotominor.yy45 = yymsp[-2].minor.yy45;
 	yymsp[-2].minor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
 	delete yymsp[0].minor.yy12;
 }
+#line 1218 "FOLParserGrammar.c"
         break;
       case 25: /* body ::= bodydef */
+#line 396 "FOLParserGrammar.y"
 {
 	yygotominor.yy45 = new Body;
 	yygotominor.yy45->addPredicate(yymsp[0].minor.yy12->getPredicate());
 	delete yymsp[0].minor.yy12;
 }
+#line 1227 "FOLParserGrammar.c"
         break;
       case 26: /* bodydef ::= string LBRACKET variables RBRACKET */
+#line 403 "FOLParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy36)
@@ -1194,8 +1238,10 @@ static void yy_reduce(
 	yygotominor.yy12->addPredicate(p);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1242 "FOLParserGrammar.c"
         break;
       case 27: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */
+#line 416 "FOLParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy36)
@@ -1208,8 +1254,10 @@ static void yy_reduce(
 	yygotominor.yy12->addPredicate(p);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1258 "FOLParserGrammar.c"
         break;
       case 28: /* bodydef ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+#line 430 "FOLParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy36)
@@ -1223,8 +1271,10 @@ static void yy_reduce(
 	tree->statHasDblNeg = true;
 	delete yymsp[-1].minor.yy36;
 }
+#line 1275 "FOLParserGrammar.c"
         break;
       case 29: /* bodydef ::= LBRACKET NEGATION NEGATION string LBRACKET variables RBRACKET RBRACKET */
+#line 447 "FOLParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-2].minor.yy36)
@@ -1238,29 +1288,37 @@ static void yy_reduce(
 	yygotominor.yy12->addPredicate(p);
 	delete yymsp[-2].minor.yy36;
 }
+#line 1292 "FOLParserGrammar.c"
         break;
       case 30: /* bodydef ::= string EQUAL string */
+#line 462 "FOLParserGrammar.y"
 {
 	Predicate p(yymsp[-2].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setEquality();
 	yygotominor.yy12 = new BodyDef;
 	yygotominor.yy12->addPredicate(p);
 }
+#line 1302 "FOLParserGrammar.c"
         break;
       case 31: /* bodydef ::= string NEGATION EQUAL string */
+#line 470 "FOLParserGrammar.y"
 {
 	Predicate p(yymsp[-3].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setInEquality();
 	yygotominor.yy12 = new BodyDef;
 	yygotominor.yy12->addPredicate(p);
 }
+#line 1312 "FOLParserGrammar.c"
         break;
       case 32: /* head ::= headdef */
+#line 492 "FOLParserGrammar.y"
 { 
 	yygotominor.yy53 = yymsp[0].minor.yy53;
 }
+#line 1319 "FOLParserGrammar.c"
         break;
       case 33: /* headdef ::= string LBRACKET variables RBRACKET */
+#line 497 "FOLParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy36)
@@ -1272,8 +1330,10 @@ static void yy_reduce(
 	// yygotominor.yy53->addPredicate(p);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1334 "FOLParserGrammar.c"
         break;
       case 34: /* headdef ::= NEGATION string LBRACKET variables RBRACKET */
+#line 510 "FOLParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy36)
@@ -1286,8 +1346,10 @@ static void yy_reduce(
 	yygotominor.yy53->addPredicate(p);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1350 "FOLParserGrammar.c"
         break;
       case 35: /* decl ::= string LBRACKET variables RBRACKET */
+#line 524 "FOLParserGrammar.y"
 {
 	yygotominor.yy1 = new Variable;
 	std::map<int, Domain> posMap;
@@ -1309,40 +1371,50 @@ static void yy_reduce(
 	yygotominor.yy1->setPosMap(posMap);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1375 "FOLParserGrammar.c"
         break;
       case 36: /* predicate ::= string LBRACKET variables RBRACKET DOT */
+#line 547 "FOLParserGrammar.y"
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->setVar(yymsp[-4].minor.yy0->token);
 	yygotominor.yy52->setTokens(*yymsp[-2].minor.yy36,tree->domainList);
 	delete yymsp[-2].minor.yy36;
 }
+#line 1385 "FOLParserGrammar.c"
         break;
       case 37: /* predicate ::= number string LBRACKET variables RBRACKET */
+#line 555 "FOLParserGrammar.y"
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->setVar(yymsp[-3].minor.yy0->token);
 	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36,tree->domainList);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1395 "FOLParserGrammar.c"
         break;
       case 38: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
+#line 564 "FOLParserGrammar.y"
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
 	tree->statHasDblNeg = true;
 	delete yymsp[-1].minor.yy36;
 }
+#line 1405 "FOLParserGrammar.c"
         break;
       case 39: /* predicate ::= number NEGATION string LBRACKET variables RBRACKET */
+#line 572 "FOLParserGrammar.y"
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
 	// tree->statHasDblNeg = true;
 	delete yymsp[-1].minor.yy36;
 }
+#line 1415 "FOLParserGrammar.c"
         break;
       case 40: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+#line 579 "FOLParserGrammar.y"
 {
 	yygotominor.yy52 = new Predicate;
 	yygotominor.yy52->notToBeCompleted();
@@ -1351,55 +1423,72 @@ static void yy_reduce(
 	yygotominor.yy52->setTokens(*yymsp[-1].minor.yy36,tree->domainList);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1427 "FOLParserGrammar.c"
         break;
       case 41: /* domain ::= string EQUAL domains */
+#line 589 "FOLParserGrammar.y"
 { 
 	yygotominor.yy63 = yymsp[0].minor.yy63;
 	yymsp[0].minor.yy63->setDomainVar(yymsp[-2].minor.yy0->token);
 }
+#line 1435 "FOLParserGrammar.c"
         break;
       case 42: /* domains ::= LPAREN variables RPAREN */
+#line 596 "FOLParserGrammar.y"
 {
 	yygotominor.yy63 = new Domain();
 	yygotominor.yy63->setVars(*yymsp[-1].minor.yy36);
 	delete yymsp[-1].minor.yy36;
 }
+#line 1444 "FOLParserGrammar.c"
         break;
       case 43: /* variables ::= variable */
+#line 603 "FOLParserGrammar.y"
 {
 	yygotominor.yy36 = new std::vector<std::string*>();
 	yygotominor.yy36->push_back(yymsp[0].minor.yy0->token);
 }
+#line 1452 "FOLParserGrammar.c"
         break;
       case 44: /* variables ::= variables COMMA variable */
+#line 608 "FOLParserGrammar.y"
 {
 	yygotominor.yy36 = yymsp[-2].minor.yy36;
 	yymsp[-2].minor.yy36->push_back(yymsp[0].minor.yy0->token);
 }
+#line 1460 "FOLParserGrammar.c"
         break;
       case 45: /* variable ::= string */
       case 46: /* variable ::= number */ yytestcase(yyruleno==46);
       case 47: /* string ::= STRING */ yytestcase(yyruleno==47);
       case 48: /* number ::= NUMBER */ yytestcase(yyruleno==48);
+#line 613 "FOLParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
+#line 1468 "FOLParserGrammar.c"
         break;
       case 49: /* number ::= lnumber DOT rnumber */
+#line 622 "FOLParserGrammar.y"
 { 
 	// yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
+#line 1477 "FOLParserGrammar.c"
         break;
       case 50: /* number ::= MINUS lnumber DOT rnumber */
+#line 629 "FOLParserGrammar.y"
 {
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 	// yygotominor.yy0 = new Token("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
+#line 1486 "FOLParserGrammar.c"
         break;
       case 51: /* lnumber ::= NUMBER */
       case 52: /* rnumber ::= NUMBER */ yytestcase(yyruleno==52);
+#line 634 "FOLParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
+#line 1492 "FOLParserGrammar.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -1452,9 +1541,11 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
+#line 48 "FOLParserGrammar.y"
 
     // std::cout<<"Giving up.  Parser is lost...\n";
 
+#line 1549 "FOLParserGrammar.c"
 /************ End %parse_failure code *****************************************/
   FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1471,6 +1562,7 @@ static void yy_syntax_error(
   FOLParserGrammarARG_FETCH;
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
+#line 54 "FOLParserGrammar.y"
 
 	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
@@ -1484,6 +1576,7 @@ static void yy_syntax_error(
             }
     }
     
+#line 1580 "FOLParserGrammar.c"
 /************ End %syntax_error code ******************************************/
   FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1504,8 +1597,10 @@ static void yy_accept(
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
 /*********** Begin %parse_accept code *****************************************/
+#line 43 "FOLParserGrammar.y"
 
     std::cout<<("//parsing complete!\n");
+#line 1604 "FOLParserGrammar.c"
 /*********** End %parse_accept code *******************************************/
   FOLParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

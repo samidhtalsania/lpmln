@@ -362,7 +362,7 @@ rule(R) ::= LBRACKET ruleU(R1) RBRACKET DOT.{
 //B=>bottom
 ruleU(R) ::= body(B) CONJUNCTION bodydef(B1).{
 	R = new RuleCompletion;
-	B->appendStr(B1->getPredicate(),false,false,true);
+	B->appendStr(B1->getPredicate(),false,false,true, tree->domainList);
 	R->appendStr(B->toString());
 	R->setBodyType(BodyType::CONJUNCTION);
 	delete B;
@@ -383,7 +383,7 @@ ruleU(R) ::= head(B) DISJUNCTION bodydef(B1).{
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
 
-	B->appendStr(B1->getPredicate().toString(),false,true,false);
+	B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);
 	R->appendStr(B->toString());
 	R->setBodyType(BodyType::DISJUNCTION);
 	delete B;
@@ -418,7 +418,7 @@ rule(R) ::= head(B) DISJUNCTION bodydef(B1) DOT.{
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	B->appendStr(B1->getPredicate().toString(),false,true,false);
+	B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);
 	std::cout<<B->toString()<<"."<<"\n";
 	delete B;
 	delete B1;
@@ -439,7 +439,7 @@ rule(R) ::= number(N) head(B) DISJUNCTION bodydef(B1).{
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	B->appendStr(B1->getPredicate().toString(),false,true,false);
+	B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);
 	std::cout<<N->toString()<<SPACE<<B->toString()<<"\n";
 	delete B;
 	delete B1;
@@ -535,7 +535,7 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 	B = B1;
 	B1->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate(),false,false,true);
+	B->appendStr(Bd->getPredicate(),false,false,true,tree->domainList);
 	delete Bd;
 }
 
@@ -549,7 +549,7 @@ body(B) ::= body(B1) CONJUNCTION bodydef(Bd).{
 head(H) ::= head(H1) DISJUNCTION bodydef(Hd).{
 	H = H1;
 	H1->addPredicate(Hd->getPredicate());
-	H->appendStr(Hd->getPredicate().toString(),false,true,false);
+	H->appendStr(Hd->getPredicate().toString(tree->domainList),false,true,false);
 	H->setDisjunction(true);
 	delete Hd;
 }
@@ -557,14 +557,14 @@ head(H) ::= head(H1) DISJUNCTION bodydef(Hd).{
 head(H) ::= bodydef(Bd).{
 	H = new Head(Bd->getPredicate());
 	// H->addPredicate(Bd->getPredicate());
-	H->appendStr(Bd->getPredicate().toString(),false,false,false);
+	H->appendStr(Bd->getPredicate().toString(tree->domainList),false,false,false);
 	delete Bd;
 }
 
 body(B) ::= bodydef(Bd).{
 	B = new Body;
 	B->addPredicate(Bd->getPredicate());
-	B->appendStr(Bd->getPredicate(),false,false,false);
+	B->appendStr(Bd->getPredicate(),false,false,false,tree->domainList);
 	delete Bd;
 }
 
@@ -583,7 +583,7 @@ bodydef(B) ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	delete Ve;
 	auto itr = tree->variables.find(*(S->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete B;
 			throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -611,7 +611,7 @@ bodydef(B) ::= NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	delete Ve;
 	auto itr = tree->variables.find(*(S->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete B;
 			throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -639,7 +639,7 @@ bodydef(B) ::= NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRACKET.{
 	delete Ve;
 	auto itr = tree->variables.find(*(S->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete B;
 			throw invalid_arguments(expectedArgs, vars.size(), *(S->token));
@@ -669,7 +669,7 @@ bodydef(B) ::= LBRACKET NEGATION NEGATION string(S) LBRACKET variables(Ve) RBRAC
 	delete Ve;
 	auto itr = tree->variables.find(*(S->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete B;
 			throw invalid_arguments(expectedArgs, vars.size(), *(S->token));

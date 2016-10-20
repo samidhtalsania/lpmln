@@ -64,11 +64,11 @@ public:
 		return intermediateSet;
 	}
 
-	std::string toNNFString(){
+	std::string toNNFString(const std::set<std::string>& domainList){
 		std::string str;
 		for (unsigned int i = 0; i < predList.size(); ++i){
 			str += "not ";
-			str += predList.at(i).toString();
+			str += predList.at(i).toString(domainList);
 			str += " , ";
 		}
 		str = str.substr(0,str.size()-3);

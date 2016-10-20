@@ -5,7 +5,7 @@ Body::Body(){}
 Body::~Body(){}
 
 
-void Body::appendStr(Predicate pred, bool trim, bool disjunction, bool conjunction){
+void Body::appendStr(Predicate pred, bool trim, bool disjunction, bool conjunction, const std::set<std::string>& domainList){
 
 	if(disjunction){
 		bodyStr += LanguageConstants::DIS;
@@ -20,7 +20,7 @@ void Body::appendStr(Predicate pred, bool trim, bool disjunction, bool conjuncti
 		bodyNegation = true;
 	}
 
-	bodyStr += pred.toString();
+	bodyStr += pred.toString(domainList);
 	NNFbodyStr += pred.toNNFString();
 	
 	if(trim){

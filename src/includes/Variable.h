@@ -25,7 +25,7 @@ public:
 		pos = _pos;
 	}
 
-	int getSize() const {
+	unsigned int getSize() const {
 		return pos.size();
 	}
 

@@ -24,6 +24,7 @@
 */
 #include <stdio.h>
 /************ Begin %include sections from the grammar ************************/
+#line 2 "ASPParserGrammar.y"
 
 	#include <iostream>
 	#include <assert.h> 
@@ -65,6 +66,7 @@
 	void RuleCompletion_HD_BT(Head*, Tree*);
 	void RuleCompletion_HD_BC(Head*, Body*, bool, Tree*);
 
+#line 111 "ASPParserGrammar.y"
 
 
 	RuleCompletion* RuleCompletion_BH(Body* B, Head* H, Tree* tree){
@@ -189,6 +191,7 @@
 			delete H;
 		}
 	}
+#line 195 "ASPParserGrammar.c"
 #include "ASPParserGrammar.h"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
@@ -1070,6 +1073,7 @@ static void yy_reduce(
 /********** Begin reduce actions **********************************************/
       case 1: /* prog ::= prog NEWLINE domain */
       case 2: /* prog ::= domain */ yytestcase(yyruleno==2);
+#line 241 "ASPParserGrammar.y"
 { 
 	tree->domains.insert(*yymsp[0].minor.yy51); 
 	tree->domainNamesList.insert(yymsp[0].minor.yy51->getDomainVar());
@@ -1079,8 +1083,10 @@ static void yy_reduce(
 	cout<<yymsp[0].minor.yy51->toString(false);
 	delete yymsp[0].minor.yy51;
 }
+#line 1087 "ASPParserGrammar.c"
         break;
       case 3: /* prog ::= prog NEWLINE predicate */
+#line 260 "ASPParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy26->needsToBeCompleted()){	
 		FactCompletion f(*yymsp[0].minor.yy26);
@@ -1088,8 +1094,10 @@ static void yy_reduce(
 	}	
 	delete yymsp[0].minor.yy26;
 }
+#line 1098 "ASPParserGrammar.c"
         break;
       case 4: /* prog ::= predicate */
+#line 268 "ASPParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy26->needsToBeCompleted()){
 		FactCompletion f(*yymsp[0].minor.yy26);
@@ -1097,24 +1105,30 @@ static void yy_reduce(
 	}
 	delete yymsp[0].minor.yy26;
 }
+#line 1109 "ASPParserGrammar.c"
         break;
       case 5: /* prog ::= prog NEWLINE decl */
       case 6: /* prog ::= decl */ yytestcase(yyruleno==6);
+#line 276 "ASPParserGrammar.y"
 {
 	tree->variables.insert(*yymsp[0].minor.yy57);
 	cout<<yymsp[0].minor.yy57->toString();
 	delete yymsp[0].minor.yy57;
 }
+#line 1119 "ASPParserGrammar.c"
         break;
       case 7: /* prog ::= prog NEWLINE rule */
       case 8: /* prog ::= rule */ yytestcase(yyruleno==8);
+#line 287 "ASPParserGrammar.y"
 {
 	if((yymsp[0].minor.yy21->isHeadTop == false) && (yymsp[0].minor.yy21->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy21->getHead().getVar(),*yymsp[0].minor.yy21));
 	delete yymsp[0].minor.yy21;
 }
+#line 1129 "ASPParserGrammar.c"
         break;
       case 11: /* rule ::= number REVERSE_IMPLICATION LBRACKET ruleU RBRACKET */
+#line 320 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = yymsp[-1].minor.yy21;
 	yygotominor.yy21->toBeCompleted = false;
@@ -1123,8 +1137,10 @@ static void yy_reduce(
 	}
 	cout<<yymsp[-4].minor.yy0->toString()<<SPACE<<"!("<<yymsp[-1].minor.yy21->toString()<<")"<<"\n";
 }
+#line 1141 "ASPParserGrammar.c"
         break;
       case 12: /* rule ::= number LBRACKET ruleU RBRACKET */
+#line 330 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = yymsp[-1].minor.yy21;
 	yygotominor.yy21->toBeCompleted = false;
@@ -1133,8 +1149,10 @@ static void yy_reduce(
 	}
 	cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<"("<<yymsp[-1].minor.yy21->toString()<<")"<<"\n";
 }
+#line 1153 "ASPParserGrammar.c"
         break;
       case 13: /* rule ::= REVERSE_IMPLICATION LBRACKET ruleU RBRACKET DOT */
+#line 341 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = yymsp[-2].minor.yy21;
 	yymsp[-2].minor.yy21->toBeCompleted = false;
@@ -1143,8 +1161,10 @@ static void yy_reduce(
 	}
 	cout<<"!("<<yymsp[-2].minor.yy21->toString()<<")."<<"\n";
 }
+#line 1165 "ASPParserGrammar.c"
         break;
       case 14: /* rule ::= LBRACKET ruleU RBRACKET DOT */
+#line 352 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = yymsp[-2].minor.yy21;
 	yygotominor.yy21->toBeCompleted = false;
@@ -1153,18 +1173,22 @@ static void yy_reduce(
 	}
 	cout<<"("<<yymsp[-2].minor.yy21->toString()<<")."<<"\n";
 }
+#line 1177 "ASPParserGrammar.c"
         break;
       case 15: /* ruleU ::= body CONJUNCTION bodydef */
+#line 363 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = new RuleCompletion;
-	yymsp[-2].minor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate(),false,false,true);
+	yymsp[-2].minor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate(),false,false,true, tree->domainList);
 	yygotominor.yy21->appendStr(yymsp[-2].minor.yy53->toString());
 	yygotominor.yy21->setBodyType(BodyType::CONJUNCTION);
 	delete yymsp[-2].minor.yy53;
 	delete yymsp[0].minor.yy20;
 }
+#line 1189 "ASPParserGrammar.c"
         break;
       case 16: /* ruleU ::= head DISJUNCTION bodydef */
+#line 374 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = new RuleCompletion;	
 	yygotominor.yy21->isHeadTop = true;
@@ -1177,14 +1201,16 @@ static void yy_reduce(
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
 
-	yymsp[-2].minor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,true,false);
+	yymsp[-2].minor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(tree->domainList),false,true,false);
 	yygotominor.yy21->appendStr(yymsp[-2].minor.yy1->toString());
 	yygotominor.yy21->setBodyType(BodyType::DISJUNCTION);
 	delete yymsp[-2].minor.yy1;
 	delete yymsp[0].minor.yy20;
 }
+#line 1211 "ASPParserGrammar.c"
         break;
       case 17: /* rule ::= REVERSE_IMPLICATION body DOT */
+#line 397 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = new RuleCompletion;
 	yygotominor.yy21->isHeadTop = true;
@@ -1193,8 +1219,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy53;
 	// delete B1;
 }
+#line 1223 "ASPParserGrammar.c"
         break;
       case 18: /* rule ::= head DISJUNCTION bodydef DOT */
+#line 409 "ASPParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy21 = new RuleCompletion;
@@ -1207,13 +1235,15 @@ static void yy_reduce(
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	yymsp[-3].minor.yy1->appendStr(yymsp[-1].minor.yy20->getPredicate().toString(),false,true,false);
+	yymsp[-3].minor.yy1->appendStr(yymsp[-1].minor.yy20->getPredicate().toString(tree->domainList),false,true,false);
 	std::cout<<yymsp[-3].minor.yy1->toString()<<"."<<"\n";
 	delete yymsp[-3].minor.yy1;
 	delete yymsp[-1].minor.yy20;
 }
+#line 1244 "ASPParserGrammar.c"
         break;
       case 19: /* rule ::= number head DISJUNCTION bodydef */
+#line 430 "ASPParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy21 = new RuleCompletion;
@@ -1226,13 +1256,15 @@ static void yy_reduce(
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	yymsp[-2].minor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,true,false);
+	yymsp[-2].minor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(tree->domainList),false,true,false);
 	std::cout<<yymsp[-3].minor.yy0->toString()<<SPACE<<yymsp[-2].minor.yy1->toString()<<"\n";
 	delete yymsp[-2].minor.yy1;
 	delete yymsp[0].minor.yy20;
 }
+#line 1265 "ASPParserGrammar.c"
         break;
       case 20: /* rule ::= head REVERSE_IMPLICATION body DOT */
+#line 451 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = new RuleCompletion;
 
@@ -1257,8 +1289,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy53;
 	delete yymsp[-3].minor.yy1;
 }
+#line 1293 "ASPParserGrammar.c"
         break;
       case 21: /* rule ::= number head REVERSE_IMPLICATION body */
+#line 479 "ASPParserGrammar.y"
 {
 	// RULE_COMPLETION_BH(yymsp[0].minor.yy53,yymsp[-2].minor.yy1);
 	// yygotominor.yy21 = new RuleCompletion(yymsp[-2].minor.yy1->getPredicate(),predList, resultMap, varMap);
@@ -1272,8 +1306,10 @@ static void yy_reduce(
 	delete yymsp[0].minor.yy53;
 	delete yymsp[-2].minor.yy1;
 }
+#line 1310 "ASPParserGrammar.c"
         break;
       case 22: /* rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET */
+#line 505 "ASPParserGrammar.y"
 {
 	yygotominor.yy21 = new RuleCompletion;
 	yygotominor.yy21->isHeadTop = true;	
@@ -1282,8 +1318,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy53;
 	delete yymsp[-3].minor.yy1;
 }
+#line 1322 "ASPParserGrammar.c"
         break;
       case 23: /* rule ::= LPAREN head RPAREN REVERSE_IMPLICATION body DOT */
+#line 514 "ASPParserGrammar.y"
 {
 	
 	if (yymsp[-4].minor.yy1->getPredicate().checkEquality() != 0){
@@ -1302,41 +1340,51 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy53;
 	delete yymsp[-4].minor.yy1;
 }
+#line 1344 "ASPParserGrammar.c"
         break;
       case 24: /* body ::= body CONJUNCTION bodydef */
+#line 535 "ASPParserGrammar.y"
 {
 	yygotominor.yy53 = yymsp[-2].minor.yy53;
 	yymsp[-2].minor.yy53->addPredicate(yymsp[0].minor.yy20->getPredicate());
-	yygotominor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate(),false,false,true);
+	yygotominor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate(),false,false,true,tree->domainList);
 	delete yymsp[0].minor.yy20;
 }
+#line 1354 "ASPParserGrammar.c"
         break;
       case 25: /* head ::= head DISJUNCTION bodydef */
+#line 549 "ASPParserGrammar.y"
 {
 	yygotominor.yy1 = yymsp[-2].minor.yy1;
 	yymsp[-2].minor.yy1->addPredicate(yymsp[0].minor.yy20->getPredicate());
-	yygotominor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,true,false);
+	yygotominor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(tree->domainList),false,true,false);
 	yygotominor.yy1->setDisjunction(true);
 	delete yymsp[0].minor.yy20;
 }
+#line 1365 "ASPParserGrammar.c"
         break;
       case 26: /* head ::= bodydef */
+#line 557 "ASPParserGrammar.y"
 {
 	yygotominor.yy1 = new Head(yymsp[0].minor.yy20->getPredicate());
 	// yygotominor.yy1->addPredicate(yymsp[0].minor.yy20->getPredicate());
-	yygotominor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(),false,false,false);
+	yygotominor.yy1->appendStr(yymsp[0].minor.yy20->getPredicate().toString(tree->domainList),false,false,false);
 	delete yymsp[0].minor.yy20;
 }
+#line 1375 "ASPParserGrammar.c"
         break;
       case 27: /* body ::= bodydef */
+#line 564 "ASPParserGrammar.y"
 {
 	yygotominor.yy53 = new Body;
 	yygotominor.yy53->addPredicate(yymsp[0].minor.yy20->getPredicate());
-	yygotominor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate(),false,false,false);
+	yygotominor.yy53->appendStr(yymsp[0].minor.yy20->getPredicate(),false,false,false,tree->domainList);
 	delete yymsp[0].minor.yy20;
 }
+#line 1385 "ASPParserGrammar.c"
         break;
       case 28: /* bodydef ::= string LBRACKET variables RBRACKET */
+#line 574 "ASPParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy45)
@@ -1349,7 +1397,7 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy45;
 	auto itr = tree->variables.find(*(yymsp[-3].minor.yy0->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete yygotominor.yy20;
 			throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-3].minor.yy0->token));
@@ -1362,8 +1410,10 @@ static void yy_reduce(
 	
 
 }
+#line 1414 "ASPParserGrammar.c"
         break;
       case 29: /* bodydef ::= NEGATION string LBRACKET variables RBRACKET */
+#line 601 "ASPParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy45)
@@ -1377,7 +1427,7 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy45;
 	auto itr = tree->variables.find(*(yymsp[-3].minor.yy0->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete yygotominor.yy20;
 			throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-3].minor.yy0->token));
@@ -1389,8 +1439,10 @@ static void yy_reduce(
 	}
 
 }
+#line 1443 "ASPParserGrammar.c"
         break;
       case 30: /* bodydef ::= NEGATION NEGATION string LBRACKET variables RBRACKET */
+#line 628 "ASPParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy45)
@@ -1405,7 +1457,7 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy45;
 	auto itr = tree->variables.find(*(yymsp[-3].minor.yy0->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete yygotominor.yy20;
 			throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-3].minor.yy0->token));
@@ -1417,8 +1469,10 @@ static void yy_reduce(
 	}
 
 }
+#line 1473 "ASPParserGrammar.c"
         break;
       case 31: /* bodydef ::= LBRACKET NEGATION NEGATION string LBRACKET variables RBRACKET RBRACKET */
+#line 658 "ASPParserGrammar.y"
 {	
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-2].minor.yy45)
@@ -1433,7 +1487,7 @@ static void yy_reduce(
 	delete yymsp[-2].minor.yy45;
 	auto itr = tree->variables.find(*(yymsp[-4].minor.yy0->token));
 	if(itr != tree->variables.end()){
-		int expectedArgs = itr->getSize();
+		unsigned int expectedArgs = itr->getSize();
 		if (expectedArgs != vars.size()){
 			delete yygotominor.yy20;
 			throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-4].minor.yy0->token));
@@ -1445,16 +1499,20 @@ static void yy_reduce(
 	}
 
 }
+#line 1503 "ASPParserGrammar.c"
         break;
       case 32: /* bodydef ::= string EQUAL string */
+#line 686 "ASPParserGrammar.y"
 {
 	Predicate p(yymsp[-2].minor.yy0->token,yymsp[0].minor.yy0->token);
 	p.setEquality();
 	yygotominor.yy20 = new BodyDef;
 	yygotominor.yy20->addPredicate(p);
 }
+#line 1513 "ASPParserGrammar.c"
         break;
       case 33: /* bodydef ::= string NEGATION EQUAL string */
+#line 694 "ASPParserGrammar.y"
 {
 	
 	Predicate p(yymsp[-3].minor.yy0->token,yymsp[0].minor.yy0->token);
@@ -1462,8 +1520,10 @@ static void yy_reduce(
 	yygotominor.yy20 = new BodyDef;
 	yygotominor.yy20->addPredicate(p);
 }
+#line 1524 "ASPParserGrammar.c"
         break;
       case 34: /* decl ::= string LBRACKET variables RBRACKET */
+#line 731 "ASPParserGrammar.y"
 {
 	yygotominor.yy57 = new Variable;
 	std::map<int, Domain> posMap;
@@ -1485,8 +1545,10 @@ static void yy_reduce(
 	yygotominor.yy57->setPosMap(posMap);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1549 "ASPParserGrammar.c"
         break;
       case 35: /* predicate ::= string LBRACKET variables RBRACKET DOT */
+#line 755 "ASPParserGrammar.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->setVar(yymsp[-4].minor.yy0->token);
@@ -1495,8 +1557,10 @@ static void yy_reduce(
 	cout<<yygotominor.yy26->toString(s1,true);
 	delete yymsp[-2].minor.yy45;
 }
+#line 1561 "ASPParserGrammar.c"
         break;
       case 36: /* predicate ::= number string LBRACKET variables RBRACKET */
+#line 765 "ASPParserGrammar.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->setVar(yymsp[-3].minor.yy0->token);
@@ -1504,8 +1568,10 @@ static void yy_reduce(
 	cout<<yygotominor.yy26->toString(yymsp[-4].minor.yy0->toString()+SPACE, false);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1572 "ASPParserGrammar.c"
         break;
       case 37: /* predicate ::= number NEGATION NEGATION string LBRACKET variables RBRACKET */
+#line 775 "ASPParserGrammar.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->notToBeCompleted();
@@ -1515,8 +1581,10 @@ static void yy_reduce(
 	cout<<yygotominor.yy26->toString(yymsp[-6].minor.yy0->toString()+SPACE, false);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1585 "ASPParserGrammar.c"
         break;
       case 38: /* predicate ::= number NEGATION string LBRACKET variables RBRACKET */
+#line 786 "ASPParserGrammar.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->notToBeCompleted();
@@ -1525,8 +1593,10 @@ static void yy_reduce(
 	cout<<yygotominor.yy26->toString(yymsp[-5].minor.yy0->toString()+SPACE+"!", false);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1597 "ASPParserGrammar.c"
         break;
       case 39: /* predicate ::= NEGATION NEGATION string LBRACKET variables RBRACKET DOT */
+#line 795 "ASPParserGrammar.y"
 {
 	yygotominor.yy26 = new Predicate;
 	yygotominor.yy26->notToBeCompleted();
@@ -1537,54 +1607,71 @@ static void yy_reduce(
 	cout<<yygotominor.yy26->toString(s1, false);
 	delete yymsp[-2].minor.yy45;
 }
+#line 1611 "ASPParserGrammar.c"
         break;
       case 40: /* domain ::= string EQUAL domains */
+#line 807 "ASPParserGrammar.y"
 { 
 	yygotominor.yy51 = yymsp[0].minor.yy51;
 	yymsp[0].minor.yy51->setDomainVar(yymsp[-2].minor.yy0->token);
 }
+#line 1619 "ASPParserGrammar.c"
         break;
       case 41: /* domains ::= LPAREN variables RPAREN */
+#line 814 "ASPParserGrammar.y"
 {
 	yygotominor.yy51 = new Domain();
 	yygotominor.yy51->setVars(*yymsp[-1].minor.yy45);
 	delete yymsp[-1].minor.yy45;
 }
+#line 1628 "ASPParserGrammar.c"
         break;
       case 42: /* variables ::= variable */
+#line 821 "ASPParserGrammar.y"
 {
 	yygotominor.yy45 = new std::vector<std::string*>();
 	yygotominor.yy45->push_back(yymsp[0].minor.yy0->token);
 }
+#line 1636 "ASPParserGrammar.c"
         break;
       case 43: /* variables ::= variables COMMA variable */
+#line 826 "ASPParserGrammar.y"
 {
 	yygotominor.yy45 = yymsp[-2].minor.yy45;
 	yymsp[-2].minor.yy45->push_back(yymsp[0].minor.yy0->token);
 }
+#line 1644 "ASPParserGrammar.c"
         break;
       case 44: /* variable ::= string */
       case 45: /* variable ::= number */ yytestcase(yyruleno==45);
       case 46: /* string ::= STRING */ yytestcase(yyruleno==46);
       case 47: /* number ::= NUMBER */ yytestcase(yyruleno==47);
+#line 831 "ASPParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
+#line 1652 "ASPParserGrammar.c"
         break;
       case 48: /* number ::= lnumber DOT rnumber */
+#line 840 "ASPParserGrammar.y"
 { 
 	// yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken(*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
+#line 1661 "ASPParserGrammar.c"
         break;
       case 49: /* number ::= MINUS lnumber DOT rnumber */
+#line 847 "ASPParserGrammar.y"
 {
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken("-"+*(yymsp[-2].minor.yy0->token)+"."+*(yymsp[0].minor.yy0->token));
 }
+#line 1669 "ASPParserGrammar.c"
         break;
       case 50: /* lnumber ::= NUMBER */
       case 51: /* rnumber ::= NUMBER */ yytestcase(yyruleno==51);
+#line 851 "ASPParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
+#line 1675 "ASPParserGrammar.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -1637,9 +1724,11 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
+#line 57 "ASPParserGrammar.y"
 
     // std::cout<<"Giving up.  Parser is lost...\n";
 
+#line 1732 "ASPParserGrammar.c"
 /************ End %parse_failure code *****************************************/
   ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1656,6 +1745,7 @@ static void yy_syntax_error(
   ASPParserGrammarARG_FETCH;
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
+#line 63 "ASPParserGrammar.y"
 
 	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
@@ -1669,6 +1759,7 @@ static void yy_syntax_error(
             }
     }
     
+#line 1763 "ASPParserGrammar.c"
 /************ End %syntax_error code ******************************************/
   ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1689,8 +1780,10 @@ static void yy_accept(
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
 /*********** Begin %parse_accept code *****************************************/
+#line 52 "ASPParserGrammar.y"
 
     std::cout<<("//parsing complete!\n");
+#line 1787 "ASPParserGrammar.c"
 /*********** End %parse_accept code *******************************************/
   ASPParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

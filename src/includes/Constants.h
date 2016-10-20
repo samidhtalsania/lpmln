@@ -58,5 +58,6 @@
 #define MVSM_PARSE_TOKEN_COLON                          18
 #define MVSM_PARSE_TOKEN_CONSTANTS                      19
 #define MVSM_PARSE_TOKEN_COUNT                          20
-#define MVSM_PARSE_TOKEN_STRING                         21
-#define MVSM_PARSE_TOKEN_NUMBER                         22
+#define MVSM_PARSE_TOKEN_SUM                            21
+#define MVSM_PARSE_TOKEN_STRING                         22
+#define MVSM_PARSE_TOKEN_NUMBER                         23

@@ -23,7 +23,7 @@ public:
 	}
 
 
-	void appendStr(Predicate, bool, bool, bool);
+	void appendStr(Predicate, bool, bool, bool,const std::set<std::string>& domainList);
 
 	bool bodyHasNegation(){
 		return bodyNegation;

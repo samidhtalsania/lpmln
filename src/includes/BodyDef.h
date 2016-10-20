@@ -16,14 +16,14 @@ public:
 		return p;
 	}
 
-	std::string toString(){
+	std::string toString(const std::set<std::string>& domainList){
 		if(!aggregateString){
 			if(!hasVariables){
-				std::string s = p.toString();
+				std::string s = p.toString(domainList);
 				Util::toUpper(s);
 				return s;
 			}
-			return p.toString();
+			return p.toString(domainList);
 		}
 		else
 			return str;
