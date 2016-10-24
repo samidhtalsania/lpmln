@@ -2,7 +2,7 @@ INCLUDE = $(PROJECT_ROOT)/src/includes
 AM_CPPFLAGS = -I $(INCLUDE)
 AM_CFLAGS = -I $(INCLUDE)
 AM_CXXFLAGS = -I $(INCLUDE)
-bin_PROGRAMS = ../lpmlncompiler  lpmln
+bin_PROGRAMS = ../lpmlncompiler  lpmln lpmln2wc
 
 ___lpmlncompiler_SOURCES = \
 			main.cpp \
@@ -39,3 +39,7 @@ lpmln_SOURCES = \
 		lpexec_src/lpexec.cpp \
 		lpexec_src/FileConfig.cpp \
 		lpexec_src/NoLanguageSelectedException.cpp
+
+lpmln2wc_LDADD = -lboost_regex
+lpmln2wc_SOURCES = \
+		lpmln2wc_src/lpmln2wc.cpp
