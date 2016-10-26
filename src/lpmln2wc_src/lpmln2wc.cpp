@@ -5,7 +5,8 @@
 #include <boost/algorithm/string/regex.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <exception>
-
+#include <set>
+#include <stack>
 #include <vector>
 #include <algorithm>
 #include <sstream>
@@ -17,6 +18,74 @@ namespace io = boost::iostreams;
 
 //build
 //g++ -g -std=c++11 lpmln2wc.cpp -o lpmln2wc -L /usr/lib -lboost_regex
+
+// TODO: variables in unsat
+
+set<string> findVariables(const string&);
+set<string> findFreeVariables(const string&, const string&);
+
+set<string> findVariables(const string& head){
+	
+	set<string> s;
+
+	stack<int> stack;
+	for(unsigned int i=0;i<head.length();i++){
+		if(head.at(i) == '('){
+			stack.push(0);
+		}
+
+		string tempStr;
+		while(!stack.empty()){
+			i++;
+			if(i == head.length()) break;
+			
+			if( (int)head.at(i) >= 65 && // A
+				(int)head.at(i) <= 90 && // Z
+				( 	(int)head.at(i-1) == 44 || //comma
+					(int) head.at(i-1) == 40) ||  // opening paren
+					(int) head.at(i-1) == 32 ) { //space 
+				
+				while(true){
+					
+					tempStr += head.at(i);
+					i++;
+					if(head.at(i) == ',')
+						break;
+					
+					if(head.at(i) == '('){
+						stack.push(0);	
+					}
+
+					if(head.at(i) == ')'){
+						stack.pop();
+						break;	
+					}
+					
+					if(i == head.length()){
+						break;
+					}
+				}
+
+				s.insert(tempStr);
+				tempStr = "";
+			}
+
+			if(head.at(i) == ')'){
+				stack.pop();
+			}
+		}
+	}
+	return s;
+}
+
+
+
+set<string> findFreeVariables(const string& head,const string& body){
+	set<string> s = findVariables(head);
+	set<string> s1 = findVariables(body);	
+	s.insert(s1.begin(), s1.end());
+	return s;
+}
 
 
 int main(int argc, char **argv){
@@ -63,28 +132,35 @@ int main(int argc, char **argv){
 						newStr += splitVecSpace[i];
 					}
 					string tempstr;
+
+					int weight = 0;
 					try{
-						if(splitVecSpace.size() == 1){
-							//W :- B
-							tempstr = ":~ "+ splitVec[1] + "["+ to_string((int)(stof(splitVecSpace[0])* 10000)) +","+ to_string(unsatcount) +"]\n" ;
+						weight = (int)(stof(splitVecSpace[0])* 10000);
+					}
+					catch(const std::exception& ex){
+						cout << str + "\n";
+						continue;
+					}
 
-						}
-						else{
-							// W H :- B
-							// if(splitVec[1][splitVec[1].length()-1] == '.')
-								splitVec[1].pop_back();
-							tempstr = "unsat(" + to_string(unsatcount) + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + ")." + " [" + to_string((int)(stof(splitVecSpace[0])* 10000)) + ","+ to_string(unsatcount) +"]\n";
-							
-						}
-						cout<<tempstr;
-						unsatcount++;
+					set<string> s = findFreeVariables(newStr, splitVec[1]);
+					string vars;
+					for(auto itr = s.begin(); itr!=s.end();++itr)
+						vars += *itr + ",";
+					vars.pop_back();
+
+					splitVec[1].pop_back();
+
+					if(splitVecSpace.size() == 1){
+						//W :- B
+
+						tempstr = ":~ "+ splitVec[1]+ "." + "["+ to_string(weight) +","+ to_string(unsatcount)+ ","+ vars +"]\n" ;
 
 					}
-					catch(const std::invalid_argument& ia){
-						cout<<str + "\n";
+					else{
+						tempstr = "unsat(" + to_string(unsatcount) + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + ")." + " [" + to_string(weight) + ","+ to_string(unsatcount)+","+ vars +"]\n";
 					}
-					
-				
+					cout<<tempstr;
+					unsatcount++;
 				} 
 
 			}
