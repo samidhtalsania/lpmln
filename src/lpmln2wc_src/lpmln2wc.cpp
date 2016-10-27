@@ -135,7 +135,7 @@ int main(int argc, char **argv){
 
 					int weight = 0;
 					try{
-						weight = (int)(stof(splitVecSpace[0])* 10000);
+						weight = (int)(stof(splitVecSpace[0]));
 					}
 					catch(const std::exception& ex){
 						cout << str + "\n";
