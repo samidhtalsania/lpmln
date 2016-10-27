@@ -129,7 +129,7 @@ int main(int argc, char **argv){
 					string newStr;
 
 					for(unsigned int i=1;i<splitVecSpace.size();i++){
-						newStr += splitVecSpace[i];
+						newStr += splitVecSpace[i] + " ";
 					}
 					string tempstr;
 
@@ -146,18 +146,22 @@ int main(int argc, char **argv){
 					string vars;
 					for(auto itr = s.begin(); itr!=s.end();++itr)
 						vars += *itr + ",";
-					vars.pop_back();
+					if(vars.length() != 0){
+						vars.pop_back();
+						vars = "," + vars;
+					}
+
 
 					splitVec[1].pop_back();
 
 					if(splitVecSpace.size() == 1){
 						//W :- B
 
-						tempstr = ":~ "+ splitVec[1]+ "." + "["+ to_string(weight) +","+ to_string(unsatcount)+ ","+ vars +"]\n" ;
+						tempstr = ":~ "+ splitVec[1]+ "." + "["+ to_string(weight) +","+ to_string(unsatcount)+ vars +"]\n" ;
 
 					}
 					else{
-						tempstr = "unsat(" + to_string(unsatcount) + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + ")." + " [" + to_string(weight) + ","+ to_string(unsatcount)+","+ vars +"]\n";
+						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + to_string(weight) + ","+ to_string(unsatcount)+vars +"]\n";
 					}
 					cout<<tempstr;
 					unsatcount++;
