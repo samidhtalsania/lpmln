@@ -116,13 +116,60 @@ int main(int argc, char **argv){
 				
 
 				boost::algorithm::split_regex(splitVec, str, regex(":-"));
+				vector<string> splitVecSpace;
+				int weight = 0;
+
 
 				if(splitVec.size() == 1){
+					//process it if its of the form 
+					// W H.
+
+					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
+					try{
+
+						weight = (int)(stof(splitVecSpace[0]));
+						
+						string newStr;
+
+						for(unsigned int i=1;i<splitVecSpace.size();i++){
+							newStr += splitVecSpace[i] + " ";
+						}
+						string tempstr;
+
+						set<string> s = findVariables(newStr);
+						string vars;
+						for(auto itr = s.begin(); itr!=s.end();++itr)
+							vars += *itr + ",";
+						if(vars.length() != 0){
+							vars.pop_back();
+							vars = "," + vars;
+						}
+
+						splitVecSpace[1].pop_back();
+						trim(newStr);
+						newStr.pop_back();
+
+						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-";
+						
+						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
+						
+						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
+						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string(weight) + ","+ to_string(unsatcount)+vars +"]\n";
+
+
+						cout<<tempstr;
+						unsatcount++;
+					}
+					catch(const std::exception& ex){
+						cout << str + "\n";
+					}
+
+
 					// dont process it
-					cout<<str + "\n";
+					// cout<<str + "\n";
 				}
 				else{
-					vector<string> splitVecSpace;
+					
 					trim(splitVec[0]);
 					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
 
@@ -133,7 +180,7 @@ int main(int argc, char **argv){
 					}
 					string tempstr;
 
-					int weight = 0;
+					
 					try{
 						weight = (int)(stof(splitVecSpace[0]));
 					}
