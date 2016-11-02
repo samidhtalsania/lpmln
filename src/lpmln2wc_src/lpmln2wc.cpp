@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iterator>
+#include <stdexcept>      // std::invalid_argument
 
 using namespace std;
 using namespace boost;
@@ -70,7 +71,7 @@ set<string> findVariables(const string& head){
 				tempStr = "";
 			}
 
-			if(head.at(i) == ')'){
+			if(!stack.empty() && head.at(i) == ')'){
 				stack.pop();
 			}
 		}
@@ -154,13 +155,14 @@ int main(int argc, char **argv){
 						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
 						
 						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
-						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string(weight) + ","+ to_string(unsatcount)+vars +"]\n";
+						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string(weight) + "@0,"+ to_string(unsatcount)+vars +"]\n";
 
 
 						cout<<tempstr;
 						unsatcount++;
 					}
 					catch(const std::exception& ex){
+
 						cout << str + "\n";
 					}
 
@@ -179,17 +181,27 @@ int main(int argc, char **argv){
 						newStr += splitVecSpace[i] + " ";
 					}
 					string tempstr;
-
-					
+					string weightString;
+					set<string> s;					
 					try{
 						weight = (int)(stof(splitVecSpace[0]));
+						weightString = to_string(weight) + "@0";
+						s = findFreeVariables(newStr, splitVec[1]);
 					}
-					catch(const std::exception& ex){
-						cout << str + "\n";
-						continue;
+					catch (const std::invalid_argument& ia) {
+						weightString = "1000@1";
+						s = findFreeVariables(splitVec[0], splitVec[1]);
+						splitVecSpace.clear();
+						newStr = splitVec[0];
 					}
+					catch(...){
+						weightString = "1000@1";
+						s = findFreeVariables(splitVec[0], splitVec[1]);
+						splitVecSpace.clear();
+						newStr = splitVec[0];
+					};
 
-					set<string> s = findFreeVariables(newStr, splitVec[1]);
+					// set<string> s = findFreeVariables(newStr, splitVec[1]);
 					string vars;
 					for(auto itr = s.begin(); itr!=s.end();++itr)
 						vars += *itr + ",";
@@ -204,11 +216,14 @@ int main(int argc, char **argv){
 					if(splitVecSpace.size() == 1){
 						//W :- B
 
-						tempstr = ":~ "+ splitVec[1]+ "." + "["+ to_string(weight) +","+ to_string(unsatcount)+ vars +"]\n" ;
+						tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;
 
 					}
 					else{
-						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + to_string(weight) + ","+ to_string(unsatcount)+vars +"]\n";
+						if(newStr.empty())
+							tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;							
+						else
+							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+vars +"]\n";
 					}
 					cout<<tempstr;
 					unsatcount++;
