@@ -35,6 +35,12 @@ set<string> findVariables(const string& head){
 			stack.push(0);
 		}
 
+		else if(head.at(i) == '#'){
+			while(head.at(i) != '}')
+				i++;
+			i++;
+		}
+
 		string tempStr;
 		while(!stack.empty()){
 			i++;
@@ -189,13 +195,13 @@ int main(int argc, char **argv){
 						s = findFreeVariables(newStr, splitVec[1]);
 					}
 					catch (const std::invalid_argument& ia) {
-						weightString = "1000@1";
+						weightString = "1@1";
 						s = findFreeVariables(splitVec[0], splitVec[1]);
 						splitVecSpace.clear();
 						newStr = splitVec[0];
 					}
 					catch(...){
-						weightString = "1000@1";
+						weightString = "1@1";
 						s = findFreeVariables(splitVec[0], splitVec[1]);
 						splitVecSpace.clear();
 						newStr = splitVec[0];
