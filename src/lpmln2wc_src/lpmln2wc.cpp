@@ -99,6 +99,11 @@ int main(int argc, char **argv){
 	
 	ifstream file(argv[1], ios_base::in | ios_base::binary);
 
+	int mode = 0;
+
+	if(argc == 3)
+		mode = *argv[2] - '0';
+
 	int unsatcount = 0;
 	string str;
 
@@ -253,7 +258,10 @@ int main(int argc, char **argv){
 						if(newStr.empty())
 							tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;							
 						else
-							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+vars +"]\n";
+							if(mode == 1)
+								tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+vars +"]\n";
+							else
+								tempstr = str;
 					}
 					cout<<tempstr;
 					unsatcount++;
