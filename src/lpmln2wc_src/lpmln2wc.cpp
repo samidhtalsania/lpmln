@@ -108,12 +108,36 @@ int main(int argc, char **argv){
 			io::filtering_istream in;
 
 			in.push(file);
-
+			bool f = false; 
 			for(str; getline(in, str); ){
 
 				if(str[0] == '%'){
 					//ignore comments
 					cout<<str+"\n";
+					continue;
+				}
+
+				
+				std::size_t found;
+				if(!f){
+					found = str.find("python");
+					if(found != std::string::npos) {
+						f = true;
+					}
+				}
+				
+				
+				if(f){
+					// found = std::string::npos;
+					// f = true;
+					// while(found == std::string::npos){
+					// 	cout<<str;
+					// 	found = str.find("end");
+					// }
+					cout<<str + "\n";
+					found = str.find("end");
+					if(found != std::string::npos)
+						f = false;
 					continue;
 				}
 
