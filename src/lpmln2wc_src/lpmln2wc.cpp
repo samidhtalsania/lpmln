@@ -102,6 +102,20 @@ int main(int argc, char **argv){
 	int unsatcount = 0;
 	string str;
 
+	//Default mode is 0, which translates all rules.
+	//Mode 1 translates only soft rules.
+	int mode = 0;
+
+	if(argc >= 3){
+		std::stringstream ss(argv[2]);
+		ss >> mode;
+		if(mode != 0 && mode != 1){
+			cout << "Invalid 3rd argument. Can be either 0 or 1.\n";
+			exit(1);
+		}
+
+	}
+
 	if(file){
     
 	    try{
@@ -110,6 +124,8 @@ int main(int argc, char **argv){
 			in.push(file);
 			bool f = false; 
 			for(str; getline(in, str); ){
+
+				if(str.length() == 0) continue;
 
 				if(str[0] == '%'){
 					//ignore comments
@@ -142,18 +158,19 @@ int main(int argc, char **argv){
 				}
 
 				trim(str);
-				
+				//splits the rule to head and body
 				vector<string> splitVec;
 				
 
 				boost::algorithm::split_regex(splitVec, str, regex(":-"));
+				//splits the head into weight part and rule part
 				vector<string> splitVecSpace;
 				int weight = 0;
 
 
 				if(splitVec.size() == 1){
 					//process it if its of the form 
-					// W H.
+					// W H. or H.
 
 					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
 					try{
@@ -192,8 +209,31 @@ int main(int argc, char **argv){
 						unsatcount++;
 					}
 					catch(const std::exception& ex){
+						// It could be of type H. Process it.
+						
+						if(mode == 1){
+							//Hard facts are untouched in Mode 1
+							cout << str + "\n";
+							continue;
+						}
 
-						cout << str + "\n";
+						//Remove . at the end
+						str.pop_back();
+
+						set<string> s = findVariables(str);
+						string vars;
+						for(auto itr = s.begin(); itr!=s.end();++itr)
+							vars += *itr + ",";
+						if(vars.length() != 0){
+							vars.pop_back();
+							vars = "," + vars;
+						}
+
+						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
+											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
+											":~ unsat(" + to_string(unsatcount) +vars+"). [1@1," + to_string(unsatcount) + vars+ "]";
+								unsatcount++;
+						cout << tempstr + "\n";
 					}
 
 
@@ -212,10 +252,12 @@ int main(int argc, char **argv){
 					}
 					string tempstr;
 					string weightString;
-					set<string> s;					
+					set<string> s;	
+					bool issoft = false;				
 					try{
 						weight = (int)(stof(splitVecSpace[0]));
 						weightString = to_string(weight) + "@0";
+						issoft = true;
 						s = findFreeVariables(newStr, splitVec[1]);
 					}
 					catch (const std::invalid_argument& ia) {
@@ -249,16 +291,30 @@ int main(int argc, char **argv){
 						tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;
 
 					}
+					// Hard rules/constraints are ignored.
 					else{
-						if(newStr.empty())
-							tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;							
-						else
+						if(newStr.empty()){
+							//if soft rule translate it irrespective of the mode.
+							if(issoft || (!issoft && mode == 0))
+								tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;
+							else{
+								tempstr = str + "\n";
+							}
+						}
+						else if(issoft || (!issoft && mode == 0)){
+							//Soft rules are translated irespective of the mode
+							//Hard rules are translated only in mode 0
 							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+vars +"]\n";
+						}
+						else if(!issoft && mode == 1){
+							//Hard rules are translated only in mode 0
+							// cout << str + "\n";
+							tempstr = str + "\n";
+						}
 					}
 					cout<<tempstr;
 					unsatcount++;
 				} 
-
 			}
 		}
 		catch(const std::exception& ia) {
