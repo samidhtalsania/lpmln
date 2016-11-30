@@ -92,6 +92,16 @@ Config::Config(int argc, char** argv){
 										Config::showError(Error::INVALID_A,i);
 									continue;
 								}
+		
+		"-f2lp"					{
+									if(parserType == ParserType::PARSER_NONE)
+										parserType = ParserType::F2LP;
+									else
+										Config::showError(Error::INVALID_A,i);
+									continue;
+		
+
+								}
 
 		"-d"					{
 									debug = true;

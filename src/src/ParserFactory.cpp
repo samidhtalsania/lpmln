@@ -9,7 +9,7 @@ Parser* ParserFactory::getParser(ParserType parser){
 		ASPParser* aspParser = new ASPParser;
 		p = aspParser;
 	}
-	else if(parser == ParserType::MVSM){
+	else if(parser == ParserType::MVSM || parser == ParserType::F2LP){
 		MVSMParser* mvsmParser = new MVSMParser;
 		p = mvsmParser;
 	}

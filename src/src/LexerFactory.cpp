@@ -15,6 +15,10 @@ Lexer* LexerFactory::getLexer(ParserType parser){
 		MVSMLexer* mvsmlexer = new MVSMLexer;
 		l = mvsmlexer;
 	}
+	else if(parser == ParserType::F2LP){
+		F2LPLexer* f2lplexer = new F2LPLexer;
+		l = f2lplexer;
+	}
 	/*Default to FOL parser*/
 	else{
 		FOLLexer* follexer = new FOLLexer;

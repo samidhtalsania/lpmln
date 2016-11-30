@@ -1,6 +1,7 @@
 #include "FOLLexer.h"
 #include "ASPLexer.h"
 #include "MVSMLexer.h"
+#include "F2LPLexer.h"
 #include "Config.h"
 #include "Lexer.h"
 

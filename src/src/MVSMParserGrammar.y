@@ -166,6 +166,29 @@ object ::= variables(Ve) COLON COLON string(S).{
 	delete Ve;
 }
 
+object ::= variable(V1) DOT DOT variable(V2) COLON COLON string(S).{
+	auto itr = tree->domainNamesList.find(S->toString());
+	if(itr != tree->domainNamesList.end()){
+		Domain* d  = new Domain(S->toString());
+
+		int start = stoi(*(V1->token));
+		int end = stoi(*(V2->token));
+
+		for(int i=start; i<=end ;i++){
+			d->addVars(to_string(i));
+			tree->domainList.insert(to_string(i));
+		}
+
+		cout<<d->toString(false);
+		delete d;
+	}
+	else{
+		throw syntax_exception("Domain " + S->toString() +" not declared.\n");
+	}
+	
+	// delete Ve;
+}
+
 prog ::= prog CONSTANTS constantdecl.
 
 constantdecl ::= constant SEMI_COLON constantdecl.

@@ -27,6 +27,7 @@ enum ParserType{
 	FOL,
 	ASP,
 	MVSM,
+	F2LP,
 	PARSER_NONE
 };
 
