@@ -178,6 +178,7 @@ int main(int argc, char **argv){
 					// W H. or H.
 
 					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
+					//Process soft rules of form W H.
 					try{
 
 						weight = (int)(stof(splitVecSpace[0]));
@@ -202,6 +203,9 @@ int main(int argc, char **argv){
 						trim(newStr);
 						newStr.pop_back();
 
+						vars = ",0,"+ to_string(weight) + vars ;
+
+
 						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-";
 						
 						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
@@ -213,6 +217,7 @@ int main(int argc, char **argv){
 						cout<<tempstr;
 						unsatcount++;
 					}
+					//Process hard rules of form H.
 					catch(const std::exception& ex){
 						// It could be of type H. Process it.
 						
@@ -233,6 +238,8 @@ int main(int argc, char **argv){
 							vars.pop_back();
 							vars = "," + vars;
 						}
+
+						vars = ",1" + vars ;
 
 						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
 											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
@@ -289,6 +296,12 @@ int main(int argc, char **argv){
 
 
 					splitVec[1].pop_back();
+					string probString = "";
+
+					if(issoft) probString += ",0,"+to_string(weight);
+					else probString += ",1";
+
+					vars = probString + vars;
 
 					if(splitVecSpace.size() == 1){
 						//W :- B
