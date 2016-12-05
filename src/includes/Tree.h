@@ -115,4 +115,7 @@ public:
 	// int unsatCount = 0;
 
 	void printASPRuleHB(Head*, Body*);
+
+	std::set<std::string> findVariables(const std::string&);
+	std::set<std::string> findFreeVariables(const std::string&, const std::string&);
 };

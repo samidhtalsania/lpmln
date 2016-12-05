@@ -1,6 +1,8 @@
 #include "Tree.h"
 #include "LanguageConstants.h"
 
+#include <stack> 
+
 Tree::Tree(OptimizationLevel _level, OutputType _type){
 	level = _level;
 	outputType = _type;
@@ -549,4 +551,73 @@ void Tree::printASPRuleHB(Head* H, Body* B){
 					<<str
 					<<LanguageConstants::LINE_END
 					<<"\n";	
+}
+
+std::set<std::string> Tree::findVariables(const std::string& head){
+	
+	std::set<std::string> s;
+
+	std::stack<int> stack;
+	for(unsigned int i=0;i<head.length();i++){
+		if(head.at(i) == '('){
+			stack.push(0);
+		}
+
+		else if(head.at(i) == '#'){
+			while(head.at(i) != '}')
+				i++;
+			i++;
+		}
+
+		std::string tempStr;
+		while(!stack.empty()){
+			i++;
+			if(i == head.length()) break;
+			
+			if( (int)head.at(i) >= 65 && // A
+				(int)head.at(i) <= 90 && // Z
+				( 	(int)head.at(i-1) == 44 || //comma
+					(int) head.at(i-1) == 40) ||  // opening paren
+					(int) head.at(i-1) == 32 ) { //space 
+				
+				while(true){
+					
+					tempStr += head.at(i);
+					i++;
+					if(head.at(i) == ',')
+						break;
+					
+					if(head.at(i) == '('){
+						stack.push(0);	
+					}
+
+					if(head.at(i) == ')'){
+						stack.pop();
+						break;	
+					}
+					
+					if(i == head.length()){
+						break;
+					}
+				}
+
+				s.insert(tempStr);
+				tempStr = "";
+			}
+
+			if(!stack.empty() && head.at(i) == ')'){
+				stack.pop();
+			}
+		}
+	}
+	return s;
+}
+
+
+
+std::set<std::string> Tree::findFreeVariables(const std::string& head,const std::string& body){
+	std::set<std::string> s = findVariables(head);
+	std::set<std::string> s1 = findVariables(body);	
+	s.insert(s1.begin(), s1.end());
+	return s;
 }

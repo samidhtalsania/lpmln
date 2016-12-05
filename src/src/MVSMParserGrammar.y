@@ -536,8 +536,14 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 				<<"\n";
 	
 	if(tree->outputType == OutputType::OUTPUT_ASP){
-
-		std::cout << "unsat(" << tree->weak_constraint_counter << ")"
+		std::set<std::string> uniqueSet = tree->findFreeVariables(H->toNNFString(tree->domainList),B->toString());
+		std::string uniqueSetStr;
+		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
+			uniqueSetStr += *itr + ",";
+		}
+		uniqueSetStr.pop_back();
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + "," +uniqueSetStr + ")";
+		std::cout << unsatString
 					<< " :- "
 					<< B->toString()
 					<< " , "
@@ -551,18 +557,21 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 					<< B->toString()
 					<< " , "
 					<< "not "
-					<< "unsat(" << tree->weak_constraint_counter << ")"
+					<< unsatString
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
 	
 		std::cout   << " :~ "
-					<< "unsat(" << tree->weak_constraint_counter << ")"
+					<< unsatString
 					<< ". "
 					<< "["
-					<< std::to_string((int)(std::stof(N->toString())* 10000))
+					<< std::to_string((int)(std::stof(N->toString())* 1))
+					<< "@0"
 					<<","
 					<< tree->weak_constraint_counter
+					<< ","
+					<< uniqueSetStr
 					<< "]"
 					<<"\n";
 
@@ -937,8 +946,14 @@ predicate(P) ::= number(N) literal(L).{
 		cout<<P->toString(N->toString()+SPACE, false);
 	}
 	if(tree->outputType == OutputType::OUTPUT_ASP){
-
-		std::cout << "unsat(" << tree->weak_constraint_counter << ")"
+		std::set<std::string> uniqueSet = tree->findVariables(P->toString(tree->domainList));
+		std::string uniqueSetStr;
+		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
+			uniqueSetStr += *itr + ",";
+		}
+		uniqueSetStr.pop_back();
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + "," +uniqueSetStr + ")";
+		std::cout << unsatString
 					<< " :- "
 					<< "not "
 					<< P->toString(tree->domainList)
@@ -948,18 +963,20 @@ predicate(P) ::= number(N) literal(L).{
 		std::cout << P->toString(tree->domainList)
 					<< " :- "
 					<< "not "
-					<< "unsat(" << tree->weak_constraint_counter << ")"
+					<< unsatString
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
 	
 		std::cout   << " :~ "
-					<< "unsat(" << tree->weak_constraint_counter << ")"
+					<< unsatString
 					<< ". "
 					<< "["
-					<< std::to_string((int)(std::stof(N->toString())* 10000))
+					<< std::to_string((int)(std::stof(N->toString())* 1))
 					<<","
 					<< tree->weak_constraint_counter
+					<< ","
+					<< uniqueSetStr
 					<< "]"
 					<<"\n";
 
