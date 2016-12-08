@@ -20,3 +20,4 @@ void Head::appendStr(std::string str, bool trim, bool disjunction, bool conjunct
 		headStr = headStr.substr(0,headStr.size()-3); 
 	}
 }
+

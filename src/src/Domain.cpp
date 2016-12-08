@@ -19,6 +19,9 @@ std::string Domain::toString(bool source) const{
 	if(!source){
 		std::string str;
 		str += domainVar;
+		if (LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
+			Util::toLower(str);
+		}
 		str += LanguageConstants::OBJ_EQUALS;
 		str += LanguageConstants::OBJ_PAREN_OPEN;
 

@@ -156,7 +156,13 @@ object ::= variables(Ve) COLON COLON string(S).{
 			for(auto& v : d->getVars()){
 				tree->domainList.insert(v);	
 			}
-			cout<<d->toString(false);
+
+			if(tree->outputType != OutputType::OUTPUT_ASP){
+				cout<<d->toString(false);
+			}
+			else{
+				cout<<d->toString(false);	
+			}
 			delete d;
 		}
 		else{
@@ -395,7 +401,7 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 				+ LanguageConstants::LINE_END
 				+ " "
 				+ "["
-				+  std::to_string((int)(std::stof(N->toString())* 10000))
+				+  std::to_string((int)(std::stof(N->toString())* 1))
 				+  ","
 				+  std::to_string(tree->weak_constraint_counter);
 
@@ -419,7 +425,6 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 //H.
 //Test case covered
 rule(R) ::= head(B) DISJUNCTION bodydef(B1) DOT.{
-	//Doing this 
 	R = new RuleCompletion;
 	R->isHeadTop = true;
 	B->addPredicate(B1->getPredicate());
@@ -442,9 +447,13 @@ rule(R) ::= head(B) DISJUNCTION bodydef(B1) DOT.{
 		else{
 			temp = B->toString();
 		}
+		std::cout<<temp<<"."<<"\n";
+	}
+	else{
+		std::cout<<B->toString()<<".\n";	
 	}
 	
-	std::cout<<temp<<"."<<"\n";
+	
 	
 	delete B;
 	delete B1;
@@ -465,8 +474,45 @@ rule(R) ::= number(N) head(B) DISJUNCTION bodydef(B1).{
 	catch(const std::out_of_range& e){
 		throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
-	B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);
-	std::cout<<N->toString()<<SPACE<<B->toString()<<"\n";
+
+	if(tree->outputType == OutputType::OUTPUT_ASP){
+		std::set<std::string> uniqueSet = tree->findVariables(B->toNNFString(tree->domainList));
+		std::string uniqueSetStr;
+		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
+			uniqueSetStr += *itr + ",";
+		}
+		if (uniqueSetStr.length() > 0)
+		{
+			uniqueSetStr.pop_back();
+			uniqueSetStr = "," + uniqueSetStr; 
+		}
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + uniqueSetStr + ")";
+		std::cout << unsatString 
+				<< " :- "
+				<<B->toNNFString(tree->domainList)
+				<<".\n";
+		std::cout << B->toString(tree->domainList)
+					<< " :- "
+					<< "not "
+					<< unsatString
+					<< ".\n";
+
+		std::cout   << " :~ "
+					<< unsatString
+					<< ". "
+					<< "["
+					<< std::to_string((int)(std::stof(N->toString())* 1))
+					<<","
+					<< tree->weak_constraint_counter
+					<< uniqueSetStr
+					<< "]"
+					<<"\n";
+	}
+	else{
+		B->appendStr(B1->getPredicate().toString(tree->domainList),false,true,false);	
+		std::cout<<N->toString()<<SPACE<<B->toString()<<"\n";
+	}
+	
 	delete B;
 	delete B1;
 }
@@ -541,8 +587,12 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
 			uniqueSetStr += *itr + ",";
 		}
-		uniqueSetStr.pop_back();
-		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + "," +uniqueSetStr + ")";
+		if (uniqueSetStr.length() > 0)
+		{
+			uniqueSetStr.pop_back();
+			uniqueSetStr = "," + uniqueSetStr; 
+		}
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + uniqueSetStr + ")";
 		std::cout << unsatString
 					<< " :- "
 					<< B->toString()
@@ -951,8 +1001,12 @@ predicate(P) ::= number(N) literal(L).{
 		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
 			uniqueSetStr += *itr + ",";
 		}
-		uniqueSetStr.pop_back();
-		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + "," +uniqueSetStr + ")";
+		if (uniqueSetStr.length() > 0)
+		{
+			uniqueSetStr.pop_back();
+			uniqueSetStr = "," + uniqueSetStr; 
+		}
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(N->toString())* 1)) + uniqueSetStr + ")";
 		std::cout << unsatString
 					<< " :- "
 					<< "not "
@@ -975,7 +1029,6 @@ predicate(P) ::= number(N) literal(L).{
 					<< std::to_string((int)(std::stof(N->toString())* 1))
 					<<","
 					<< tree->weak_constraint_counter
-					<< ","
 					<< uniqueSetStr
 					<< "]"
 					<<"\n";
@@ -1001,13 +1054,29 @@ predicate(P) ::= number(N) NEGATION NEGATION literal(L).{
 		if(temp.length() > 0)
 			str += ",";
 		str += temp;
+		std::string constants = P->getExtraConstants();
+		if (constants.length() > 0)
+		{
+			constants = "," + constants; 
+		}
+
+		std::set<std::string> uniqueSet = tree->findVariables(str);
+		std::string uniqueSetStr;
+		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
+			uniqueSetStr += *itr + ",";
+		}
+		if (uniqueSetStr.length() > 0)
+		{
+			uniqueSetStr.pop_back();
+			uniqueSetStr = "," + uniqueSetStr; 
+		}
+
 		str += LanguageConstants::LINE_END;
 		str += " [" + 
-				std::to_string((int)(std::stof(N->toString())* 10000)) + 
+				std::to_string((int)(std::stof(N->toString())* 1)) + 
 				"," + 
 				std::to_string(tree->weak_constraint_counter++) + 
-				"," +
-				P->getExtraConstants()+
+				constants + 
 				"]\n";
 		cout<<str;
 	}
@@ -1028,12 +1097,32 @@ predicate(P) ::= number(N) NEGATION literal(L).{
 		std::string temp  = P->getExtra(tree->variables);	
 		if(temp.length() > 0)
 			str += ",";
+
+		std::string constants = P->getExtraConstants();
+		if (constants.length() > 0)
+		{
+			constants = "," + constants; 
+		}
+
+		std::set<std::string> uniqueSet = tree->findVariables(str);
+		std::string uniqueSetStr;
+		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
+			uniqueSetStr += *itr + ",";
+		}
+		if (uniqueSetStr.length() > 0)
+		{
+			uniqueSetStr.pop_back();
+			uniqueSetStr = "," + uniqueSetStr; 
+		}
+		
+
+
+
 		str += " [" + 
-		std::to_string((int)(std::stof(N->toString())* 10000)) + 
+		std::to_string((int)(std::stof(N->toString())* 1)) + 
 		"," + 
 		std::to_string(tree->weak_constraint_counter++) + 
-		"," +
-		P->getExtraConstants() + 
+		constants + 
 		"]\n";
 		cout<<str;
 	}

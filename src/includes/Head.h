@@ -28,6 +28,17 @@ public:
 		return headStr;
 	}
 
+
+	std::string toString(const std::set<std::string>& domainList) const{
+		std::string str;
+		for (unsigned int i = 0; i < predList.size(); ++i){
+			str += predList.at(i).toString(domainList);
+			str += " ; ";
+		}
+		str = str.substr(0,str.size()-3);
+		return str;
+	}
+
 	inline std::string getExtra(const std::set<Variable>& variable){
 		std::string str;
 		for (std::vector<Predicate>::iterator i = predList.begin(); i != predList.end(); ++i){
