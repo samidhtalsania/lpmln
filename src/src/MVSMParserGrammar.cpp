@@ -1454,7 +1454,6 @@ static void yy_reduce(
 					<< "@0"
 					<<","
 					<< tree->weak_constraint_counter
-					<< ","
 					<< uniqueSetStr
 					<< "]"
 					<<"\n";

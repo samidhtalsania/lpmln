@@ -620,7 +620,6 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 					<< "@0"
 					<<","
 					<< tree->weak_constraint_counter
-					<< ","
 					<< uniqueSetStr
 					<< "]"
 					<<"\n";
