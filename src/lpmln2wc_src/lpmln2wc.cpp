@@ -12,6 +12,7 @@
 #include <sstream>
 #include <iterator>
 #include <stdexcept>      // std::invalid_argument
+#include <cmath>
 
 using namespace std;
 using namespace boost;
@@ -180,8 +181,10 @@ int main(int argc, char **argv){
 					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
 					//Process soft rules of form W H.
 					try{
-
-						weight = (int)(stof(splitVecSpace[0]));
+						float floatVal = stof(splitVecSpace[0]); 
+						if(isinf(floatVal) || isnan(floatVal)) throw std::runtime_error("inf/nan error");
+						
+						weight = (int)floatVal;
 						
 						string newStr;
 
