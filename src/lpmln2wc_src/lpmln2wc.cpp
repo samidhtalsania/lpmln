@@ -50,8 +50,8 @@ set<string> findVariables(const string& head){
 			if( (int)head.at(i) >= 65 && // A
 				(int)head.at(i) <= 90 && // Z
 				( 	(int)head.at(i-1) == 44 || //comma
-					(int) head.at(i-1) == 40) ||  // opening paren
-					(int) head.at(i-1) == 32 ) { //space 
+					(int) head.at(i-1) == 40 ||  // opening paren
+					(int) head.at(i-1) == 32 )) { //space 
 				
 				while(true){
 					
