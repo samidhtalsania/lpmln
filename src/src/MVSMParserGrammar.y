@@ -953,7 +953,9 @@ predicate(P) ::= literal(L) DOT.{
 	}
 
 	std::string s1,s2;
-	
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+		cout<<P->toString(tree->domainList) + ".\n";
+	}
 
 	if(tree->outputType == OutputType::OUTPUT_ASP){
 		s2 = P->getExtra(tree->variables);

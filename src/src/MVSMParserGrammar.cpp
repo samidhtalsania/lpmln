@@ -1,29 +1,10 @@
-/*
-** 2000-05-29
-**
-** The author disclaims copyright to this source code.  In place of
-** a legal notice, here is a blessing:
-**
-**    May you do good and not evil.
-**    May you find forgiveness for yourself and forgive others.
-**    May you share freely, never taking more than you give.
-**
-*************************************************************************
-** Driver template for the LEMON parser generator.
-**
-** The "lemon" program processes an LALR(1) input grammar file, then uses
-** this template to construct a parser.  The "lemon" program inserts text
-** at each "%%" line.  Also, any "P-a-r-s-e" identifer prefix (without the
-** interstitial "-" characters) contained in this template is changed into
-** the value of the %name directive from the grammar.  Otherwise, the content
-** of this template is copied straight through into the generate parser
-** source file.
-**
-** The following is the concatenation of all %include directives from the
-** input grammar file:
+/* Driver template for the LEMON parser generator.
+** The author disclaims copyright to this source code.
 */
+/* First off, code is included that follows the "include" declaration
+** in the input grammar file. */
 #include <stdio.h>
-/************ Begin %include sections from the grammar ************************/
+#line 4 "MVSMParserGrammar.y"
 
 	#include <iostream>
 	#include <assert.h> 
@@ -70,12 +51,18 @@
 	void RuleCompletion_HD_BT(Head*, Tree*);
 	void RuleCompletion_HD_BC(Head*, Body*, bool, Tree*);
 
+#line 55 "MVSMParserGrammar.c"
 #include "MVSMParserGrammar.h"
-/**************** End of %include directives **********************************/
-/* These constants specify the various numeric values for terminal symbols
-** in a format understandable to "makeheaders".  This section is blank unless
-** "lemon" is run with the "-m" command-line option.
-***************** Begin makeheaders token definitions *************************/
+/* Next is all token values, in a form suitable for use by makeheaders.
+** This section will be null unless lemon is run with the -m switch.
+*/
+/* 
+** These constants (all generated automatically by the parser generator)
+** specify the various kinds of tokens (terminals) that the parser
+** understands. 
+**
+** Each symbol here is a terminal symbol in the grammar.
+*/
 #if INTERFACE
 #define MVSM_PARSE_TOKEN_REVERSE_IMPLICATION             1
 #define MVSM_PARSE_TOKEN_EQUAL                           2
@@ -101,62 +88,48 @@
 #define MVSM_PARSE_TOKEN_STRING                         22
 #define MVSM_PARSE_TOKEN_NUMBER                         23
 #endif
-/**************** End makeheaders token definitions ***************************/
-
-/* The next sections is a series of control #defines.
+/* Make sure the INTERFACE macro is defined.
+*/
+#ifndef INTERFACE
+# define INTERFACE 1
+#endif
+/* The next thing included is series of defines which control
 ** various aspects of the generated parser.
-**    YYCODETYPE         is the data type used to store the integer codes
-**                       that represent terminal and non-terminal symbols.
-**                       "unsigned char" is used if there are fewer than
-**                       256 symbols.  Larger types otherwise.
-**    YYNOCODE           is a number of type YYCODETYPE that is not used for
-**                       any terminal or nonterminal symbol.
+**    YYCODETYPE         is the data type used for storing terminal
+**                       and nonterminal numbers.  "unsigned char" is
+**                       used if there are fewer than 250 terminals
+**                       and nonterminals.  "int" is used otherwise.
+**    YYNOCODE           is a number of type YYCODETYPE which corresponds
+**                       to no legal terminal or nonterminal number.  This
+**                       number is used to fill in empty slots of the hash 
+**                       table.
 **    YYFALLBACK         If defined, this indicates that one or more tokens
-**                       (also known as: "terminal symbols") have fall-back
-**                       values which should be used if the original symbol
-**                       would not parse.  This permits keywords to sometimes
-**                       be used as identifiers, for example.
-**    YYACTIONTYPE       is the data type used for "action codes" - numbers
-**                       that indicate what to do in response to the next
-**                       token.
-**    MVSMParserGrammarTOKENTYPE     is the data type used for minor type for terminal
-**                       symbols.  Background: A "minor type" is a semantic
-**                       value associated with a terminal or non-terminal
-**                       symbols.  For example, for an "ID" terminal symbol,
-**                       the minor type might be the name of the identifier.
-**                       Each non-terminal can have a different minor type.
-**                       Terminal symbols all have the same minor type, though.
-**                       This macros defines the minor type for terminal 
-**                       symbols.
-**    YYMINORTYPE        is the data type used for all minor types.
+**                       have fall-back values which should be used if the
+**                       original value of the token will not parse.
+**    YYACTIONTYPE       is the data type used for storing terminal
+**                       and nonterminal numbers.  "unsigned char" is
+**                       used if there are fewer than 250 rules and
+**                       states combined.  "int" is used otherwise.
+**    MVSMParserGrammarTOKENTYPE     is the data type used for minor tokens given 
+**                       directly to the parser from the tokenizer.
+**    YYMINORTYPE        is the data type used for all minor tokens.
 **                       This is typically a union of many types, one of
 **                       which is MVSMParserGrammarTOKENTYPE.  The entry in the union
-**                       for terminal symbols is called "yy0".
+**                       for base tokens is called "yy0".
 **    YYSTACKDEPTH       is the maximum depth of the parser's stack.  If
 **                       zero the stack is dynamically sized using realloc()
 **    MVSMParserGrammarARG_SDECL     A static variable declaration for the %extra_argument
 **    MVSMParserGrammarARG_PDECL     A parameter declaration for the %extra_argument
 **    MVSMParserGrammarARG_STORE     Code to store %extra_argument into yypParser
 **    MVSMParserGrammarARG_FETCH     Code to extract %extra_argument from yypParser
-**    YYERRORSYMBOL      is the code number of the error symbol.  If not
-**                       defined, then do no error processing.
 **    YYNSTATE           the combined number of states.
 **    YYNRULE            the number of rules in the grammar
-**    YY_MAX_SHIFT       Maximum value for shift actions
-**    YY_MIN_SHIFTREDUCE Minimum value for shift-reduce actions
-**    YY_MAX_SHIFTREDUCE Maximum value for shift-reduce actions
-**    YY_MIN_REDUCE      Maximum value for reduce actions
-**    YY_ERROR_ACTION    The yy_action[] code for syntax error
-**    YY_ACCEPT_ACTION   The yy_action[] code for accept
-**    YY_NO_ACTION       The yy_action[] code for no-op
+**    YYERRORSYMBOL      is the code number of the error symbol.  If not
+**                       defined, then do no error processing.
 */
-#ifndef INTERFACE
-# define INTERFACE 1
-#endif
-/************* Begin control #defines *****************************************/
 #define YYCODETYPE unsigned char
 #define YYNOCODE 47
-#define YYACTIONTYPE unsigned short int
+#define YYACTIONTYPE unsigned char
 #if INTERFACE
 #define MVSMParserGrammarTOKENTYPE Token*
 #endif
@@ -181,17 +154,11 @@ typedef union {
 #define MVSMParserGrammarARG_FETCH Tree* tree = yypParser->tree
 #define MVSMParserGrammarARG_STORE yypParser->tree = tree
 #endif
-#define YYNSTATE             103
-#define YYNRULE              66
-#define YY_MAX_SHIFT         102
-#define YY_MIN_SHIFTREDUCE   157
-#define YY_MAX_SHIFTREDUCE   222
-#define YY_MIN_REDUCE        223
-#define YY_MAX_REDUCE        288
-#define YY_ERROR_ACTION      289
-#define YY_ACCEPT_ACTION     290
-#define YY_NO_ACTION         291
-/************* End control #defines *******************************************/
+#define YYNSTATE 157
+#define YYNRULE 66
+#define YY_NO_ACTION      (YYNSTATE+YYNRULE+2)
+#define YY_ACCEPT_ACTION  (YYNSTATE+YYNRULE+1)
+#define YY_ERROR_ACTION   (YYNSTATE+YYNRULE)
 
 /* The yyzerominor constant is used to initialize instances of
 ** YYMINORTYPE objects to zero. */
@@ -218,20 +185,16 @@ static const YYMINORTYPE yyzerominor = { 0 };
 ** Suppose the action integer is N.  Then the action is determined as
 ** follows
 **
-**   0 <= N <= YY_MAX_SHIFT             Shift N.  That is, push the lookahead
+**   0 <= N < YYNSTATE                  Shift N.  That is, push the lookahead
 **                                      token onto the stack and goto state N.
 **
-**   N between YY_MIN_SHIFTREDUCE       Shift to an arbitrary state then
-**     and YY_MAX_SHIFTREDUCE           reduce by rule N-YY_MIN_SHIFTREDUCE.
+**   YYNSTATE <= N < YYNSTATE+YYNRULE   Reduce by rule N-YYNSTATE.
 **
-**   N between YY_MIN_REDUCE            Reduce by rule N-YY_MIN_REDUCE
-**     and YY_MAX_REDUCE
-
-**   N == YY_ERROR_ACTION               A syntax error has occurred.
+**   N == YYNSTATE+YYNRULE              A syntax error has occurred.
 **
-**   N == YY_ACCEPT_ACTION              The parser accepts its input.
+**   N == YYNSTATE+YYNRULE+1            The parser accepts its input.
 **
-**   N == YY_NO_ACTION                  No such action.  Denotes unused
+**   N == YYNSTATE+YYNRULE+2            No such action.  Denotes unused
 **                                      slots in the yy_action[] table.
 **
 ** The action table is constructed as a single large table named yy_action[].
@@ -260,127 +223,132 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_reduce_ofst[]   For each state, the offset into yy_action for
 **                     shifting non-terminals after a reduce.
 **  yy_default[]       Default action for each state.
-**
-*********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (335)
+*/
+#define YY_ACTTAB_COUNT (344)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */   290,   52,  177,   93,   90,  221,   53,  198,   71,  203,
- /*    10 */   219,  199,  179,  217,  192,  176,   57,    2,   81,   53,
- /*    20 */    10,  220,  203,    4,   68,  178,  221,  192,   89,   57,
- /*    30 */     2,   81,   18,  221,  222,   67,    5,   66,  210,  160,
- /*    40 */    79,  221,  222,   14,   53,   11,   77,  203,  219,  165,
- /*    50 */    78,  101,  192,  200,   64,  220,   58,   53,  175,  220,
- /*    60 */   203,  221,  222,   53,   54,  193,  203,   68,  220,  194,
- /*    70 */   216,  192,  205,   55,  220,  194,   53,    7,   67,  203,
- /*    80 */    69,  210,   35,   56,  193,   37,   53,  220,  194,  203,
- /*    90 */   221,  222,   53,   61,  193,  203,   82,  220,  194,   15,
- /*   100 */   192,  221,   62,  220,  194,   53,  172,   53,  203,  167,
- /*   110 */   203,   68,   84,  193,   85,  193,  220,  194,  220,  194,
- /*   120 */    53,   17,   67,  203,  188,  211,  166,   73,  193,  159,
- /*   130 */    79,  220,  194,   77,  212,  219,  163,   78,  101,    9,
- /*   140 */    77,   45,  219,  162,   78,  101,  220,   89,   32,  158,
- /*   150 */    79,   20,   86,  220,   26,   53,    3,   74,  203,  219,
- /*   160 */   221,  222,  217,   83,   42,   53,  220,  194,  203,   27,
- /*   170 */   220,   53,  184,  191,  203,   17,  220,  194,   53,   63,
- /*   180 */   221,  203,  220,  194,   89,   22,  190,  223,   21,  220,
- /*   190 */   194,  197,   17,    1,  221,  222,   23,  221,  222,   44,
- /*   200 */    65,  189,  260,  203,   13,   72,   39,  261,  203,  260,
- /*   210 */    65,  220,  195,  203,  261,   72,  220,   60,  203,   29,
- /*   220 */    72,  220,   59,  203,   47,   72,  220,   80,  203,   41,
- /*   230 */    72,  220,   87,  203,   30,   72,  220,  209,  203,  204,
- /*   240 */    72,  220,   91,  203,  102,   72,  220,  207,  203,   35,
- /*   250 */    72,  220,  208,  203,   19,   72,  220,   92,  203,   33,
- /*   260 */    88,  220,  206,  221,  222,  262,  220,  196,  221,  222,
- /*   270 */   219,   24,  262,  201,   75,   31,    6,   25,  171,   76,
- /*   280 */    75,  220,   75,   15,  169,   76,  168,   76,  219,  219,
- /*   290 */   257,   99,  218,   17,    8,   28,   46,  257,   36,  220,
- /*   300 */   220,   16,  186,   32,   93,   90,   41,   70,   17,   41,
- /*   310 */    48,   34,  225,   94,   32,   49,   97,  182,   96,  225,
- /*   320 */    95,  225,   38,  170,   12,  164,   50,   43,  161,   98,
- /*   330 */    40,  100,  225,  225,   51,
+ /*     0 */   224,   52,  104,   93,   90,  153,   53,   11,   74,  125,
+ /*    10 */   146,   41,  103,  137,  110,  134,   57,    2,   81,   53,
+ /*    20 */    51,  145,  125,  153,  144,  133,  102,  110,  100,   57,
+ /*    30 */     2,   81,   77,   41,  146,  151,   78,  101,   17,   77,
+ /*    40 */    97,  146,  150,   78,  101,  145,   77,  132,  146,  149,
+ /*    50 */    78,  101,  145,  126,   53,   40,   89,  125,   29,  145,
+ /*    60 */    21,   73,  113,   35,   53,  145,  130,  125,   98,  153,
+ /*    70 */   144,   85,  113,   30,   53,  145,  130,  125,   43,  152,
+ /*    80 */    53,   84,  113,  125,   68,  145,  130,   50,  110,   96,
+ /*    90 */    62,  145,  130,   53,   34,   67,  125,   69,  119,   53,
+ /*   100 */    61,  113,  125,   95,  145,  130,   56,  113,   49,   53,
+ /*   110 */   145,  130,  125,  146,   42,   53,  147,  110,  125,   55,
+ /*   120 */   145,  130,   54,  113,  145,   53,  145,  130,  125,  146,
+ /*   130 */   153,   72,   99,  110,  125,   64,  145,   58,   10,  157,
+ /*   140 */   145,    4,  145,  128,   75,    1,   89,   48,  141,   76,
+ /*   150 */    18,   44,   72,   31,   53,  125,   13,  125,   39,  153,
+ /*   160 */   144,   70,  131,  145,  124,  145,  130,   53,   32,   53,
+ /*   170 */   125,   71,  125,  146,   28,   63,  137,  111,  145,  130,
+ /*   180 */   145,  130,   53,    9,  145,  125,   72,   93,   90,  125,
+ /*   190 */    83,   89,   33,  145,  130,   20,   72,  145,   92,  125,
+ /*   200 */   118,  153,  144,   72,  153,  144,  125,  145,  123,   72,
+ /*   210 */    35,   68,  125,   36,  145,  122,   72,   12,  142,  125,
+ /*   220 */   145,   91,   67,   72,   66,  119,  125,  145,  121,   72,
+ /*   230 */    41,   45,  125,   25,  145,   87,   65,   94,   32,  125,
+ /*   240 */   145,   80,   86,   65,   24,   26,  125,  145,  129,  156,
+ /*   250 */    79,   38,  135,   72,  145,   59,  125,   75,   37,   68,
+ /*   260 */    27,  140,   76,   75,  145,   60,  146,  139,   76,  127,
+ /*   270 */    67,   19,    7,  120,  153,   46,   17,  145,   22,  112,
+ /*   280 */   153,  144,   32,    8,  191,  153,  144,  153,  144,    6,
+ /*   290 */    16,  191,  196,  195,  194,    5,   15,   17,   88,  196,
+ /*   300 */   195,  194,   14,   17,   47,   82,  108,  116,   15,  155,
+ /*   310 */    79,   23,  107,   17,  154,   79,    3,  153,  144,  109,
+ /*   320 */   106,  105,  225,  153,  225,  225,  225,  225,  225,  225,
+ /*   330 */   148,  225,  225,  225,  225,  225,  225,  225,  143,  138,
+ /*   340 */   136,  114,  117,  115,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    25,   26,   27,   20,   21,   22,   31,   31,   29,   34,
- /*    10 */    31,   31,   37,   34,   39,   27,   41,   42,   43,   31,
- /*    20 */     1,   42,   34,    4,   31,   37,   22,   39,    9,   41,
- /*    30 */    42,   43,   13,   22,   23,   42,    1,   44,   45,   30,
- /*    40 */    31,   22,   23,    8,   31,    6,   29,   34,   31,   32,
- /*    50 */    33,   34,   39,   31,   41,   42,   43,   31,   31,   42,
- /*    60 */    34,   22,   23,   31,   38,   39,   34,   31,   42,   43,
- /*    70 */    16,   39,    5,   41,   42,   43,   31,    9,   42,   34,
- /*    80 */    44,   45,   15,   38,   39,    6,   31,   42,   43,   34,
- /*    90 */    22,   23,   31,   38,   39,   34,    5,   42,   43,    8,
- /*   100 */    39,   22,   41,   42,   43,   31,   31,   31,   34,   31,
- /*   110 */    34,   31,   38,   39,   38,   39,   42,   43,   42,   43,
- /*   120 */    31,    7,   42,   34,   10,   45,   31,   38,   39,   30,
- /*   130 */    31,   42,   43,   29,   16,   31,   32,   33,   34,    1,
- /*   140 */    29,    2,   31,   32,   33,   34,   42,    9,    9,   30,
- /*   150 */    31,   13,   13,   42,    3,   31,    1,   29,   34,   31,
- /*   160 */    22,   23,   34,   39,    6,   31,   42,   43,   34,   18,
- /*   170 */    42,   31,   16,   39,   34,    7,   42,   43,   31,   39,
- /*   180 */    22,   34,   42,   43,    9,   13,   39,    0,   13,   42,
- /*   190 */    43,   10,    7,    6,   22,   23,   13,   22,   23,   12,
- /*   200 */    31,   16,    1,   34,   17,   31,   19,    1,   34,    8,
- /*   210 */    31,   42,   43,   34,    8,   31,   42,   43,   34,    3,
- /*   220 */    31,   42,   43,   34,    2,   31,   42,   43,   34,    3,
- /*   230 */    31,   42,   43,   34,   18,   31,   42,   43,   34,    5,
- /*   240 */    31,   42,   43,   34,   18,   31,   42,   43,   34,   15,
- /*   250 */    31,   42,   43,   34,   13,   31,   42,   43,   34,   13,
- /*   260 */    13,   42,   43,   22,   23,    1,   42,   43,   22,   23,
- /*   270 */    31,    4,    8,   34,   31,    4,    1,   18,   35,   36,
- /*   280 */    31,   42,   31,    8,   35,   36,   35,   36,   31,   31,
- /*   290 */     1,   34,   34,    7,    1,   18,    2,    8,    2,   42,
- /*   300 */    42,    8,   16,    9,   20,   21,    3,    2,    7,    3,
- /*   310 */    18,    9,   46,   10,    9,   18,   10,   16,   18,   46,
- /*   320 */    18,   46,   15,   16,   15,   16,   18,   15,   16,   18,
- /*   330 */    16,   16,   46,   46,   18,
+ /*     0 */    25,   26,   27,   20,   21,   22,   31,    6,   29,   34,
+ /*    10 */    31,    3,   37,   34,   39,   27,   41,   42,   43,   31,
+ /*    20 */    18,   42,   34,   22,   23,   37,   18,   39,   16,   41,
+ /*    30 */    42,   43,   29,    3,   31,   32,   33,   34,    7,   29,
+ /*    40 */    10,   31,   32,   33,   34,   42,   29,   16,   31,   32,
+ /*    50 */    33,   34,   42,    5,   31,   16,    9,   34,    3,   42,
+ /*    60 */    13,   38,   39,   15,   31,   42,   43,   34,   18,   22,
+ /*    70 */    23,   38,   39,   18,   31,   42,   43,   34,   15,   16,
+ /*    80 */    31,   38,   39,   34,   31,   42,   43,   18,   39,   18,
+ /*    90 */    41,   42,   43,   31,    9,   42,   34,   44,   45,   31,
+ /*   100 */    38,   39,   34,   18,   42,   43,   38,   39,   18,   31,
+ /*   110 */    42,   43,   34,   31,    6,   31,   34,   39,   34,   41,
+ /*   120 */    42,   43,   38,   39,   42,   31,   42,   43,   34,   31,
+ /*   130 */    22,   31,   34,   39,   34,   41,   42,   43,    1,    0,
+ /*   140 */    42,    4,   42,   43,   31,    6,    9,   18,   35,   36,
+ /*   150 */    13,   12,   31,    4,   31,   34,   17,   34,   19,   22,
+ /*   160 */    23,    2,   39,   42,   43,   42,   43,   31,    9,   31,
+ /*   170 */    34,   29,   34,   31,   18,   39,   34,   39,   42,   43,
+ /*   180 */    42,   43,   31,    1,   42,   34,   31,   20,   21,   34,
+ /*   190 */    39,    9,   13,   42,   43,   13,   31,   42,   43,   34,
+ /*   200 */     5,   22,   23,   31,   22,   23,   34,   42,   43,   31,
+ /*   210 */    15,   31,   34,    2,   42,   43,   31,   15,   16,   34,
+ /*   220 */    42,   43,   42,   31,   44,   45,   34,   42,   43,   31,
+ /*   230 */     3,    2,   34,   18,   42,   43,   31,   10,    9,   34,
+ /*   240 */    42,   43,   13,   31,    4,    3,   34,   42,   43,   30,
+ /*   250 */    31,   15,   16,   31,   42,   43,   34,   31,    6,   31,
+ /*   260 */    18,   35,   36,   31,   42,   43,   31,   35,   36,   34,
+ /*   270 */    42,   13,    9,   45,   22,    2,    7,   42,   13,   10,
+ /*   280 */    22,   23,    9,    1,    1,   22,   23,   22,   23,    1,
+ /*   290 */     8,    8,    1,    1,    1,    1,    8,    7,   13,    8,
+ /*   300 */     8,    8,    8,    7,    2,    5,   16,   10,    8,   30,
+ /*   310 */    31,   13,   16,    7,   30,   31,    1,   22,   23,   16,
+ /*   320 */    16,   16,   46,   22,   46,   46,   46,   46,   46,   46,
+ /*   330 */    31,   46,   46,   46,   46,   46,   46,   46,   31,   31,
+ /*   340 */    31,   31,   31,   31,
 };
 #define YY_SHIFT_USE_DFLT (-18)
 #define YY_SHIFT_COUNT (102)
 #define YY_SHIFT_MIN   (-17)
-#define YY_SHIFT_MAX   (316)
+#define YY_SHIFT_MAX   (315)
 static const short yy_shift_ofst[] = {
- /*     0 */    19,   19,  138,  175,  175,  175,  175,  175,  175,  175,
- /*    10 */   175,   39,   39,   39,  175,  175,  175,  175,  172,   68,
- /*    20 */   241,  246,   11,   11,   11,   11,   11,   11,   11,   11,
- /*    30 */    11,   11,   11,   11,   11,   11,   11,   79,   79,   79,
- /*    40 */    11,   11,  158,  158,  158,  -17,  -17,    4,    4,    4,
- /*    50 */     4,    4,  187,  139,  185,   91,  286,   35,  201,  206,
- /*    60 */   264,  114,  275,  289,  293,  294,   67,  151,  216,  234,
- /*    70 */   284,  303,  305,  301,  306,  302,  307,  226,  309,  312,
- /*    80 */    54,  118,  155,  156,  168,  168,  222,  181,  183,  247,
- /*    90 */   267,  259,  277,  271,  296,  292,  297,  300,  308,  311,
- /*   100 */   314,  315,  316,
+ /*     0 */   137,  137,  182,   47,   47,   47,   47,   47,   47,   47,
+ /*    10 */    47,    1,    1,    1,   47,   47,   47,   47,  265,  263,
+ /*    20 */   258,  179,  295,  295,  295,  295,  295,  295,  295,  295,
+ /*    30 */   295,  295,  295,  295,  295,  295,  295,  252,  252,  252,
+ /*    40 */   295,  295,  108,  108,  108,  -17,  -17,  301,  301,  301,
+ /*    50 */   301,  301,  139,  229,  296,  300,  290,  294,  293,  292,
+ /*    60 */   291,  269,  288,  283,  282,  273,  195,  242,   55,   48,
+ /*    70 */   167,  227,  159,   31,   30,   85,  236,    8,  202,   63,
+ /*    80 */   305,  304,  315,  303,  306,  306,  302,  297,  298,  285,
+ /*    90 */   240,  215,  156,  149,  211,  129,   90,   71,   69,   50,
+ /*   100 */    39,   12,    2,
 };
 #define YY_REDUCE_USE_DFLT (-26)
 #define YY_REDUCE_COUNT (51)
 #define YY_REDUCE_MIN   (-25)
-#define YY_REDUCE_MAX   (258)
+#define YY_REDUCE_MAX   (312)
 static const short yy_reduce_ofst[] = {
- /*     0 */   -25,  -12,   13,   26,   32,   45,   55,   61,   74,   76,
- /*    10 */    89,   17,  104,  111,  124,  134,  140,  147,  169,  174,
- /*    20 */   179,  169,  184,  189,   -7,  194,  199,  204,  209,  214,
- /*    30 */   219,   36,  -21,  224,  128,   80,  239,  243,  249,  251,
- /*    40 */   257,  258,    9,   99,  119,  -24,  -20,   22,   27,   75,
- /*    50 */    78,   95,
+ /*     0 */   -25,  -12,   94,   84,   78,   68,   62,   49,   43,   33,
+ /*    10 */    23,   17,   10,    3,  151,  138,  136,  123,  205,  222,
+ /*    20 */   212,  205,  198,  192,  180,  185,  178,  172,  165,  155,
+ /*    30 */   121,   53,  142,  100,  -21,  228,  235,  232,  226,  113,
+ /*    40 */    98,   82,  284,  279,  219,  312,  311,  310,  309,  308,
+ /*    50 */   307,  299,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */   247,  246,  286,  289,  289,  289,  289,  289,  289,  289,
- /*    10 */   289,  289,  289,  289,  289,  289,  289,  289,  289,  289,
- /*    20 */   289,  289,  289,  289,  289,  289,  289,  289,  289,  289,
- /*    30 */   289,  289,  289,  289,  289,  289,  289,  289,  289,  289,
- /*    40 */   289,  289,  289,  289,  289,  289,  289,  289,  289,  289,
- /*    50 */   289,  289,  289,  285,  289,  289,  289,  289,  279,  281,
- /*    60 */   280,  289,  289,  251,  289,  285,  289,  289,  289,  289,
- /*    70 */   289,  289,  285,  289,  289,  240,  289,  289,  289,  289,
- /*    80 */   262,  260,  289,  257,  253,  249,  289,  289,  289,  289,
- /*    90 */   289,  289,  289,  289,  268,  289,  289,  239,  289,  289,
- /*   100 */   289,  283,  289,
+ /*     0 */   181,  180,  220,  223,  223,  223,  223,  223,  223,  223,
+ /*    10 */   223,  223,  223,  223,  223,  223,  223,  223,  223,  223,
+ /*    20 */   223,  223,  223,  223,  223,  223,  223,  223,  223,  223,
+ /*    30 */   223,  223,  223,  223,  223,  223,  223,  223,  223,  223,
+ /*    40 */   223,  223,  223,  223,  223,  223,  223,  223,  223,  223,
+ /*    50 */   223,  223,  223,  219,  223,  223,  223,  223,  213,  215,
+ /*    60 */   214,  223,  223,  185,  223,  219,  223,  223,  223,  223,
+ /*    70 */   223,  223,  219,  223,  223,  174,  223,  223,  223,  223,
+ /*    80 */   196,  194,  223,  191,  187,  183,  223,  223,  223,  223,
+ /*    90 */   223,  223,  223,  223,  202,  223,  223,  173,  223,  223,
+ /*   100 */   223,  217,  223,  179,  177,  216,  212,  189,  186,  184,
+ /*   110 */   192,  191,  188,  193,  200,  198,  197,  199,  205,  210,
+ /*   120 */   211,  209,  207,  208,  206,  203,  204,  201,  196,  195,
+ /*   130 */   194,  190,  182,  178,  176,  170,  175,  217,  172,  171,
+ /*   140 */   169,  168,  164,  167,  222,  220,  219,  218,  166,  165,
+ /*   150 */   163,  162,  161,  221,  160,  159,  158,
 };
-/********** End of lemon-generated parsing tables *****************************/
 
-/* The next table maps tokens (terminal symbols) into fallback tokens.  
-** If a construct like the following:
+/* The next table maps tokens into fallback tokens.  If a construct
+** like the following:
 ** 
 **      %fallback ID X Y Z.
 **
@@ -388,10 +356,6 @@ static const YYACTIONTYPE yy_default[] = {
 ** and Z.  Whenever one of the tokens X, Y, or Z is input to the parser
 ** but it does not parse, the type of the token is changed to ID and
 ** the parse is retried before an error is thrown.
-**
-** This feature can be used, for example, to cause some keywords in a language
-** to revert to identifiers if they keyword does not apply in the context where
-** it appears.
 */
 #ifdef YYFALLBACK
 static const YYCODETYPE yyFallback[] = {
@@ -409,13 +373,9 @@ static const YYCODETYPE yyFallback[] = {
 **   +  The semantic value stored at this level of the stack.  This is
 **      the information used by the action routines in the grammar.
 **      It is sometimes called the "minor" token.
-**
-** After the "shift" half of a SHIFTREDUCE action, the stateno field
-** actually contains the reduce action for the second half of the
-** SHIFTREDUCE.
 */
 struct yyStackEntry {
-  YYACTIONTYPE stateno;  /* The state-number, or reduce action in SHIFTREDUCE */
+  YYACTIONTYPE stateno;  /* The state-number */
   YYCODETYPE major;      /* The major token value.  This is the code
                          ** number for the token at this stack level */
   YYMINORTYPE minor;     /* The user-supplied minor token value.  This
@@ -589,15 +549,6 @@ static void yyGrowStack(yyParser *p){
 }
 #endif
 
-/* Datatype of the argument to the memory allocated passed as the
-** second argument to MVSMParserGrammarAlloc() below.  This can be changed by
-** putting an appropriate #define in the %include section of the input
-** grammar.
-*/
-#ifndef YYMALLOCARGTYPE
-# define YYMALLOCARGTYPE size_t
-#endif
-
 /* 
 ** This function allocates a new parser.
 ** The only argument is a pointer to a function which works like
@@ -610,9 +561,9 @@ static void yyGrowStack(yyParser *p){
 ** A pointer to a parser.  This pointer is used in subsequent calls
 ** to MVSMParserGrammar and MVSMParserGrammarFree.
 */
-void *MVSMParserGrammarAlloc(void *(*mallocProc)(YYMALLOCARGTYPE)){
+void *MVSMParserGrammarAlloc(void *(*mallocProc)(size_t)){
   yyParser *pParser;
-  pParser = (yyParser*)(*mallocProc)( (YYMALLOCARGTYPE)sizeof(yyParser) );
+  pParser = (yyParser*)(*mallocProc)( (size_t)sizeof(yyParser) );
   if( pParser ){
     pParser->yyidx = -1;
 #ifdef YYTRACKMAXSTACKDEPTH
@@ -627,12 +578,10 @@ void *MVSMParserGrammarAlloc(void *(*mallocProc)(YYMALLOCARGTYPE)){
   return pParser;
 }
 
-/* The following function deletes the "minor type" or semantic value
-** associated with a symbol.  The symbol can be either a terminal
-** or nonterminal. "yymajor" is the symbol code, and "yypminor" is
-** a pointer to the value to be deleted.  The code used to do the 
-** deletions is derived from the %destructor and/or %token_destructor
-** directives of the input grammar.
+/* The following function deletes the value associated with a
+** symbol.  The symbol can be either a terminal or nonterminal.
+** "yymajor" is the symbol code, and "yypminor" is a pointer to
+** the value.
 */
 static void yy_destructor(
   yyParser *yypParser,    /* The parser */
@@ -648,11 +597,9 @@ static void yy_destructor(
     ** being destroyed before it is finished parsing.
     **
     ** Note: during a reduce, the only symbols destroyed are those
-    ** which appear on the RHS of the rule, but which are *not* used
+    ** which appear on the RHS of the rule, but which are not used
     ** inside the C code.
     */
-/********* Begin destructor definitions ***************************************/
-/********* End destructor definitions *****************************************/
     default:  break;   /* If no destructor action specified: do nothing */
   }
 }
@@ -662,37 +609,45 @@ static void yy_destructor(
 **
 ** If there is a destructor routine associated with the token which
 ** is popped from the stack, then call it.
+**
+** Return the major token number for the symbol popped.
 */
-static void yy_pop_parser_stack(yyParser *pParser){
-  yyStackEntry *yytos;
-  assert( pParser->yyidx>=0 );
-  yytos = &pParser->yystack[pParser->yyidx--];
+static int yy_pop_parser_stack(yyParser *pParser){
+  YYCODETYPE yymajor;
+  yyStackEntry *yytos = &pParser->yystack[pParser->yyidx];
+
+  if( pParser->yyidx<0 ) return 0;
 #ifndef NDEBUG
-  if( yyTraceFILE ){
+  if( yyTraceFILE && pParser->yyidx>=0 ){
     fprintf(yyTraceFILE,"%sPopping %s\n",
       yyTracePrompt,
       yyTokenName[yytos->major]);
   }
 #endif
-  yy_destructor(pParser, yytos->major, &yytos->minor);
+  yymajor = yytos->major;
+  yy_destructor(pParser, yymajor, &yytos->minor);
+  pParser->yyidx--;
+  return yymajor;
 }
 
 /* 
-** Deallocate and destroy a parser.  Destructors are called for
+** Deallocate and destroy a parser.  Destructors are all called for
 ** all stack elements before shutting the parser down.
 **
-** If the YYPARSEFREENEVERNULL macro exists (for example because it
-** is defined in a %include section of the input grammar) then it is
-** assumed that the input pointer is never NULL.
+** Inputs:
+** <ul>
+** <li>  A pointer to the parser.  This should be a pointer
+**       obtained from MVSMParserGrammarAlloc.
+** <li>  A pointer to a function used to reclaim memory obtained
+**       from malloc.
+** </ul>
 */
 void MVSMParserGrammarFree(
   void *p,                    /* The parser to be deleted */
   void (*freeProc)(void*)     /* Function used to reclaim memory */
 ){
   yyParser *pParser = (yyParser*)p;
-#ifndef YYPARSEFREENEVERNULL
   if( pParser==0 ) return;
-#endif
   while( pParser->yyidx>=0 ) yy_pop_parser_stack(pParser);
 #if YYSTACKDEPTH<=0
   free(pParser->yystack);
@@ -713,6 +668,10 @@ int MVSMParserGrammarStackPeak(void *p){
 /*
 ** Find the appropriate action for a parser given the terminal
 ** look-ahead token iLookAhead.
+**
+** If the look-ahead token is YYNOCODE, then check to see if the action is
+** independent of the look-ahead.  If it is, return the action, otherwise
+** return YY_NO_ACTION.
 */
 static int yy_find_shift_action(
   yyParser *pParser,        /* The parser */
@@ -721,64 +680,63 @@ static int yy_find_shift_action(
   int i;
   int stateno = pParser->yystack[pParser->yyidx].stateno;
  
-  if( stateno>=YY_MIN_REDUCE ) return stateno;
-  assert( stateno <= YY_SHIFT_COUNT );
-  do{
-    i = yy_shift_ofst[stateno];
-    if( i==YY_SHIFT_USE_DFLT ) return yy_default[stateno];
-    assert( iLookAhead!=YYNOCODE );
-    i += iLookAhead;
-    if( i<0 || i>=YY_ACTTAB_COUNT || yy_lookahead[i]!=iLookAhead ){
-      if( iLookAhead>0 ){
+  if( stateno>YY_SHIFT_COUNT
+   || (i = yy_shift_ofst[stateno])==YY_SHIFT_USE_DFLT ){
+    return yy_default[stateno];
+  }
+  assert( iLookAhead!=YYNOCODE );
+  i += iLookAhead;
+  if( i<0 || i>=YY_ACTTAB_COUNT || yy_lookahead[i]!=iLookAhead ){
+    if( iLookAhead>0 ){
 #ifdef YYFALLBACK
-        YYCODETYPE iFallback;            /* Fallback token */
-        if( iLookAhead<sizeof(yyFallback)/sizeof(yyFallback[0])
-               && (iFallback = yyFallback[iLookAhead])!=0 ){
+      YYCODETYPE iFallback;            /* Fallback token */
+      if( iLookAhead<sizeof(yyFallback)/sizeof(yyFallback[0])
+             && (iFallback = yyFallback[iLookAhead])!=0 ){
 #ifndef NDEBUG
-          if( yyTraceFILE ){
-            fprintf(yyTraceFILE, "%sFALLBACK %s => %s\n",
-               yyTracePrompt, yyTokenName[iLookAhead], yyTokenName[iFallback]);
-          }
-#endif
-          assert( yyFallback[iFallback]==0 ); /* Fallback loop must terminate */
-          iLookAhead = iFallback;
-          continue;
+        if( yyTraceFILE ){
+          fprintf(yyTraceFILE, "%sFALLBACK %s => %s\n",
+             yyTracePrompt, yyTokenName[iLookAhead], yyTokenName[iFallback]);
         }
+#endif
+        return yy_find_shift_action(pParser, iFallback);
+      }
 #endif
 #ifdef YYWILDCARD
-        {
-          int j = i - iLookAhead + YYWILDCARD;
-          if( 
+      {
+        int j = i - iLookAhead + YYWILDCARD;
+        if( 
 #if YY_SHIFT_MIN+YYWILDCARD<0
-            j>=0 &&
+          j>=0 &&
 #endif
 #if YY_SHIFT_MAX+YYWILDCARD>=YY_ACTTAB_COUNT
-            j<YY_ACTTAB_COUNT &&
+          j<YY_ACTTAB_COUNT &&
 #endif
-            yy_lookahead[j]==YYWILDCARD
-          ){
+          yy_lookahead[j]==YYWILDCARD
+        ){
 #ifndef NDEBUG
-            if( yyTraceFILE ){
-              fprintf(yyTraceFILE, "%sWILDCARD %s => %s\n",
-                 yyTracePrompt, yyTokenName[iLookAhead],
-                 yyTokenName[YYWILDCARD]);
-            }
-#endif /* NDEBUG */
-            return yy_action[j];
+          if( yyTraceFILE ){
+            fprintf(yyTraceFILE, "%sWILDCARD %s => %s\n",
+               yyTracePrompt, yyTokenName[iLookAhead], yyTokenName[YYWILDCARD]);
           }
+#endif /* NDEBUG */
+          return yy_action[j];
         }
-#endif /* YYWILDCARD */
       }
-      return yy_default[stateno];
-    }else{
-      return yy_action[i];
+#endif /* YYWILDCARD */
     }
-  }while(1);
+    return yy_default[stateno];
+  }else{
+    return yy_action[i];
+  }
 }
 
 /*
 ** Find the appropriate action for a parser given the non-terminal
 ** look-ahead token iLookAhead.
+**
+** If the look-ahead token is YYNOCODE, then check to see if the action is
+** independent of the look-ahead.  If it is, return the action, otherwise
+** return YY_NO_ACTION.
 */
 static int yy_find_reduce_action(
   int stateno,              /* Current state number */
@@ -821,30 +779,8 @@ static void yyStackOverflow(yyParser *yypParser, YYMINORTYPE *yypMinor){
    while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
    /* Here code is inserted which will execute if the parser
    ** stack every overflows */
-/******** Begin %stack_overflow code ******************************************/
-/******** End %stack_overflow code ********************************************/
    MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument var */
 }
-
-/*
-** Print tracing information for a SHIFT action
-*/
-#ifndef NDEBUG
-static void yyTraceShift(yyParser *yypParser, int yyNewState){
-  if( yyTraceFILE ){
-    if( yyNewState<YYNSTATE ){
-      fprintf(yyTraceFILE,"%sShift '%s', go to state %d\n",
-         yyTracePrompt,yyTokenName[yypParser->yystack[yypParser->yyidx].major],
-         yyNewState);
-    }else{
-      fprintf(yyTraceFILE,"%sShift '%s'\n",
-         yyTracePrompt,yyTokenName[yypParser->yystack[yypParser->yyidx].major]);
-    }
-  }
-}
-#else
-# define yyTraceShift(X,Y)
-#endif
 
 /*
 ** Perform a shift action.
@@ -880,7 +816,16 @@ static void yy_shift(
   yytos->stateno = (YYACTIONTYPE)yyNewState;
   yytos->major = (YYCODETYPE)yyMajor;
   yytos->minor = *yypMinor;
-  yyTraceShift(yypParser, yyNewState);
+#ifndef NDEBUG
+  if( yyTraceFILE && yypParser->yyidx>0 ){
+    int i;
+    fprintf(yyTraceFILE,"%sShift %d\n",yyTracePrompt,yyNewState);
+    fprintf(yyTraceFILE,"%sStack:",yyTracePrompt);
+    for(i=1; i<=yypParser->yyidx; i++)
+      fprintf(yyTraceFILE," %s",yyTokenName[yypParser->yystack[i].major]);
+    fprintf(yyTraceFILE,"\n");
+  }
+#endif
 }
 
 /* The following table contains information about every rule that
@@ -978,12 +923,28 @@ static void yy_reduce(
 #ifndef NDEBUG
   if( yyTraceFILE && yyruleno>=0 
         && yyruleno<(int)(sizeof(yyRuleName)/sizeof(yyRuleName[0])) ){
-    yysize = yyRuleInfo[yyruleno].nrhs;
-    fprintf(yyTraceFILE, "%sReduce [%s], go to state %d.\n", yyTracePrompt,
-      yyRuleName[yyruleno], yymsp[-yysize].stateno);
+    fprintf(yyTraceFILE, "%sReduce [%s].\n", yyTracePrompt,
+      yyRuleName[yyruleno]);
   }
 #endif /* NDEBUG */
+
+  /* Silence complaints from purify about yygotominor being uninitialized
+  ** in some cases when it is copied into the stack after the following
+  ** switch.  yygotominor is uninitialized when a rule reduces that does
+  ** not set the value of its left-hand side nonterminal.  Leaving the
+  ** value of the nonterminal uninitialized is utterly harmless as long
+  ** as the value is never used.  So really the only thing this code
+  ** accomplishes is to quieten purify.  
+  **
+  ** 2007-01-16:  The wireshark project (www.wireshark.org) reports that
+  ** without this code, their parser segfaults.  I'm not sure what there
+  ** parser is doing to make this happen.  This is the second bug report
+  ** from wireshark this week.  Clearly they are stressing Lemon in ways
+  ** that it has not been previously stressed...  (SQLite ticket #2172)
+  */
+  /*memset(&yygotominor, 0, sizeof(yygotominor));*/
   yygotominor = yyzerominor;
+
 
   switch( yyruleno ){
   /* Beginning here are the reduction cases.  A typical example
@@ -994,8 +955,8 @@ static void yy_reduce(
   **  #line <lineno> <thisfile>
   **     break;
   */
-/********** Begin reduce actions **********************************************/
       case 2: /* sortdecl ::= string SEMI_COLON sortdecl */
+#line 121 "MVSMParserGrammar.y"
 {
 	std::string str = yymsp[-2].minor.yy0->toString();
 	auto it = tree->domainNamesList.find(str);
@@ -1004,8 +965,10 @@ static void yy_reduce(
 	else
 		tree->domainNamesList.insert(yymsp[-2].minor.yy0->toString());
 }
+#line 969 "MVSMParserGrammar.c"
         break;
       case 4: /* sortdecl ::= string DOT */
+#line 132 "MVSMParserGrammar.y"
 {
 	std::string str = yymsp[-1].minor.yy0->toString();
 	auto it = tree->domainNamesList.find(str);
@@ -1014,8 +977,10 @@ static void yy_reduce(
 	else
 		tree->domainNamesList.insert(str);	
 }
+#line 981 "MVSMParserGrammar.c"
         break;
       case 9: /* object ::= variables COLON COLON string */
+#line 149 "MVSMParserGrammar.y"
 {
 	// if(tree->cdp == Tree::Current_Decl_Part::DECL_OBJECTS){
 		auto itr = tree->domainNamesList.find(yymsp[0].minor.yy0->toString());
@@ -1041,8 +1006,10 @@ static void yy_reduce(
 	
 	delete yymsp[-3].minor.yy7;
 }
+#line 1010 "MVSMParserGrammar.c"
         break;
       case 10: /* object ::= variable DOT DOT variable COLON COLON string */
+#line 175 "MVSMParserGrammar.y"
 {
 	auto itr = tree->domainNamesList.find(yymsp[0].minor.yy0->toString());
 	if(itr != tree->domainNamesList.end()){
@@ -1065,8 +1032,10 @@ static void yy_reduce(
 	
 	// delete Ve;
 }
+#line 1036 "MVSMParserGrammar.c"
         break;
       case 15: /* constant ::= string LBRACKET variables RBRACKET COLON COLON string */
+#line 206 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
@@ -1106,8 +1075,10 @@ static void yy_reduce(
 	delete va;
 	delete yymsp[-4].minor.yy7;
 }
+#line 1079 "MVSMParserGrammar.c"
         break;
       case 16: /* constant ::= string LBRACKET variables RBRACKET */
+#line 246 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
@@ -1133,8 +1104,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy7;
 	delete va;
 }
+#line 1108 "MVSMParserGrammar.c"
         break;
       case 17: /* constant ::= string */
+#line 272 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	va->setVar(yymsp[0].minor.yy0->toString());
@@ -1145,8 +1118,10 @@ static void yy_reduce(
 	
 	delete va;	
 }
+#line 1122 "MVSMParserGrammar.c"
         break;
       case 18: /* constant ::= string COLON COLON string */
+#line 283 "MVSMParserGrammar.y"
 {
 	Variable* va = new Variable;
 	std::map<int, Domain> posMap;
@@ -1172,8 +1147,10 @@ static void yy_reduce(
 	
 	delete va;	
 }
+#line 1151 "MVSMParserGrammar.c"
         break;
       case 19: /* prog ::= prog NEWLINE predicate */
+#line 310 "MVSMParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy16->needsToBeCompleted()){	
 		FactCompletion f(*yymsp[0].minor.yy16);
@@ -1183,8 +1160,10 @@ static void yy_reduce(
 			
 	delete yymsp[0].minor.yy16;
 }
+#line 1164 "MVSMParserGrammar.c"
         break;
       case 20: /* prog ::= predicate */
+#line 320 "MVSMParserGrammar.y"
 { 
 	if(yymsp[0].minor.yy16->needsToBeCompleted()){
 		FactCompletion f(*yymsp[0].minor.yy16);
@@ -1192,16 +1171,20 @@ static void yy_reduce(
 	}
 	delete yymsp[0].minor.yy16;
 }
+#line 1175 "MVSMParserGrammar.c"
         break;
       case 21: /* prog ::= prog NEWLINE rule */
       case 22: /* prog ::= rule */ yytestcase(yyruleno==22);
+#line 328 "MVSMParserGrammar.y"
 {
 	if((yymsp[0].minor.yy57->isHeadTop == false) && (yymsp[0].minor.yy57->toBeCompleted == true))
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(yymsp[0].minor.yy57->getHead().getVar(),*yymsp[0].minor.yy57));
 	delete yymsp[0].minor.yy57;
 }
+#line 1185 "MVSMParserGrammar.c"
         break;
       case 25: /* rule ::= REVERSE_IMPLICATION body DOT */
+#line 361 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;
@@ -1221,8 +1204,10 @@ static void yy_reduce(
 	}
 	delete yymsp[-1].minor.yy21;
 }
+#line 1208 "MVSMParserGrammar.c"
         break;
       case 26: /* rule ::= number REVERSE_IMPLICATION body */
+#line 382 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;
@@ -1264,8 +1249,10 @@ static void yy_reduce(
 	// std::cout<<yymsp[-2].minor.yy0->toString()<<SPACE<<"("<<yymsp[0].minor.yy21->toNNFString()<<")"<<"\n";
 	delete yymsp[0].minor.yy21;
 }
+#line 1253 "MVSMParserGrammar.c"
         break;
       case 27: /* rule ::= head DISJUNCTION bodydef DOT */
+#line 427 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;
@@ -1300,8 +1287,10 @@ static void yy_reduce(
 	delete yymsp[-3].minor.yy77;
 	delete yymsp[-1].minor.yy92;
 }
+#line 1291 "MVSMParserGrammar.c"
         break;
       case 28: /* rule ::= number head DISJUNCTION bodydef */
+#line 465 "MVSMParserGrammar.y"
 {
 	//Doing this 
 	yygotominor.yy57 = new RuleCompletion;
@@ -1356,8 +1345,10 @@ static void yy_reduce(
 	delete yymsp[-2].minor.yy77;
 	delete yymsp[0].minor.yy92;
 }
+#line 1349 "MVSMParserGrammar.c"
         break;
       case 29: /* rule ::= head REVERSE_IMPLICATION body DOT */
+#line 525 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 
@@ -1395,8 +1386,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy21;
 	delete yymsp[-3].minor.yy77;
 }
+#line 1390 "MVSMParserGrammar.c"
         break;
       case 30: /* rule ::= number head REVERSE_IMPLICATION body */
+#line 566 "MVSMParserGrammar.y"
 {
 	// RULE_COMPLETION_BH(yymsp[0].minor.yy21,yymsp[-2].minor.yy77);
 	// yygotominor.yy57 = new RuleCompletion(yymsp[-2].minor.yy77->getPredicate(),predList, resultMap, varMap);
@@ -1467,8 +1460,10 @@ static void yy_reduce(
 	delete yymsp[0].minor.yy21;
 	delete yymsp[-2].minor.yy77;
 }
+#line 1464 "MVSMParserGrammar.c"
         break;
       case 31: /* rule ::= number NEGATION NEGATION LBRACKET head REVERSE_IMPLICATION body RBRACKET */
+#line 640 "MVSMParserGrammar.y"
 {
 	yygotominor.yy57 = new RuleCompletion;
 	yygotominor.yy57->isHeadTop = true;	
@@ -1494,8 +1489,10 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy21;
 	delete yymsp[-3].minor.yy77;
 }
+#line 1493 "MVSMParserGrammar.c"
         break;
       case 32: /* rule ::= LPAREN head RPAREN REVERSE_IMPLICATION body DOT */
+#line 666 "MVSMParserGrammar.y"
 {
 	
 	if (yymsp[-4].minor.yy77->getPredicate().checkEquality() != 0){
@@ -1518,16 +1515,20 @@ static void yy_reduce(
 	delete yymsp[-1].minor.yy21;
 	delete yymsp[-4].minor.yy77;
 }
+#line 1519 "MVSMParserGrammar.c"
         break;
       case 33: /* body ::= body CONJUNCTION bodydef */
+#line 690 "MVSMParserGrammar.y"
 {
 	yygotominor.yy21 = yymsp[-2].minor.yy21;
 	yymsp[-2].minor.yy21->addPredicate(yymsp[0].minor.yy92->getPredicate());
 	yygotominor.yy21->appendStr(yymsp[0].minor.yy92->getPredicate(),false,false,true,tree->domainList);
 	delete yymsp[0].minor.yy92;
 }
+#line 1529 "MVSMParserGrammar.c"
         break;
       case 34: /* head ::= head DISJUNCTION bodydef */
+#line 697 "MVSMParserGrammar.y"
 {
 	yygotominor.yy77 = yymsp[-2].minor.yy77;
 	yymsp[-2].minor.yy77->addPredicate(yymsp[0].minor.yy92->getPredicate());
@@ -1535,16 +1536,20 @@ static void yy_reduce(
 	yygotominor.yy77->setDisjunction(true);
 	delete yymsp[0].minor.yy92;
 }
+#line 1540 "MVSMParserGrammar.c"
         break;
       case 35: /* head ::= bodydef */
+#line 705 "MVSMParserGrammar.y"
 {
 	yygotominor.yy77 = new Head(yymsp[0].minor.yy92->getPredicate());
 	// yygotominor.yy77->addPredicate(yymsp[0].minor.yy92->getPredicate());
 	yygotominor.yy77->appendStr(yymsp[0].minor.yy92->getPredicate().toString(tree->domainList),false,false,false);
 	delete yymsp[0].minor.yy92;
 }
+#line 1550 "MVSMParserGrammar.c"
         break;
       case 36: /* body ::= bodydef */
+#line 712 "MVSMParserGrammar.y"
 {
 	yygotominor.yy21 = new Body;
 	Predicate p = yymsp[0].minor.yy92->getPredicate();
@@ -1552,13 +1557,17 @@ static void yy_reduce(
 	yygotominor.yy21->appendStr(p,false,false,false,tree->domainList);
 	delete yymsp[0].minor.yy92;
 }
+#line 1561 "MVSMParserGrammar.c"
         break;
       case 37: /* bodydef ::= literal */
+#line 723 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy92 = yymsp[0].minor.yy92;
 }
+#line 1568 "MVSMParserGrammar.c"
         break;
       case 38: /* bodydef ::= NEGATION literal */
+#line 728 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy92 = yymsp[0].minor.yy92;
 	Predicate p = yygotominor.yy92->getPredicate();
@@ -1566,22 +1575,28 @@ static void yy_reduce(
 	yygotominor.yy92->addPredicate(p);
 	// yygotominor.yy92->getPredicate().setSingleNegation(true);
 }
+#line 1579 "MVSMParserGrammar.c"
         break;
       case 39: /* bodydef ::= NEGATION NEGATION literal */
+#line 737 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy92 = yymsp[0].minor.yy92;
 	tree->statHasDblNeg = true;
 	yygotominor.yy92->getPredicate().setDoubleNegation(true);
 }
+#line 1588 "MVSMParserGrammar.c"
         break;
       case 40: /* bodydef ::= LBRACKET NEGATION NEGATION literal RBRACKET */
+#line 746 "MVSMParserGrammar.y"
 {	
 	yygotominor.yy92 = yymsp[-1].minor.yy92;
 	tree->statHasDblNeg = true;
 	yygotominor.yy92->getPredicate().setDoubleNegation(true);
 }
+#line 1597 "MVSMParserGrammar.c"
         break;
       case 41: /* bodydef ::= string EQUAL string */
+#line 753 "MVSMParserGrammar.y"
 {
 	yygotominor.yy92 = new BodyDef;
 	auto itr = tree->variables.find(*(yymsp[-2].minor.yy0->token));
@@ -1613,8 +1628,10 @@ static void yy_reduce(
 		yygotominor.yy92->addPredicate(p);
 	}
 }
+#line 1632 "MVSMParserGrammar.c"
         break;
       case 42: /* bodydef ::= NEGATION string EQUAL string */
+#line 786 "MVSMParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	vars.push_back(yymsp[0].minor.yy0->toString());
@@ -1630,8 +1647,10 @@ static void yy_reduce(
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-2].minor.yy0->token));
 	}
 }
+#line 1651 "MVSMParserGrammar.c"
         break;
       case 43: /* bodydef ::= string NEGATION EQUAL string */
+#line 802 "MVSMParserGrammar.y"
 {
 	
 	/*check if yymsp[-3].minor.yy0 is declared in constant section
@@ -1647,8 +1666,10 @@ static void yy_reduce(
 	yygotominor.yy92 = new BodyDef;
 	yygotominor.yy92->addPredicate(p);
 }
+#line 1670 "MVSMParserGrammar.c"
         break;
       case 44: /* literal ::= string LBRACKET variables RBRACKET EQUAL variable */
+#line 821 "MVSMParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-3].minor.yy7)
@@ -1670,8 +1691,10 @@ static void yy_reduce(
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-5].minor.yy0->token));
 	}
 }
+#line 1695 "MVSMParserGrammar.c"
         break;
       case 45: /* literal ::= string LBRACKET variables RBRACKET */
+#line 843 "MVSMParserGrammar.y"
 {
 	std::vector<std::string> vars;
 	for(auto& v : *yymsp[-1].minor.yy7)
@@ -1692,8 +1715,10 @@ static void yy_reduce(
 		throw invalid_arguments(expectedArgs, vars.size(), *(yymsp[-3].minor.yy0->token));
 	}	
 }
+#line 1719 "MVSMParserGrammar.c"
         break;
       case 46: /* literal ::= variable */
+#line 864 "MVSMParserGrammar.y"
 {
 	Predicate p(yymsp[0].minor.yy0->token);
 	auto itr = tree->variables.find(yymsp[0].minor.yy0->toString());
@@ -1702,8 +1727,10 @@ static void yy_reduce(
 	yygotominor.yy92->setHasVariables();
 	yygotominor.yy92->addPredicate(p);
 }
+#line 1731 "MVSMParserGrammar.c"
         break;
       case 47: /* literal ::= string EQUAL COUNT LPAREN aggregateCum RPAREN */
+#line 873 "MVSMParserGrammar.y"
 {
 	std::string s = (*yymsp[-5].minor.yy0).toString();
 	Util::toUpper(s);
@@ -1714,8 +1741,10 @@ static void yy_reduce(
 	yygotominor.yy92->addPredicate(p);
 	delete yymsp[-1].minor.yy0;
 }
+#line 1745 "MVSMParserGrammar.c"
         break;
       case 48: /* literal ::= string EQUAL SUM LPAREN aggregateCum RPAREN */
+#line 884 "MVSMParserGrammar.y"
 {
 	std::string s = (*yymsp[-5].minor.yy0).toString();
 	Util::toUpper(s);
@@ -1726,8 +1755,10 @@ static void yy_reduce(
 	yygotominor.yy92->addPredicate(p);
 	delete yymsp[-1].minor.yy0;
 }
+#line 1759 "MVSMParserGrammar.c"
         break;
       case 49: /* aggregate ::= string COLON literal */
+#line 896 "MVSMParserGrammar.y"
 {
 	yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token));
 	std::string s1 = yygotominor.yy0->toString();
@@ -1736,8 +1767,10 @@ static void yy_reduce(
 	yygotominor.yy0->modifyToken(s1);
 	delete yymsp[0].minor.yy92;
 }
+#line 1771 "MVSMParserGrammar.c"
         break;
       case 50: /* aggregate ::= number COLON literal */
+#line 905 "MVSMParserGrammar.y"
 {
 	yygotominor.yy0 = new Token(*(yymsp[-2].minor.yy0->token));
 	std::string s1 = yygotominor.yy0->toString();
@@ -1745,8 +1778,10 @@ static void yy_reduce(
 	yygotominor.yy0->modifyToken(s1);
 	delete yymsp[0].minor.yy92;
 }
+#line 1782 "MVSMParserGrammar.c"
         break;
       case 51: /* aggregate ::= string COMMA literal COLON literal */
+#line 913 "MVSMParserGrammar.y"
 {
 	yygotominor.yy0 = new Token(*(yymsp[-4].minor.yy0->token));
 	std::string s1 = yygotominor.yy0->toString();
@@ -1754,8 +1789,10 @@ static void yy_reduce(
 	s1 = s1 + "," + yymsp[-2].minor.yy92->toString(tree->domainList) + ":" + yymsp[0].minor.yy92->toString(tree->domainList);
 	yygotominor.yy0->modifyToken(s1);
 }
+#line 1793 "MVSMParserGrammar.c"
         break;
       case 52: /* aggregate ::= number COMMA literal COLON literal */
+#line 922 "MVSMParserGrammar.y"
 {
 	yygotominor.yy0 = new Token(*(yymsp[-4].minor.yy0->token));
 	std::string s1 = (*yymsp[-4].minor.yy0).toString();
@@ -1763,21 +1800,27 @@ static void yy_reduce(
 	s1 = s1 + "," + yymsp[-2].minor.yy92->toString(tree->domainList)+ ":" + yymsp[0].minor.yy92->toString(tree->domainList);
 	yygotominor.yy0->modifyToken(s1);
 }
+#line 1804 "MVSMParserGrammar.c"
         break;
       case 53: /* aggregateCum ::= aggregate */
+#line 930 "MVSMParserGrammar.y"
 {
 	yygotominor.yy0 = new Token(*(yymsp[0].minor.yy0->token));
 	delete yymsp[0].minor.yy0;
 }
+#line 1812 "MVSMParserGrammar.c"
         break;
       case 54: /* aggregateCum ::= aggregateCum SEMI_COLON aggregate */
+#line 935 "MVSMParserGrammar.y"
 {
 	yygotominor.yy0 = yymsp[-2].minor.yy0;
 	yygotominor.yy0->modifyToken(yymsp[-2].minor.yy0->toString() + ";" + yymsp[0].minor.yy0->toString());
 	delete yymsp[0].minor.yy0;
 }
+#line 1821 "MVSMParserGrammar.c"
         break;
       case 55: /* predicate ::= literal DOT */
+#line 942 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[-1].minor.yy92->getPredicate();
@@ -1792,7 +1835,9 @@ static void yy_reduce(
 	}
 
 	std::string s1,s2;
-	
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+		cout<<yygotominor.yy16->toString(tree->domainList) + ".\n";
+	}
 
 	if(tree->outputType == OutputType::OUTPUT_ASP){
 		s2 = yygotominor.yy16->getExtra(tree->variables);
@@ -1815,8 +1860,10 @@ static void yy_reduce(
 
 	delete yymsp[-1].minor.yy92;
 }
+#line 1864 "MVSMParserGrammar.c"
         break;
       case 56: /* predicate ::= number literal */
+#line 982 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[0].minor.yy92->getPredicate();
@@ -1877,8 +1924,10 @@ static void yy_reduce(
 	}	
 	delete yymsp[0].minor.yy92;
 }
+#line 1928 "MVSMParserGrammar.c"
         break;
       case 57: /* predicate ::= number NEGATION NEGATION literal */
+#line 1043 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[0].minor.yy92->getPredicate();
@@ -1923,8 +1972,10 @@ static void yy_reduce(
 	
 	delete yymsp[0].minor.yy92;
 }
+#line 1976 "MVSMParserGrammar.c"
         break;
       case 58: /* predicate ::= number NEGATION literal */
+#line 1088 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[0].minor.yy92->getPredicate();
@@ -1971,8 +2022,10 @@ static void yy_reduce(
 	
 	delete yymsp[0].minor.yy92;
 }
+#line 2026 "MVSMParserGrammar.c"
         break;
       case 59: /* predicate ::= NEGATION NEGATION literal DOT */
+#line 1135 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[-1].minor.yy92->getPredicate();
@@ -1991,26 +2044,35 @@ static void yy_reduce(
 	
 	delete yymsp[-1].minor.yy92;	
 }
+#line 2048 "MVSMParserGrammar.c"
         break;
       case 60: /* variables ::= variable */
+#line 1155 "MVSMParserGrammar.y"
 {
 	yygotominor.yy7 = new std::vector<std::string*>();	
 	yygotominor.yy7->push_back(yymsp[0].minor.yy0->token);
 }
+#line 2056 "MVSMParserGrammar.c"
         break;
       case 61: /* variables ::= variables COMMA variable */
+#line 1160 "MVSMParserGrammar.y"
 {
 	yygotominor.yy7 = yymsp[-2].minor.yy7;
 	yymsp[-2].minor.yy7->push_back(yymsp[0].minor.yy0->token);
 }
+#line 2064 "MVSMParserGrammar.c"
         break;
       case 62: /* variable ::= string */
       case 63: /* variable ::= number */ yytestcase(yyruleno==63);
       case 64: /* string ::= STRING */ yytestcase(yyruleno==64);
+#line 1165 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
+#line 2071 "MVSMParserGrammar.c"
         break;
       case 65: /* number ::= NUMBER */
+#line 1173 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
+#line 2076 "MVSMParserGrammar.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -2027,16 +2089,14 @@ static void yy_reduce(
       /* (23) prog ::= prog NEWLINE */ yytestcase(yyruleno==23);
       /* (24) prog ::= */ yytestcase(yyruleno==24);
         break;
-/********** End reduce actions ************************************************/
   };
-  assert( yyruleno>=0 && yyruleno<sizeof(yyRuleInfo)/sizeof(yyRuleInfo[0]) );
   yygoto = yyRuleInfo[yyruleno].lhs;
   yysize = yyRuleInfo[yyruleno].nrhs;
   yypParser->yyidx -= yysize;
   yyact = yy_find_reduce_action(yymsp[-yysize].stateno,(YYCODETYPE)yygoto);
-  if( yyact <= YY_MAX_SHIFTREDUCE ){
-    if( yyact>YY_MAX_SHIFT ) yyact += YY_MIN_REDUCE - YY_MIN_SHIFTREDUCE;
-    /* If the reduce action popped at least
+  if( yyact < YYNSTATE ){
+#ifdef NDEBUG
+    /* If we are not debugging and the reduce action popped at least
     ** one element off the stack, then we can push the new element back
     ** onto the stack here, and skip the stack overflow test in yy_shift().
     ** That gives a significant speed improvement. */
@@ -2046,12 +2106,13 @@ static void yy_reduce(
       yymsp->stateno = (YYACTIONTYPE)yyact;
       yymsp->major = (YYCODETYPE)yygoto;
       yymsp->minor = yygotominor;
-      yyTraceShift(yypParser, yyact);
-    }else{
+    }else
+#endif
+    {
       yy_shift(yypParser,yyact,yygoto,&yygotominor);
     }
   }else{
-    assert( yyact == YY_ACCEPT_ACTION );
+    assert( yyact == YYNSTATE + YYNRULE + 1 );
     yy_accept(yypParser);
   }
 }
@@ -2072,11 +2133,11 @@ static void yy_parse_failed(
   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
-/************ Begin %parse_failure code ***************************************/
+#line 66 "MVSMParserGrammar.y"
 
     std::cout<<"Giving up.Parser is lost...\n";
 
-/************ End %parse_failure code *****************************************/
+#line 2141 "MVSMParserGrammar.c"
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 #endif /* YYNOERRORRECOVERY */
@@ -2091,7 +2152,7 @@ static void yy_syntax_error(
 ){
   MVSMParserGrammarARG_FETCH;
 #define TOKEN (yyminor.yy0)
-/************ Begin %syntax_error code ****************************************/
+#line 71 "MVSMParserGrammar.y"
 
 	 // std::cout << ;
     int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
@@ -2106,7 +2167,7 @@ static void yy_syntax_error(
     }
     throw syntax_exception("Parsing Failed. Unexpected sequence of tokens\n");
     
-/************ End %syntax_error code ******************************************/
+#line 2171 "MVSMParserGrammar.c"
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
@@ -2125,13 +2186,13 @@ static void yy_accept(
   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
-/*********** Begin %parse_accept code *****************************************/
+#line 58 "MVSMParserGrammar.y"
 
 	if (tree->outputType == OutputType::OUTPUT_ASP)
 		std::cout<<("%parsing complete!\n");
 	else
     	std::cout<<("//parsing complete!\n");
-/*********** End %parse_accept code *******************************************/
+#line 2196 "MVSMParserGrammar.c"
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
@@ -2162,9 +2223,7 @@ void MVSMParserGrammar(
 ){
   YYMINORTYPE yyminorunion;
   int yyact;            /* The parser action. */
-#if !defined(YYERRORSYMBOL) && !defined(YYNOERRORRECOVERY)
   int yyendofinput;     /* True if we are at the end of input */
-#endif
 #ifdef YYERRORSYMBOL
   int yyerrorhit = 0;   /* True if yymajor has invoked an error */
 #endif
@@ -2185,34 +2244,26 @@ void MVSMParserGrammar(
     yypParser->yyerrcnt = -1;
     yypParser->yystack[0].stateno = 0;
     yypParser->yystack[0].major = 0;
-#ifndef NDEBUG
-    if( yyTraceFILE ){
-      fprintf(yyTraceFILE,"%sInitialize. Empty stack. State 0\n",
-              yyTracePrompt);
-    }
-#endif
   }
   yyminorunion.yy0 = yyminor;
-#if !defined(YYERRORSYMBOL) && !defined(YYNOERRORRECOVERY)
   yyendofinput = (yymajor==0);
-#endif
   MVSMParserGrammarARG_STORE;
 
 #ifndef NDEBUG
   if( yyTraceFILE ){
-    fprintf(yyTraceFILE,"%sInput '%s'\n",yyTracePrompt,yyTokenName[yymajor]);
+    fprintf(yyTraceFILE,"%sInput %s\n",yyTracePrompt,yyTokenName[yymajor]);
   }
 #endif
 
   do{
     yyact = yy_find_shift_action(yypParser,(YYCODETYPE)yymajor);
-    if( yyact <= YY_MAX_SHIFTREDUCE ){
-      if( yyact > YY_MAX_SHIFT ) yyact += YY_MIN_REDUCE - YY_MIN_SHIFTREDUCE;
+    if( yyact<YYNSTATE ){
+      assert( !yyendofinput );  /* Impossible to shift the $ token */
       yy_shift(yypParser,yyact,yymajor,&yyminorunion);
       yypParser->yyerrcnt--;
       yymajor = YYNOCODE;
-    }else if( yyact <= YY_MAX_REDUCE ){
-      yy_reduce(yypParser,yyact-YY_MIN_REDUCE);
+    }else if( yyact < YYNSTATE + YYNRULE ){
+      yy_reduce(yypParser,yyact-YYNSTATE);
     }else{
       assert( yyact == YY_ERROR_ACTION );
 #ifdef YYERRORSYMBOL
@@ -2262,7 +2313,7 @@ void MVSMParserGrammar(
           yymx != YYERRORSYMBOL &&
           (yyact = yy_find_reduce_action(
                         yypParser->yystack[yypParser->yyidx].stateno,
-                        YYERRORSYMBOL)) >= YY_MIN_REDUCE
+                        YYERRORSYMBOL)) >= YYNSTATE
         ){
           yy_pop_parser_stack(yypParser);
         }
@@ -2312,15 +2363,5 @@ void MVSMParserGrammar(
 #endif
     }
   }while( yymajor!=YYNOCODE && yypParser->yyidx>=0 );
-#ifndef NDEBUG
-  if( yyTraceFILE ){
-    int i;
-    fprintf(yyTraceFILE,"%sReturn. Stack=",yyTracePrompt);
-    for(i=1; i<=yypParser->yyidx; i++)
-      fprintf(yyTraceFILE,"%c%s", i==1 ? '[' : ' ', 
-              yyTokenName[yypParser->yystack[i].major]);
-    fprintf(yyTraceFILE,"]\n");
-  }
-#endif
   return;
 }
