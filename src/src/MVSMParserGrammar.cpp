@@ -1892,11 +1892,18 @@ static void yy_reduce(
 			uniqueSetStr.pop_back();
 			uniqueSetStr = "," + uniqueSetStr; 
 		}
+		std::string temp  = yygotominor.yy16->getExtra(tree->variables);	
+		if(temp.length() > 0){
+			temp = ", "+ temp;
+		}
+		
+		
 		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(yymsp[-1].minor.yy0->toString())* 1)) + uniqueSetStr + ")";
 		std::cout << unsatString
 					<< " :- "
 					<< "not "
 					<< yygotominor.yy16->toString(tree->domainList)
+					<< temp
 					<<LanguageConstants::LINE_END
 					<<"\n"; 
 
@@ -1904,12 +1911,14 @@ static void yy_reduce(
 					<< " :- "
 					<< "not "
 					<< unsatString
-					<<LanguageConstants::LINE_END
-					<<"\n"; 
+					<< temp
+					<< LanguageConstants::LINE_END
+					<< "\n"; 
 
 	
 		std::cout   << " :~ "
 					<< unsatString
+					<< temp
 					<< ". "
 					<< "["
 					<< std::to_string((int)(std::stof(yymsp[-1].minor.yy0->toString())* 1))
@@ -1924,10 +1933,10 @@ static void yy_reduce(
 	}	
 	delete yymsp[0].minor.yy92;
 }
-#line 1928 "MVSMParserGrammar.c"
+#line 1937 "MVSMParserGrammar.c"
         break;
       case 57: /* predicate ::= number NEGATION NEGATION literal */
-#line 1043 "MVSMParserGrammar.y"
+#line 1052 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[0].minor.yy92->getPredicate();
@@ -1938,18 +1947,37 @@ static void yy_reduce(
 		cout<<yygotominor.yy16->toString(yymsp[-3].minor.yy0->toString()+SPACE, false);	
 	}
 	else if(tree->outputType == OutputType::OUTPUT_ASP){
-		std::string str = yygotominor.yy16->toString(":~ not ", false);
-		std::string temp  = yygotominor.yy16->getExtra(tree->variables);	
-		if(temp.length() > 0)
-			str += ",";
-		str += temp;
-		std::string constants = yygotominor.yy16->getExtraConstants();
-		if (constants.length() > 0)
-		{
-			constants = "," + constants; 
-		}
+		// std::string str = yygotominor.yy16->toString(":~ not ", false);
+		// std::string temp  = yygotominor.yy16->getExtra(tree->variables);	
+		// if(temp.length() > 0)
+		// 	str += ",";
+		// str += temp;
+		// std::string constants = yygotominor.yy16->getExtraConstants();
+		// if (constants.length() > 0)
+		// {
+		// 	constants = "," + constants; 
+		// }
 
-		std::set<std::string> uniqueSet = tree->findVariables(str);
+		// std::set<std::string> uniqueSet = tree->findVariables(str);
+		// std::string uniqueSetStr;
+		// for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
+		// 	uniqueSetStr += *itr + ",";
+		// }
+		// if (uniqueSetStr.length() > 0)
+		// {
+		// 	uniqueSetStr.pop_back();
+		// 	uniqueSetStr = "," + uniqueSetStr; 
+		// }
+
+		// str += LanguageConstants::LINE_END;
+		// str += " [" + 
+		// 		std::to_string((int)(std::stof(yymsp[-3].minor.yy0->toString())* 1)) + 
+		// 		"," + 
+		// 		std::to_string(tree->weak_constraint_counter++) + 
+		// 		constants + 
+		// 		"]\n";
+		// cout<<str;
+		std::set<std::string> uniqueSet = tree->findVariables(yygotominor.yy16->toString(tree->domainList));
 		std::string uniqueSetStr;
 		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
 			uniqueSetStr += *itr + ",";
@@ -1959,23 +1987,52 @@ static void yy_reduce(
 			uniqueSetStr.pop_back();
 			uniqueSetStr = "," + uniqueSetStr; 
 		}
+		std::string temp  = yygotominor.yy16->getExtra(tree->variables);	
+		if(temp.length() > 0){
+			temp = ", "+ temp;
+		}
+		
+		
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(yymsp[-3].minor.yy0->toString())* 1)) + uniqueSetStr + ")";
+		std::cout << unsatString
+					<< " :- "
+					<< "not "
+					<< yygotominor.yy16->toString(tree->domainList)
+					<< temp
+					<<LanguageConstants::LINE_END
+					<<"\n"; 
 
-		str += LanguageConstants::LINE_END;
-		str += " [" + 
-				std::to_string((int)(std::stof(yymsp[-3].minor.yy0->toString())* 1)) + 
-				"," + 
-				std::to_string(tree->weak_constraint_counter++) + 
-				constants + 
-				"]\n";
-		cout<<str;
+		std::cout << "not not "
+					<< yygotominor.yy16->toString(tree->domainList)
+					<< " :- "
+					<< "not "
+					<< unsatString
+					<< temp
+					<< LanguageConstants::LINE_END
+					<< "\n"; 
+
+	
+		std::cout   << " :~ "
+					<< unsatString
+					<< temp
+					<< ". "
+					<< "["
+					<< std::to_string((int)(std::stof(yymsp[-3].minor.yy0->toString())* 1))
+					<<","
+					<< tree->weak_constraint_counter
+					<< uniqueSetStr
+					<< "]"
+					<<"\n";
+
+		tree->weak_constraint_counter++; 
 	}
 	
 	delete yymsp[0].minor.yy92;
 }
-#line 1976 "MVSMParserGrammar.c"
+#line 2033 "MVSMParserGrammar.c"
         break;
       case 58: /* predicate ::= number NEGATION literal */
-#line 1088 "MVSMParserGrammar.y"
+#line 1145 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[0].minor.yy92->getPredicate();
@@ -1985,14 +2042,20 @@ static void yy_reduce(
 		cout<<yygotominor.yy16->toString(yymsp[-2].minor.yy0->toString()+SPACE, false);
 	}
 	else if(tree->outputType == OutputType::OUTPUT_ASP){
-		std::string str = yygotominor.yy16->toString(":~ ", false);		
+		std::string str = yygotominor.yy16->toString(":~ ", false);	
+
 		std::string temp  = yygotominor.yy16->getExtra(tree->variables);	
-		if(temp.length() > 0)
-			str += ",";
+		if(temp.length() > 0){
+			// temp.pop_back();
+			temp = ", "+ temp;
+		}
+
+		// std::string temp  = yygotominor.yy16->getExtra(tree->variables);	
+		// if(temp.length() > 0)
+		// 	str += ",";
 
 		std::string constants = yygotominor.yy16->getExtraConstants();
-		if (constants.length() > 0)
-		{
+		if (constants.length() > 0){
 			constants = "," + constants; 
 		}
 
@@ -2001,8 +2064,7 @@ static void yy_reduce(
 		for(auto itr = uniqueSet.begin(); itr != uniqueSet.end(); ++itr){
 			uniqueSetStr += *itr + ",";
 		}
-		if (uniqueSetStr.length() > 0)
-		{
+		if (uniqueSetStr.length() > 0){
 			uniqueSetStr.pop_back();
 			uniqueSetStr = "," + uniqueSetStr; 
 		}
@@ -2010,22 +2072,55 @@ static void yy_reduce(
 
 
 
-		str += " [" + 
-		std::to_string((int)(std::stof(yymsp[-2].minor.yy0->toString())* 1)) + 
-		"," + 
-		std::to_string(tree->weak_constraint_counter++) + 
-		constants + 
-		"]\n";
-		cout<<str;
+		// str += " [" + 
+		// std::to_string((int)(std::stof(yymsp[-2].minor.yy0->toString())* 1)) + 
+		// "," + 
+		// std::to_string(tree->weak_constraint_counter++) + 
+		// constants + 
+		// "]\n";
+
+		string unsatString = "unsat(" + std::to_string(tree->weak_constraint_counter) + ",0," + std::to_string((int)(std::stof(yymsp[-2].minor.yy0->toString())* 1)) + uniqueSetStr + ")";
+		std::cout << unsatString
+					<< " :- "
+					<< "not not "
+					<< yygotominor.yy16->toString(tree->domainList)
+					<< temp
+					<<LanguageConstants::LINE_END
+					<<"\n"; 
+
+		std::cout << yygotominor.yy16->toString(tree->domainList)
+					<< " :- "
+					<< "not "
+					<< unsatString
+					<< temp
+					<< LanguageConstants::LINE_END
+					<< "\n"; 
+
+	
+		std::cout   << " :~ "
+					<< unsatString
+					<< temp
+					<< ". "
+					<< "["
+					<< std::to_string((int)(std::stof(yymsp[-2].minor.yy0->toString())* 1))
+					<<","
+					<< tree->weak_constraint_counter
+					<< uniqueSetStr
+					<< "]"
+					<<"\n";
+
+		tree->weak_constraint_counter++; 
+
+		// cout<<str;
 	}
 
 	
 	delete yymsp[0].minor.yy92;
 }
-#line 2026 "MVSMParserGrammar.c"
+#line 2121 "MVSMParserGrammar.c"
         break;
       case 59: /* predicate ::= NEGATION NEGATION literal DOT */
-#line 1135 "MVSMParserGrammar.y"
+#line 1230 "MVSMParserGrammar.y"
 {
 	yygotominor.yy16 = new Predicate;
 	*yygotominor.yy16 = yymsp[-1].minor.yy92->getPredicate();
@@ -2044,35 +2139,35 @@ static void yy_reduce(
 	
 	delete yymsp[-1].minor.yy92;	
 }
-#line 2048 "MVSMParserGrammar.c"
+#line 2143 "MVSMParserGrammar.c"
         break;
       case 60: /* variables ::= variable */
-#line 1155 "MVSMParserGrammar.y"
+#line 1250 "MVSMParserGrammar.y"
 {
 	yygotominor.yy7 = new std::vector<std::string*>();	
 	yygotominor.yy7->push_back(yymsp[0].minor.yy0->token);
 }
-#line 2056 "MVSMParserGrammar.c"
+#line 2151 "MVSMParserGrammar.c"
         break;
       case 61: /* variables ::= variables COMMA variable */
-#line 1160 "MVSMParserGrammar.y"
+#line 1255 "MVSMParserGrammar.y"
 {
 	yygotominor.yy7 = yymsp[-2].minor.yy7;
 	yymsp[-2].minor.yy7->push_back(yymsp[0].minor.yy0->token);
 }
-#line 2064 "MVSMParserGrammar.c"
+#line 2159 "MVSMParserGrammar.c"
         break;
       case 62: /* variable ::= string */
       case 63: /* variable ::= number */ yytestcase(yyruleno==63);
       case 64: /* string ::= STRING */ yytestcase(yyruleno==64);
-#line 1165 "MVSMParserGrammar.y"
+#line 1260 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0;}
-#line 2071 "MVSMParserGrammar.c"
+#line 2166 "MVSMParserGrammar.c"
         break;
       case 65: /* number ::= NUMBER */
-#line 1173 "MVSMParserGrammar.y"
+#line 1268 "MVSMParserGrammar.y"
 { yygotominor.yy0=yymsp[0].minor.yy0; }
-#line 2076 "MVSMParserGrammar.c"
+#line 2171 "MVSMParserGrammar.c"
         break;
       default:
       /* (0) start ::= prog */ yytestcase(yyruleno==0);
@@ -2137,7 +2232,7 @@ static void yy_parse_failed(
 
     std::cout<<"Giving up.Parser is lost...\n";
 
-#line 2141 "MVSMParserGrammar.c"
+#line 2236 "MVSMParserGrammar.c"
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 #endif /* YYNOERRORRECOVERY */
@@ -2167,7 +2262,7 @@ static void yy_syntax_error(
     }
     throw syntax_exception("Parsing Failed. Unexpected sequence of tokens\n");
     
-#line 2171 "MVSMParserGrammar.c"
+#line 2266 "MVSMParserGrammar.c"
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
@@ -2192,7 +2287,7 @@ static void yy_accept(
 		std::cout<<("%parsing complete!\n");
 	else
     	std::cout<<("//parsing complete!\n");
-#line 2196 "MVSMParserGrammar.c"
+#line 2291 "MVSMParserGrammar.c"
   MVSMParserGrammarARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
