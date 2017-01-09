@@ -206,6 +206,7 @@ int main(int argc, char **argv){
 						trim(newStr);
 						newStr.pop_back();
 
+						string oldVars = vars;
 						vars = ",0,"+ to_string(weight) + vars ;
 
 
@@ -214,7 +215,7 @@ int main(int argc, char **argv){
 						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
 						
 						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
-						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string(weight) + "@0,"+ to_string(unsatcount)+vars +"]\n";
+						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string(weight) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
 
 
 						cout<<tempstr;
@@ -242,11 +243,12 @@ int main(int argc, char **argv){
 							vars = "," + vars;
 						}
 
+						string oldVars = vars;
 						vars = ",1" + vars ;
 
 						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
 											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
-											":~ unsat(" + to_string(unsatcount) +vars+"). [1@1," + to_string(unsatcount) + vars+ "]";
+											":~ unsat(" + to_string(unsatcount) +vars+"). [1@1," + to_string(unsatcount) + oldVars + "]";
 								unsatcount++;
 						cout << tempstr + "\n";
 					}
@@ -304,12 +306,13 @@ int main(int argc, char **argv){
 					if(issoft) probString += ",0,"+to_string(weight);
 					else probString += ",1";
 
+					string oldVars = vars;
 					vars = probString + vars;
 
 					if(splitVecSpace.size() == 1){
 						//W :- B
 
-						tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;
+						tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 
 					}
 					// Hard rules/constraints are ignored.
@@ -317,7 +320,7 @@ int main(int argc, char **argv){
 						if(newStr.empty()){
 							//if soft rule translate it irrespective of the mode.
 							if(issoft || (!issoft && mode == 0))
-								tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ vars +"]\n" ;
+								tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 							else{
 								tempstr = str + "\n";
 							}
@@ -325,7 +328,7 @@ int main(int argc, char **argv){
 						else if(issoft || (!issoft && mode == 0)){
 							//Soft rules are translated irespective of the mode
 							//Hard rules are translated only in mode 0
-							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+vars +"]\n";
+							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+ oldVars +"]\n";
 						}
 						else if(!issoft && mode == 1){
 							//Hard rules are translated only in mode 0
