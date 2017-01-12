@@ -270,9 +270,12 @@ int main(int argc, char **argv){
 					string tempstr;
 					string weightString;
 					set<string> s;	
-					bool issoft = false;				
+					bool issoft = false;	
+					std::string::size_type sz;			
 					try{
-						weight = (int)(stof(splitVecSpace[0]));
+						weight = (int)(stof(splitVecSpace[0], &sz));
+						if(sz != splitVecSpace[0].length())
+							throw std::invalid_argument( "the number is not a weight" );;
 						weightString = to_string(weight) + "@0";
 						issoft = true;
 						s = findFreeVariables(newStr, splitVec[1]);
