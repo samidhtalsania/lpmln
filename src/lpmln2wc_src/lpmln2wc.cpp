@@ -91,8 +91,12 @@ set<string> findVariables(const string& head){
 set<string> findFreeVariables(const string& head,const string& body){
 	set<string> s = findVariables(head);
 	set<string> s1 = findVariables(body);	
-	s.insert(s1.begin(), s1.end());
-	return s;
+	set<string> intersect;
+	set_intersection(s.begin(), s.end(), s1.begin(), s1.end(),inserter(intersect, intersect.begin()));
+	// s.insert(s1.begin(), s1.end());
+	return intersect;
+	// s.insert(s1.begin(), s1.end());
+	// return s;
 }
 
 
@@ -181,8 +185,9 @@ int main(int argc, char **argv){
 					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
 					//Process soft rules of form W H.
 					try{
-						float floatVal = stof(splitVecSpace[0]); 
-						if(isinf(floatVal) || isnan(floatVal)) throw std::runtime_error("inf/nan error");
+						std::string::size_type sz;
+						float floatVal = stof(splitVecSpace[0],&sz); 
+						if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) throw std::runtime_error("inf/nan error");
 						
 						weight = (int)floatVal;
 						
