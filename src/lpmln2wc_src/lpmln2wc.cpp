@@ -36,9 +36,17 @@ set<string> findVariables(const string& head){
 			stack.push(0);
 		}
 
-		else if(head.at(i) == '#'){
+		else if(head.at(i) == '#' || head.at(i) == '{'){
 			while(head.at(i) != '}')
 				i++;
+			i++;
+		}
+
+		else if(head.at(i) == ':'){
+			while(head.at(i) != ',' && head.at(i) != ';' && head.at(i) != '.' && head.at(i) != '-'){
+				i++;
+				if(i >= head.length()) break;
+			}
 			i++;
 		}
 
@@ -51,7 +59,8 @@ set<string> findVariables(const string& head){
 				(int)head.at(i) <= 90 && // Z
 				( 	(int)head.at(i-1) == 44 || //comma
 					(int) head.at(i-1) == 40 ||  // opening paren
-					(int) head.at(i-1) == 32 )) { //space 
+					(int) head.at(i-1) == 32 )
+				) { //space 
 				
 				while(true){
 					
@@ -91,12 +100,12 @@ set<string> findVariables(const string& head){
 set<string> findFreeVariables(const string& head,const string& body){
 	set<string> s = findVariables(head);
 	set<string> s1 = findVariables(body);	
-	set<string> intersect;
-	set_intersection(s.begin(), s.end(), s1.begin(), s1.end(),inserter(intersect, intersect.begin()));
-	// s.insert(s1.begin(), s1.end());
-	return intersect;
-	// s.insert(s1.begin(), s1.end());
-	// return s;
+	// set<string> intersect;
+	// set_intersection(s.begin(), s.end(), s1.begin(), s1.end(),inserter(intersect, intersect.begin()));
+	s.insert(s1.begin(), s1.end());
+	// return intersect;
+	s.insert(s1.begin(), s1.end());
+	return s;
 }
 
 
@@ -276,11 +285,14 @@ int main(int argc, char **argv){
 					string weightString;
 					set<string> s;	
 					bool issoft = false;	
-					std::string::size_type sz;			
+								
 					try{
-						weight = (int)(stof(splitVecSpace[0], &sz));
-						if(sz != splitVecSpace[0].length())
-							throw std::invalid_argument( "the number is not a weight" );;
+						std::string::size_type sz;
+						float floatVal = stof(splitVecSpace[0],&sz); 
+						if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) throw std::runtime_error("inf/nan error");
+						weight = (int)(floatVal);
+						// if(sz != splitVecSpace[0].length())
+						// 	throw std::invalid_argument( "the number is not a weight" );;
 						weightString = to_string(weight) + "@0";
 						issoft = true;
 						s = findFreeVariables(newStr, splitVec[1]);
