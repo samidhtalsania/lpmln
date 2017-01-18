@@ -18,6 +18,9 @@ using namespace std;
 using namespace boost;
 namespace io = boost::iostreams; 
 
+#define global 0
+#define local 1
+
 //build
 //g++ -g -std=c++11 lpmln2wc.cpp -o lpmln2wc -L /usr/lib -lboost_regex
 
@@ -28,7 +31,12 @@ set<string> findFreeVariables(const string&, const string&);
 
 set<string> findVariables(const string& head){
 	
-	set<string> s;
+	set<string> sGlobal;
+	set<string> sLocal;
+	set<string> result;
+
+	//switch
+	int area = global;
 
 	stack<int> stack;
 	for(unsigned int i=0;i<head.length();i++){
@@ -39,6 +47,7 @@ set<string> findVariables(const string& head){
 		else if(head.at(i) == '#' || head.at(i) == '{'){
 			while(head.at(i) != '}')
 				i++;
+			// area = local;
 			i++;
 		}
 
@@ -46,6 +55,7 @@ set<string> findVariables(const string& head){
 			while(head.at(i) != ',' && head.at(i) != ';' && head.at(i) != '.' && head.at(i) != '-'){
 				i++;
 				if(i >= head.length()) break;
+				// area = local;
 			}
 			i++;
 		}
@@ -61,11 +71,16 @@ set<string> findVariables(const string& head){
 					(int) head.at(i-1) == 40 ||  // opening paren
 					(int) head.at(i-1) == 32 )
 				) { //space 
-				
+				bool areaSwitch = false;
 				while(true){
 					
 					tempStr += head.at(i);
 					i++;
+					
+					if(i == head.length()){
+						break;
+					}
+
 					if(head.at(i) == ',')
 						break;
 					
@@ -78,21 +93,30 @@ set<string> findVariables(const string& head){
 						break;	
 					}
 					
-					if(i == head.length()){
+					if(head.at(i) == '}'){
+						areaSwitch = true;
 						break;
 					}
 				}
 
-				s.insert(tempStr);
+				if(area == global && !areaSwitch)
+					sGlobal.insert(tempStr);
+				else
+					sLocal.insert(tempStr);
 				tempStr = "";
 			}
 
 			if(!stack.empty() && head.at(i) == ')'){
+				area = global;
 				stack.pop();
 			}
 		}
 	}
-	return s;
+	set_difference(sGlobal.begin(), sGlobal.end(), sLocal.begin(), sLocal.end(),inserter(result, result.end()));
+	
+	
+
+	return result;
 }
 
 
@@ -105,6 +129,8 @@ set<string> findFreeVariables(const string& head,const string& body){
 	s.insert(s1.begin(), s1.end());
 	// return intersect;
 	s.insert(s1.begin(), s1.end());
+	// cout << "global:" ;
+	// for(auto iter=s.begin(); iter!=s.end();++iter) { cout << *iter << " ";}cout << endl;
 	return s;
 }
 
@@ -258,7 +284,7 @@ int main(int argc, char **argv){
 						}
 
 						string oldVars = vars;
-						vars = ",1" + vars ;
+						vars = ",1,1" + vars ;
 
 						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
 											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
@@ -324,23 +350,43 @@ int main(int argc, char **argv){
 					string probString = "";
 
 					if(issoft) probString += ",0,"+to_string(weight);
-					else probString += ",1";
+					else probString += ",1,1";
 
 					string oldVars = vars;
 					vars = probString + vars;
 
+					//If it is a constraint newStr is empty, 
+					//newStr holds value of splitVec[0] which is empty in case of a constraint.
+					// if(newStr.length() != 0){
+					// 	newStr = ", not " + newStr;
+					// }
+
 					if(splitVecSpace.size() == 1){
 						//W :- B
+						//weighted constraints
+						// cout << "366\n";
+						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :- " + splitVec[1]+ ".\n" + 
+										+ ":- " + splitVec[1] + ", not " + "unsat(" + to_string(unsatcount) + vars + ").\n"
+										+ ":~ "+ "unsat(" + to_string(unsatcount) + vars + ")." + "["+ weightString +","+ to_string(unsatcount)+ vars+"]\n" ;
 
-						tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
+						// tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 
 					}
 					// Hard rules/constraints are ignored.
 					else{
+						//This is a constraint.
 						if(newStr.empty()){
 							//if soft rule translate it irrespective of the mode.
-							if(issoft || (!issoft && mode == 0))
-								tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
+							if(issoft || (!issoft && mode == 0)){
+								// tempstr = "unsat(" + 
+								// cout << "377\n";
+								tempstr = "unsat(" + to_string(unsatcount) + vars + ") :- " + splitVec[1]+ ".\n" + 
+										+ ":- " + splitVec[1] + ", not " + "unsat(" + to_string(unsatcount) + vars + ").\n"
+										+ ":~ "+ "unsat(" + to_string(unsatcount) + vars + ")." + "["+ weightString +","+ to_string(unsatcount)+ vars+"]\n" ;
+
+								// "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
+								// tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
+							}
 							else{
 								tempstr = str + "\n";
 							}
