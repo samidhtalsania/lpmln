@@ -33,6 +33,7 @@ namespace io = boost::iostreams;
 
 set<string> findVariables(const string&);
 set<string> findFreeVariables(const string&, const string&);
+void runProcess(const string&);
 
 set<string> findVariables(const string& head){
 	
@@ -140,7 +141,7 @@ set<string> findFreeVariables(const string& head,const string& body){
 }
 
 // To run clingo
-void runProcess(string command){
+void runProcess(const string& command){
    FILE *fpipe;
    char line[1024];
 
@@ -208,7 +209,7 @@ int main(int argc, char **argv){
 									continue;
 								}
 		"--infer-type=map"		{
-									inferType = 1;
+									inferType = 0;
 									continue;
 								}
 		"--infer-type=marginal" {
@@ -220,20 +221,15 @@ int main(int argc, char **argv){
 	}
 
 
-	// if(argc >= 3){
-	// 	std::stringstream ss(argv[2]);
-	// 	ss >> mode;
-	// 	if(mode != 0 && mode != 1){
-	// 		cout << "Invalid 3rd argument. Can be either 0 or 1.\n";
-	// 		exit(1);
-	// 	}
 
-	// }
+    std::streambuf *psbuf, *backup;
+	std::ofstream filestr;
+	filestr.open ("/tmp/out.txt");
 
-	// cout to a file instead of cout to screen
-	std::ofstream out("/tmp/out.txt");
-    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+	backup = std::cout.rdbuf();     // back up cout's streambuf
+
+	psbuf = filestr.rdbuf();        // get file's streambuf
+	std::cout.rdbuf(psbuf);         // assign streambuf to cout
 
 	if(file){
     
@@ -252,6 +248,8 @@ int main(int argc, char **argv){
 					continue;
 				}
 
+
+
 				
 				std::size_t found;
 				if(!f){
@@ -263,12 +261,6 @@ int main(int argc, char **argv){
 				
 				
 				if(f){
-					// found = std::string::npos;
-					// f = true;
-					// while(found == std::string::npos){
-					// 	cout<<str;
-					// 	found = str.find("end");
-					// }
 					cout<<str + "\n";
 					found = str.find("end");
 					if(found != std::string::npos)
@@ -333,6 +325,7 @@ int main(int argc, char **argv){
 
 
 						cout<<tempstr;
+						
 						unsatcount++;
 					}
 					//Process hard rules of form H.
@@ -365,6 +358,7 @@ int main(int argc, char **argv){
 											":~ unsat(" + to_string(unsatcount) +vars+"). [1@1," + to_string(unsatcount) + oldVars + "]";
 								unsatcount++;
 						cout << tempstr + "\n";
+						
 					}
 
 
@@ -477,6 +471,7 @@ int main(int argc, char **argv){
 						}
 					}
 					cout<<tempstr;
+					
 					unsatcount++;
 				} 
 			}
@@ -491,7 +486,12 @@ int main(int argc, char **argv){
     	return -1;
     }
 
-    cout.rdbuf(coutbuf);
+	
+
+    // cout.rdbuf(coutbuf);
+    std::cout.rdbuf(backup);        // restore cout's original streambuf
+
+	filestr.close();
 
     const char *homedir;
 
@@ -499,14 +499,17 @@ int main(int argc, char **argv){
 	    homedir = getpwuid(getuid())->pw_dir;
 	}
 
+	string clingoCommand;
     //Map inference
     if(inferType == 0){
-		runProcess("clingo /tmp/out.txt " + string(homedir) + "/usr/local/share/lpmln/prob-script.py 0 --opt-mode=enum");
-    }
+    	clingoCommand = "clingo /tmp/out.txt /usr/local/share/lpmln/prob-script.py 0 --opt-mode=enum";
+    	cout << "Clingo executed with command:\n" << clingoCommand << endl;
+	}
     else{
-    	runProcess("clingo /tmp/out.txt " + string(homedir) + "/usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum");	
+    	clingoCommand = "clingo /tmp/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum";
+    	cout << "Clingo executed with command:\n" << clingoCommand << endl;
     }
-
+    runProcess(clingoCommand);
 
     return 0;
 
