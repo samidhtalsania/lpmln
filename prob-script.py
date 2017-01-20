@@ -6,36 +6,26 @@ import math
 from sympy import *
  
 def main(prg):
-    #var = raw_input("Enter query...\n")
-
     def on_model(m):
         Node.modelCount = Node.modelCount + 1
         node = Node()
  
         for i,val in enumerate(m.atoms()):
 
-            if val.name() == var:
-                args = val.args()
-                # t = tuple(args)
-                # if Node.literalDict.has_key(t):
-                #     Node.literalDict[t].append(Node.modelCount)
-                # else:
-                #     Node.literalDict[t] = [Node.modelCount]
-            
             if val.name() == 'unsat':
-               
+                # ipdb.set_trace()
                 args = val.args()
  
                 # Process soft Rules
                 if True:
                     # Unsat for this atom was false
                     # calculate its weight
-                    if args[1] == 0:
-                        node.setSoft(args[2])
- 
-                    if args[1] == 1:
+                    
+                    if args[1].__str__() == 'a':
                         node.setAlpha()
- 
+                    else:
+                        node.setSoft(args[1])
+
         Node.modelNodeMap[Node.modelCount] = node
        
     prg.ground([("base", [])])
@@ -59,38 +49,17 @@ def main(prg):
         expr = expr*maxExpr
         expr = expr/normalizedExpr
         probability = limit(expr, sym, oo)
-        #print expr
-        print 'Probability of model %s :  %s = %s' % (key, probability,probability.evalf())
-        # Node.probDict[key] = expr
-        #ipdb.set_trace() 
 
+        probValue = probability.evalf()
+        if not probValue.is_zero:
+            print 'Probability of model %s :  %s = %s' % (key, probability, probValue)
 
-    # for key, value in Node.literalDict.iteritems():
-    #     # value is the list of models whose limits need to be calculated.
-    #     lim = 0
-    #     for model in value:
-    #         if Node.calculatedLimitsDict.has_key(model):
-    #             lim = lim + Node.calculatedLimitsDict[model]
-    #         else:
-    #             l = limit(Node.probDict[model], sym, oo)
-    #             lim = lim + l
-        
-    #     print '%s%s %s' % (var, key, lim)
-
-
-
-
-    # ipdb.set_trace()
     print '\n'
  
  
 class Node(object):
     modelNodeMap = {}
     modelCount = 0
-    # Currently supports only 1 query atom
-    # literalDict = {}
-    # probDict = {}
-    # calculatedLimitsDict = {}
  
     """docstring for Node"""
     def __init__(self):

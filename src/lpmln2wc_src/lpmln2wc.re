@@ -313,7 +313,7 @@ int main(int argc, char **argv){
 						newStr.pop_back();
 
 						string oldVars = vars;
-						vars = ",0,"+ to_string(weight) + vars ;
+						vars = ","+ to_string(weight) + vars ;
 
 
 						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-";
@@ -351,7 +351,7 @@ int main(int argc, char **argv){
 						}
 
 						string oldVars = vars;
-						vars = ",1,1" + vars ;
+						vars = ",a" + vars ;
 
 						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
 											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
@@ -417,8 +417,8 @@ int main(int argc, char **argv){
 					splitVec[1].pop_back();
 					string probString = "";
 
-					if(issoft) probString += ",0,"+to_string(weight);
-					else probString += ",1,1";
+					if(issoft) probString += ","+to_string(weight);
+					else probString += ",a";
 
 					string oldVars = vars;
 					vars = probString + vars;
