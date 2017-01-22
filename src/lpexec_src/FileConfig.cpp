@@ -38,8 +38,8 @@ FileConfig::FileConfig(){
 	// Set defaults
 	//Default for lpmln: Solver is MLN, Input is MVSM
 	loptions.insert(pair<string,string>("input","mvsm"));
-	//Compile for Clingo
-	loptions.insert(pair<string,string>("solver","clingo"));
+	//Compile for Alchemy
+	loptions.insert(pair<string,string>("solver","alchemy"));
 	//max number of solutions for clingo
 	coptions.insert(pair<string,string>("solutions","0"));
 	
@@ -185,7 +185,7 @@ FileConfig::FileConfig(){
 		}
 	}
 
-	if(!execute_alch && !execute_cli || fileCouldNotBeOpened){
+	if((!execute_alch && !execute_cli) || fileCouldNotBeOpened){
 		throw NoLanguageSelectedException("No language selected from config File. Check to see if config file has the right syntax.");
 	}
 

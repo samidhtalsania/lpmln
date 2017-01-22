@@ -9,6 +9,9 @@
 #include <set>
 #include <fstream>
 
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "FileConfig.h"
 #include "exceptions/NoLanguageSelectedException.h"
 
@@ -23,6 +26,7 @@ using namespace std;
 void runProcess(string);
 void printHelp();
 void printVersion();
+bool file_exists(const string&);
 
 void runProcess(string command){
    FILE *fpipe;
@@ -84,6 +88,11 @@ void printVersion(){
    std::cout<< "lpmln v 1.0\n";
 }
 
+bool file_exists (const std::string& name) {
+  struct stat buffer;   
+  return (stat (name.c_str(), &buffer) == 0); 
+}
+
 
 int main(int argc, char **argv)
 {
@@ -109,7 +118,12 @@ int main(int argc, char **argv)
    map<string, string> aoptions ;
    map<string, string> coptions ;
 
-   bool execute_alch = false;
+   /*
+      LPNMR_Draft related change.
+      Changed default solver to alchemy.
+   */
+
+   bool execute_alch = true;
    bool execute_cli = false;
    bool execute_tuf = false;
 
@@ -134,14 +148,27 @@ int main(int argc, char **argv)
 
       //Default for lpmln: Solver is MLN, Input is MVSM
       loptions.insert(pair<string,string>("input","mvsm"));
+      
+
       //Compile for Clingo
-      loptions.insert(pair<string,string>("solver","clingo"));
+      /*
+         LPNMR_Draft related change.
+         Changed default solver to alchemy.
+      */
+      loptions.insert(pair<string,string>("solver","alchemy"));
       //max number of solutions for clingo
       coptions.insert(pair<string,string>("solutions","0"));
 
       pickUpFromCommandLine = true;
 
-      execute_cli = true;
+      /*
+         LPNMR_Draft related change.
+         Changed default solver to alchemy.
+         Clingo disabled for now.
+      */
+
+      execute_cli = false;
+      execute_alch = true;
 
       
    }
@@ -242,6 +269,21 @@ int main(int argc, char **argv)
                else{
                   // Its the input file
                   inputFileName = string(argv[i]);
+                  /*
+                  LPNMR_Draft related change.
+                  Alchemy is the only solver to be used
+                  and also the default solver.
+                  All options after the input file should default to alchemy.
+                  Also reading of file config is disabled.
+
+                  */
+                  //confirm that it is a legit input file.
+                  if(!file_exists(inputFileName)){
+                     cerr << "Invalid argument at position:" << i;
+                     exit(0);
+                  }
+                  else
+                     region = ALCH;
                }
             }
             break;
@@ -317,7 +359,8 @@ int main(int argc, char **argv)
    lpmln += inputFileName;
 
    if(pickUpFromCommandLine){
-      std::cout<<"No input language and solver specified in command line and config file.\nUsing ASP Solver.\n";
+      // std::cout<<"No input language and solver specified in command line and config file.\nUsing ASP Solver.\n";
+      std::cout << "Using MLN Solver";
    }
 
 
