@@ -111,6 +111,10 @@
 
 %type decl {Variable*}
 
+%type domain {Domain*}
+
+%type domains {Domain*}
+
 %type variables {std::vector<std::string*>*}
 
 
@@ -336,6 +340,31 @@ prog ::= rule(R).{
 		tree->rules.insert(std::pair<std::string,RuleCompletion>(R->getHead().getVar(),*R));
 	delete R;
 }
+/*
+LPNMR-draft related change. Alchemy style declaration for MVSM Parser
+*/
+
+prog ::= prog NEWLINE domain(D). { 
+	tree->domains.insert(*D); 
+	tree->domainNamesList.insert(D->getDomainVar());
+	for(auto& v : D->getVars()){
+		tree->domainList.insert(v);	
+	}
+	cout<<D->toString(false);
+	delete D;
+}
+prog ::= domain(D). { 
+	tree->domains.insert(*D); 
+	tree->domainNamesList.insert(D->getDomainVar());
+	for(auto& v : D->getVars()){
+		tree->domainList.insert(v);	
+	}
+	cout<<D->toString(false);
+	delete D;
+}
+
+prog ::= prog NEWLINE decl.
+prog ::= decl.
 
 prog ::= prog NEWLINE.
 
@@ -1267,3 +1296,71 @@ string(S) ::= STRING(S1).{ S=S1;}
 
 number(N) ::= NUMBER(N1).{ N=N1; }
 
+//Parses domains ex. step={1,2,3}
+domain(D) ::= string(S) EQUAL domains(Ds).{ 
+	D = Ds;
+	Ds->setDomainVar(S->token);
+	tree->domains.insert(*D);
+	for(auto& v : D->getVars()){
+		tree->domainList.insert(v);	
+	}
+	// cout<<D->toString(false);
+	// delete D;
+}
+
+
+//Parses RHS of domains
+domains(D) ::= LPAREN variables(Ve) RPAREN.{
+	D = new Domain();
+	D->setVars(*Ve);
+	delete Ve;
+}
+
+
+//Parses declarations ex. next(step,step)
+decl ::= string(S) LBRACKET variables(Ve) RBRACKET.{
+	// D = new Variable;
+	// std::map<int, Domain> posMap;
+	// std::set<Domain>::iterator itr;
+	// int i=0;
+	// for(auto& v : *Ve){
+	// 	itr = tree->domains.find(*v);
+	// 	if (itr == tree->domains.end()){
+	// 		// std::cout<<"Error:Domain:"+ *v +" not found.\n";
+	// 		throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
+	// 	}
+	// 	else{
+	// 		// itr = tree->domains.find(*v);
+			
+	// 		posMap[i++] = *itr;
+	// 	}
+	// }
+	// D->setVar(S->token);
+	// D->setPosMap(posMap);
+	// delete Ve;
+
+
+	Variable* va = new Variable;
+	std::map<int, Domain> posMap;
+	std::set<Domain>::iterator itr;
+	int i=0;
+	for(auto& v : *Ve){
+		itr = tree->domains.find(*v);
+		if (itr == tree->domains.end()){
+			throw syntax_exception("Syntax Error - Domain " + *v + " not found.\n");
+		}
+		else{
+			posMap[i++] = *itr;
+		}
+	}
+
+	va->setVar(S->toString());
+	va->setPosMap(posMap);
+	tree->variables.insert(*va);
+
+	/*for ASP output we do not print constants */
+	if(tree->outputType != OutputType::OUTPUT_ASP)
+		cout<<va->toString();
+	delete Ve;
+	delete va;
+}
