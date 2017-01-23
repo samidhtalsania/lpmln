@@ -1364,3 +1364,14 @@ decl ::= string(S) LBRACKET variables(Ve) RBRACKET.{
 	delete Ve;
 	delete va;
 }
+
+decl ::= string(S).{
+	Variable* va = new Variable;
+	va->setVar(S->toString());
+	tree->variables.insert(*va);
+	/*for ASP output we do not print constants */
+	if(tree->outputType != OutputType::OUTPUT_ASP)
+		cout<<va->toString()<<"\n";
+	
+	delete va;	
+}
