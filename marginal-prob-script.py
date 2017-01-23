@@ -6,7 +6,12 @@ import math
 from sympy import *
  
 def main(prg):
+    mode = 0
     var = raw_input("Enter query...\n")
+    if len(var) != 0:
+        mode = 1
+        var = var.split(",")
+
 
     def on_model(m):
         Node.modelCount = Node.modelCount + 1
@@ -14,13 +19,19 @@ def main(prg):
  
         for i,val in enumerate(m.atoms()):
 
-            if val.name() == var:
+            if val.name() in var:
                 args = val.args()
                 t = tuple(args)
-                if Node.literalDict.has_key(t):
-                    Node.literalDict[t].append(Node.modelCount)
+                if Node.parentDict.has_key(val.name()):
+                    literalDict = Node.parentDict[val.name()].getDict()
+                    if literalDict.has_key(t):
+                        literalDict[t].append(Node.modelCount)
+                    else:
+                        literalDict[t] = [Node.modelCount]
                 else:
-                    Node.literalDict[t] = [Node.modelCount]
+                    Node.parentDict[val.name()] = Query()
+                    Node.parentDict[val.name()].getDict()[t] = [Node.modelCount]
+
             
             if val.name() == 'unsat':
                
@@ -30,17 +41,17 @@ def main(prg):
                 if True:
                     # Unsat for this atom was false
                     # calculate its weight
-
-                    if args[1].__str__() == 'a':
+                    if args[1] == 0:
+                        node.setSoft(args[2])
+ 
+                    if args[1] == 1:
                         node.setAlpha()
-                    else:
-                        node.setSoft(args[1])
  
         Node.modelNodeMap[Node.modelCount] = node
        
     prg.ground([("base", [])])
     prg.solve(on_model = on_model)
- 
+    # ipdb.set_trace()
     sym = symbols('a')
  
     normalizedExpr = 0
@@ -58,25 +69,30 @@ def main(prg):
         expr = exp(value.getAlpha()*sym + value.getSoft())
         expr = expr*maxExpr
         expr = expr/normalizedExpr
-        probability = limit(expr, sym, oo)
-        # print 'Probability of model %s :  %s = %s' % (key, probability,probability.evalf())
-        Node.probDict[key] = expr
-        #ipdb.set_trace() 
-
-
-    for key, value in Node.literalDict.iteritems():
-        # value is the list of models whose limits need to be calculated.
-        lim = 0
-        for model in value:
-            if Node.calculatedLimitsDict.has_key(model):
-                lim = lim + Node.calculatedLimitsDict[model]
-            else:
-                l = limit(Node.probDict[model], sym, oo)
-                Node.calculatedLimitsDict[model] = l
-                lim = lim + l
+        if mode == 0:
+            probability = limit(expr, sym, oo).evalf()
+            if not probability.is_zero:
+                print 'Probability of Answer %s :  %s = %s' % (key, probability,probability.evalf())
+        else:
+            Node.probDict[key] = expr
         
-        if not lim.is_zero:
-            print '%s%s %s' % (var, key, lim)
+
+    
+    if mode == 1:
+        for k, val in Node.parentDict.iteritems():
+            for key, value in val.getDict().iteritems():
+                lim = 0
+                for model in value:
+                    if Node.calculatedLimitsDict.has_key(model):
+                        lim = lim + Node.calculatedLimitsDict[model]
+                    else:
+                        l = limit(Node.probDict[model], sym, oo).evalf()
+                        Node.calculatedLimitsDict[model] = l
+                        lim = lim + l
+                
+                if not lim.is_zero:
+                    print '%s%s %s' % (k, key, lim)
+
 
     print '\n'
  
@@ -84,10 +100,10 @@ def main(prg):
 class Node(object):
     modelNodeMap = {}
     modelCount = 0
-    # Currently supports only 1 query atom
     literalDict = {}
     probDict = {}
     calculatedLimitsDict = {}
+    parentDict = {}
  
     """docstring for Node"""
     def __init__(self):
@@ -106,5 +122,17 @@ class Node(object):
  
     def getSoft(self):
         return -self.soft
+
+class Query(object):
+
+    def __init__(self):
+        super(Query, self).__init__()
+        self.literalDict = {}
+
+    def getDict(self):
+        return self.literalDict;
+
+
+ 
  
 #end.

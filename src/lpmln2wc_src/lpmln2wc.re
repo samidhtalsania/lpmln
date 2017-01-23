@@ -34,6 +34,7 @@ namespace io = boost::iostreams;
 set<string> findVariables(const string&);
 set<string> findFreeVariables(const string&, const string&);
 void runProcess(const string&);
+void printHelp();
 
 set<string> findVariables(const string& head){
 	
@@ -159,6 +160,17 @@ void runProcess(const string& command){
 
 }
 
+void printHelp(){
+	cerr << "Usage: lpmln2cl <file_name> <options>\n"
+			"Options:\n"
+			"	--tr-hr=false 			Hard rules are not translated\n"
+			"	--tr-hr=true			Hard Rules are translated\n"
+			"	--infer-type=map 		Map estimation\n"
+			"	--infer-type=query		Probability Calculation\n"
+			"	--h 				Print help\n"
+			"For the option infer-type=query, the program will prompt you for query input. The system halts untill an input is provided. The user can choose to not provide any input by hitting return key.\n";
+}
+
 
 int main(int argc, char **argv){
 	
@@ -181,7 +193,7 @@ int main(int argc, char **argv){
 	int inferType = 0;
 
 	#define YYFILL(n)	{}
-	for (int i = 0; i < argc; ++i)
+	for (int i = 2; i < argc; ++i)
 	{
 		const char* YYCTXMARKER;
 
@@ -197,25 +209,32 @@ int main(int argc, char **argv){
 		/*!re2c
 
 
-		WS						= [ \t\v\f];
+			WS						= [ \t\v\f];
+			"\000"					{ continue;}
+			
+			"--tr-hr=false"			{
+										mode = 1;
+										continue;  	
+									}
+			"--tr-hr=true"			{
+										mode = 0;
+										continue;
+									}
+			"--infer-type=map"		{
+										inferType = 0;
+										continue;
+									}
+			"--infer-type=query" 	{
+										inferType = 1;
+										continue;
+									}
+			"--h"					{
+										printHelp();
+										exit(0);
+									}
+			
 
-		"\000"					{ continue;}
-		"--tr-hr=false"			{
-									mode = 1;
-									continue;  	
-								}
-		"--tr-hr=true"			{
-									mode = 0;
-									continue;
-								}
-		"--infer-type=map"		{
-									inferType = 0;
-									continue;
-								}
-		"--infer-type=marginal" {
-									inferType = 1;
-									continue;
-								}
+
 
 		*/
 	}
@@ -482,8 +501,10 @@ int main(int argc, char **argv){
     	}
     }
     else{
-    	cerr << "Some error ocurred while processing this file!\n";
-    	return -1;
+    	if(string(argv[1]) != "--h")
+    		cerr << "Some error ocurred while processing this file!\n";
+    	printHelp();
+    	return 0;
     }
 
 	
@@ -502,7 +523,7 @@ int main(int argc, char **argv){
 	string clingoCommand;
     //Map inference
     if(inferType == 0){
-    	clingoCommand = "clingo /tmp/out.txt /usr/local/share/lpmln/prob-script.py 0 --opt-mode=enum";
+    	clingoCommand = "clingo /tmp/out.txt ";
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
 	}
     else{
