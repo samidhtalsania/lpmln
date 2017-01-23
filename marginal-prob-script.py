@@ -89,9 +89,13 @@ def main(prg):
                         l = limit(Node.probDict[model], sym, oo).evalf()
                         Node.calculatedLimitsDict[model] = l
                         lim = lim + l
-                
                 if not lim.is_zero:
-                    print '%s%s %s' % (k, key, lim)
+			
+                    if len(key) == 1:
+                    	print '%s(%s) %s' % (k, key[0], lim)
+		
+                    else:
+                    	print '%s%s %s' % (k, key, lim)
 
 
     print '\n'
