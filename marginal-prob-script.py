@@ -4,9 +4,7 @@ import gringo
 import ipdb
 import math
 from sympy import *
-# from profilehooks import profile
 
-# @profile
 def main(prg):
     mode = 0
     var = raw_input("Enter query...\n")
@@ -53,7 +51,6 @@ def main(prg):
        
     prg.ground([("base", [])])
     prg.solve(on_model = on_model)
-    ipdb.set_trace()
     sym = symbols('a')
  
     normalizedExpr = 0
@@ -69,16 +66,13 @@ def main(prg):
 
     normalizedExpr = normalizedExpr*maxExpr
  
-    # ipdb.set_trace()
     for key, value in Node.modelNodeMap.iteritems():
         expr = exp(value.getAlpha()*sym + value.getSoft())
         expr = expr*maxExpr
         expr = expr/normalizedExpr
-        # if mode == 0:
         probability = float(limit(expr, sym, oo).evalf())
         if not probability == 0:
             print 'Probability of Answer %s : %s' % (key, probability)
-        # else:
             Node.probDict[key] = probability
         else:
             Node.probDict[key] = 0
@@ -90,12 +84,6 @@ def main(prg):
             for key, value in val.getDict().iteritems():
                 lim = 0
                 for model in value:
-                    # if Node.calculatedLimitsDict.has_key(model):
-                    #     lim = lim + Node.calculatedLimitsDict[model]
-                    # else:
-                    #     # l = float(limit(Node.probDict[model], sym, oo).evalf())
-                    #     Node.calculatedLimitsDict[model] = l
-                    #     lim = lim + l
                     lim += Node.probDict[model]
                 if not lim == 0:
 			
