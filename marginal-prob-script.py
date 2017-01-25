@@ -4,7 +4,9 @@ import gringo
 import ipdb
 import math
 from sympy import *
- 
+# from profilehooks import profile
+
+# @profile
 def main(prg):
     mode = 0
     var = raw_input("Enter query...\n")
@@ -51,7 +53,7 @@ def main(prg):
        
     prg.ground([("base", [])])
     prg.solve(on_model = on_model)
-    # ipdb.set_trace()
+    ipdb.set_trace()
     sym = symbols('a')
  
     normalizedExpr = 0
@@ -64,36 +66,44 @@ def main(prg):
    
     maxExpr = exp(maxValue*sym)
  
+
     normalizedExpr = normalizedExpr*maxExpr
+ 
+    # ipdb.set_trace()
     for key, value in Node.modelNodeMap.iteritems():
         expr = exp(value.getAlpha()*sym + value.getSoft())
         expr = expr*maxExpr
         expr = expr/normalizedExpr
-        if mode == 0:
-            probability = limit(expr, sym, oo).evalf()
-            if not probability.is_zero:
-                print 'Probability of Answer %s :  %s = %s' % (key, probability,probability.evalf())
+        # if mode == 0:
+        probability = float(limit(expr, sym, oo).evalf())
+        if not probability == 0:
+            print 'Probability of Answer %s : %s' % (key, probability)
+        # else:
+            Node.probDict[key] = probability
         else:
-            Node.probDict[key] = expr
+            Node.probDict[key] = 0
         
 
-    
+    print "\n"
     if mode == 1:
         for k, val in Node.parentDict.iteritems():
             for key, value in val.getDict().iteritems():
                 lim = 0
                 for model in value:
-                    if Node.calculatedLimitsDict.has_key(model):
-                        lim = lim + Node.calculatedLimitsDict[model]
-                    else:
-                        l = limit(Node.probDict[model], sym, oo).evalf()
-                        Node.calculatedLimitsDict[model] = l
-                        lim = lim + l
-                if not lim.is_zero:
+                    # if Node.calculatedLimitsDict.has_key(model):
+                    #     lim = lim + Node.calculatedLimitsDict[model]
+                    # else:
+                    #     # l = float(limit(Node.probDict[model], sym, oo).evalf())
+                    #     Node.calculatedLimitsDict[model] = l
+                    #     lim = lim + l
+                    lim += Node.probDict[model]
+                if not lim == 0:
 			
                     if len(key) == 1:
                     	print '%s(%s) %s' % (k, key[0], lim)
-		
+                    elif len(key) == 0:
+                        print '%s %s' % (k, lim)
+
                     else:
                     	print '%s%s %s' % (k, key, lim)
 
