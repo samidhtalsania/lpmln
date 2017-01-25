@@ -540,11 +540,11 @@ int main(int argc, char **argv){
 	string clingoCommand;
     //Map inference
     if(inferType == 0){
-    	clingoCommand = "clingo /tmp/out.txt ";
+    	clingoCommand = "clingo "+ getcwd() +"/out.txt ";
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
 	}
     else{
-    	clingoCommand = "clingo /tmp/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum";
+    	clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum";
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
     }
     runProcess(clingoCommand);
