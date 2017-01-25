@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <sys/param.h>
 
 using namespace std;
 using namespace boost;
@@ -35,6 +36,7 @@ set<string> findVariables(const string&);
 set<string> findFreeVariables(const string&, const string&);
 void runProcess(const string&);
 void printHelp();
+string getcwd();
 
 set<string> findVariables(const string& head){
 	
@@ -160,6 +162,19 @@ void runProcess(const string& command){
 
 }
 
+// To get the current working directory
+string getcwd(){
+    char *buffer = new char[MAXPATHLEN];
+    getcwd(buffer,MAXPATHLEN);
+    if(buffer != NULL){
+        string ret(buffer);
+        delete[] buffer;
+        return ret;
+    }else{
+        return string();
+    }
+}
+
 void printHelp(){
 	cerr << "Usage: lpmln2cl <file_name> <options>\n"
 			"Options:\n"
@@ -243,7 +258,9 @@ int main(int argc, char **argv){
 
     std::streambuf *psbuf, *backup;
 	std::ofstream filestr;
-	filestr.open ("/tmp/out.txt");
+	filestr.open (getcwd() + "/out.txt");
+
+	cout << string(argv[0]) << endl;
 
 	backup = std::cout.rdbuf();     // back up cout's streambuf
 
