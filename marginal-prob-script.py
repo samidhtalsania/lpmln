@@ -41,11 +41,11 @@ def main(prg):
                 if True:
                     # Unsat for this atom was false
                     # calculate its weight
-                    if args[1].__str__() == 'a':
+                    if args[1].__str__() == '"a"':
                         node.setAlpha()
  
                     else:
-                        node.setSoft(args[1])
+                        node.setSoft(float(args[1].strip('"')))
  
         Node.modelNodeMap[Node.modelCount] = node
        

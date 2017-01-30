@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/param.h>
+#include <sys/stat.h>
 
 using namespace std;
 using namespace boost;
@@ -207,9 +208,14 @@ int main(int argc, char **argv){
 	//Type 1 is marginal inference
 	int inferType = 0;
 
+	string clingoOptions;
+
 	#define YYFILL(n)	{}
+
 	for (int i = 2; i < argc; ++i)
 	{
+		
+
 		const char* YYCTXMARKER;
 
 		char* original = argv[i];
@@ -219,14 +225,15 @@ int main(int argc, char **argv){
 		#define YYCURSOR original
 		#define YYLIMIT original+sizeof(original)
 		#define YYMARKER YYCURSOR
-		#define YYCTXMARKER YYCURSOR 
+		#define YYCTXMARKER YYCURSOR
 
 		/*!re2c
 
 
 			WS						= [ \t\v\f];
-			"\000"					{ continue;}
 			
+			"\000"					{ continue;}
+
 			"--tr-hr=false"			{
 										mode = 1;
 										continue;  	
@@ -247,14 +254,17 @@ int main(int argc, char **argv){
 										printHelp();
 										exit(0);
 									}
-			
+
+
+			* 						{
+										clingoOptions += string(argv[i]) + " ";
+										continue;	
+									}			
 
 
 
 		*/
 	}
-
-
 
     std::streambuf *psbuf, *backup;
 	std::ofstream filestr;
@@ -540,11 +550,11 @@ int main(int argc, char **argv){
 	string clingoCommand;
     //Map inference
     if(inferType == 0){
-    	clingoCommand = "clingo "+ getcwd() +"/out.txt ";
+    	clingoCommand = "clingo "+ getcwd() +"/out.txt " + clingoOptions;
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
 	}
     else{
-    	clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum";
+    	clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum "+ clingoOptions;
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
     }
     runProcess(clingoCommand);
