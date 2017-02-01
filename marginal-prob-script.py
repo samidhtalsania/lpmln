@@ -34,18 +34,16 @@ def main(prg):
 
             
             if val.name() == 'unsat':
-               
                 args = val.args()
- 
                 # Process soft Rules
-                if True:
-                    # Unsat for this atom was false
-                    # calculate its weight
-                    if args[1].__str__() == '"a"':
-                        node.setAlpha()
- 
-                    else:
-                        node.setSoft(float(args[1].strip('"')))
+                # Unsat for this atom was false
+                # calculate its weight
+
+                if args[1].__str__() == 'a':
+                    node.setAlpha()
+
+                else:
+                    node.setSoft(float(args[1].strip('"')))
  
         Node.modelNodeMap[Node.modelCount] = node
        
