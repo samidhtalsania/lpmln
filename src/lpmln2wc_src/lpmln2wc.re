@@ -322,7 +322,7 @@ int main(int argc, char **argv){
 				boost::algorithm::split_regex(splitVec, str, regex(":-"));
 				//splits the head into weight part and rule part
 				vector<string> splitVecSpace;
-				int weight = 0;
+				float weight = 0;
 
 
 				if(splitVec.size() == 1){
@@ -336,7 +336,7 @@ int main(int argc, char **argv){
 						float floatVal = stof(splitVecSpace[0],&sz); 
 						if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) throw std::runtime_error("inf/nan error");
 						
-						weight = (int)floatVal;
+						weight = floatVal;
 						
 						string newStr;
 
@@ -359,7 +359,7 @@ int main(int argc, char **argv){
 						newStr.pop_back();
 
 						string oldVars = vars;
-						vars = ","+ to_string(weight) + vars ;
+						vars = ",\""+ to_string(weight) + "\"" + vars ;
 
 
 						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-";
@@ -367,7 +367,7 @@ int main(int argc, char **argv){
 						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
 						
 						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
-						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string(weight) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
+						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string((int)(weight*100)) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
 
 
 						cout<<tempstr;
@@ -397,7 +397,7 @@ int main(int argc, char **argv){
 						}
 
 						string oldVars = vars;
-						vars = ",a" + vars ;
+						vars = ",\"a\"" + vars ;
 
 						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
 											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
@@ -430,10 +430,10 @@ int main(int argc, char **argv){
 						std::string::size_type sz;
 						float floatVal = stof(splitVecSpace[0],&sz); 
 						if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) throw std::runtime_error("inf/nan error");
-						weight = (int)(floatVal);
+						weight = (floatVal);
 						// if(sz != splitVecSpace[0].length())
 						// 	throw std::invalid_argument( "the number is not a weight" );;
-						weightString = to_string(weight) + "@0";
+						weightString = to_string((int)(weight*100)) + "@0";
 						issoft = true;
 						s = findFreeVariables(newStr, splitVec[1]);
 					}
@@ -463,8 +463,8 @@ int main(int argc, char **argv){
 					splitVec[1].pop_back();
 					string probString = "";
 
-					if(issoft) probString += ","+to_string(weight);
-					else probString += ",a";
+					if(issoft) probString += ",\""+to_string(weight)+"\"";
+					else probString += ",\"a\"";
 
 					string oldVars = vars;
 					vars = probString + vars;
@@ -481,7 +481,7 @@ int main(int argc, char **argv){
 						// cout << "366\n";
 						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :- " + splitVec[1]+ ".\n" + 
 										+ ":- " + splitVec[1] + ", not " + "unsat(" + to_string(unsatcount) + vars + ").\n"
-										+ ":~ "+ "unsat(" + to_string(unsatcount) + vars + ")." + "["+ weightString +","+ to_string(unsatcount)+ vars+"]\n" ;
+										+ ":~ "+ "unsat(" + to_string(unsatcount) + vars + ")." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 
 						// tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 
@@ -496,7 +496,7 @@ int main(int argc, char **argv){
 								// cout << "377\n";
 								tempstr = "unsat(" + to_string(unsatcount) + vars + ") :- " + splitVec[1]+ ".\n" + 
 										+ ":- " + splitVec[1] + ", not " + "unsat(" + to_string(unsatcount) + vars + ").\n"
-										+ ":~ "+ "unsat(" + to_string(unsatcount) + vars + ")." + "["+ weightString +","+ to_string(unsatcount)+ vars+"]\n" ;
+										+ ":~ "+ "unsat(" + to_string(unsatcount) + vars + ")." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 
 								// "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
 								// tempstr = ":~ "+ splitVec[1]+ "." + "["+ weightString +","+ to_string(unsatcount)+ oldVars +"]\n" ;
@@ -508,7 +508,9 @@ int main(int argc, char **argv){
 						else if(issoft || (!issoft && mode == 0)){
 							//Soft rules are translated irespective of the mode
 							//Hard rules are translated only in mode 0
-							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" + newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+ oldVars +"]\n";
+							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" 
+							+ newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"
+							+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+ oldVars +"]\n";
 						}
 						else if(!issoft && mode == 1){
 							//Hard rules are translated only in mode 0
