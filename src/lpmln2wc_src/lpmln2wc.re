@@ -212,6 +212,8 @@ int main(int argc, char **argv){
 
 	#define YYFILL(n)	{}
 
+	int mf = 1;
+
 	for (int i = 2; i < argc; ++i)
 	{
 		
@@ -231,6 +233,8 @@ int main(int argc, char **argv){
 
 
 			WS						= [ \t\v\f];
+
+			dec 					= [-]?[1-9][0-9]*;
 			
 			"\000"					{ continue;}
 
@@ -255,6 +259,11 @@ int main(int argc, char **argv){
 										exit(0);
 									}
 
+			"--mf=" dec				{
+										mf = atoi(argv[i]+5);
+										continue;
+									}
+
 
 			* 						{
 										clingoOptions += string(argv[i]) + " ";
@@ -265,6 +274,8 @@ int main(int argc, char **argv){
 
 		*/
 	}
+
+
 
     std::streambuf *psbuf, *backup;
 	std::ofstream filestr;
@@ -367,7 +378,7 @@ int main(int argc, char **argv){
 						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
 						
 						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
-						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string((int)(weight*100)) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
+						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string((int)(weight*mf)) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
 
 
 						cout<<tempstr;
@@ -433,7 +444,7 @@ int main(int argc, char **argv){
 						weight = (floatVal);
 						// if(sz != splitVecSpace[0].length())
 						// 	throw std::invalid_argument( "the number is not a weight" );;
-						weightString = to_string((int)(weight*100)) + "@0";
+						weightString = to_string((int)(weight*mf)) + "@0";
 						issoft = true;
 						s = findFreeVariables(newStr, splitVec[1]);
 					}
