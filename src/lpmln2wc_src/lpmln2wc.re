@@ -567,7 +567,10 @@ int main(int argc, char **argv){
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
 	}
     else{
-    	clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum "+ clingoOptions;
+    	if(mode == 1)
+    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum -c issoft=true"+ clingoOptions;
+    	else
+    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum "+ clingoOptions;
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
     }
     runProcess(clingoCommand);

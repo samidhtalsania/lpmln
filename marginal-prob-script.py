@@ -7,16 +7,19 @@ from sympy import *
 
 def main(prg):
     mode = 0
+    
     var = raw_input("Enter query...\n")
     if len(var) != 0:
         mode = 1
         var = var.split(",")
 
+    issoft = prg.get_const("issoft") == 'true'
 
     def on_model(m):
         Node.modelCount = Node.modelCount + 1
         node = Node()
- 
+        ipdb.set_trace()
+        
         for i,val in enumerate(m.atoms()):
 
             if val.name() in var:
@@ -68,7 +71,10 @@ def main(prg):
         expr = exp(value.getAlpha()*sym + value.getSoft())
         expr = expr*maxExpr
         expr = expr/normalizedExpr
-        probability = float(limit(expr, sym, oo).evalf())
+        if issoft:
+            probability = float(expr.evalf())
+        else:
+            probability = float(limit(expr, sym, oo).evalf())
         if not probability == 0:
             print 'Probability of Answer %s : %s' % (key, probability)
             Node.probDict[key] = probability
@@ -84,14 +90,14 @@ def main(prg):
                 for model in value:
                     lim += Node.probDict[model]
                 if not lim == 0:
-			
+            
                     if len(key) == 1:
-                    	print '%s(%s) %s' % (k, key[0], lim)
+                        print '%s(%s) %s' % (k, key[0], lim)
                     elif len(key) == 0:
                         print '%s %s' % (k, lim)
 
                     else:
-                    	print '%s%s %s' % (k, key, lim)
+                        print '%s%s %s' % (k, key, lim)
 
 
     print '\n'
