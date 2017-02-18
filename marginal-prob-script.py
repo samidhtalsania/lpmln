@@ -1,7 +1,6 @@
 #script (python)
  
 import gringo
-import ipdb
 import math
 from sympy import *
 
@@ -18,7 +17,6 @@ def main(prg):
     def on_model(m):
         Node.modelCount = Node.modelCount + 1
         node = Node()
-        ipdb.set_trace()
         
         for i,val in enumerate(m.atoms()):
 
