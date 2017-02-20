@@ -3,16 +3,22 @@
 import gringo
 import math
 from sympy import *
+import pdb
 
 def main(prg):
     mode = 0
     
-    var = raw_input("Enter query...\n")
+    # var = raw_input("Enter query...\n")
+    # if len(var) != 0:
+    #     mode = 1
+    #     var = var.split(",")
+
+    issoft = prg.get_const("issoft") == 'true'
+    var = prg.get_const("q").__str__()
     if len(var) != 0:
         mode = 1
         var = var.split(",")
 
-    issoft = prg.get_const("issoft") == 'true'
 
     def on_model(m):
         Node.modelCount = Node.modelCount + 1
