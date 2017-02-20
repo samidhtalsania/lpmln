@@ -14,6 +14,7 @@ def main(prg):
     #     var = var.split(",")
 
     issoft = prg.get_const("issoft") == 'true'
+    isquiet = prg.get_const("quiet") == 'true'
     var = prg.get_const("q").__str__()
     if len(var) != 0:
         mode = 1
@@ -80,7 +81,8 @@ def main(prg):
         else:
             probability = float(limit(expr, sym, oo).evalf())
         if not probability == 0:
-            print 'Probability of Answer %s : %s' % (key, probability)
+            if isquiet:
+                print 'Probability of Answer %s : %s' % (key, probability)
             Node.probDict[key] = probability
         else:
             Node.probDict[key] = 0

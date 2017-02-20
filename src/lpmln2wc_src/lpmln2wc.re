@@ -568,9 +568,9 @@ int main(int argc, char **argv){
 	}
     else{
     	if(mode == 1)
-    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum -c issoft=true "+ clingoOptions;
+    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum -c issoft=true --warn=no-atom-undefined "+ clingoOptions;
     	else
-    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum "+ clingoOptions;
+    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum --warn=no-atom-undefined "+ clingoOptions;
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
     }
     runProcess(clingoCommand);
