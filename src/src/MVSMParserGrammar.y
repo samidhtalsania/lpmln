@@ -391,10 +391,16 @@ rule(R) ::= REVERSE_IMPLICATION body(B) DOT.{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
 	
-	if(tree->outputType != OutputType::OUTPUT_ASP){
+	
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
 		std::cout<<"("
 					<<B->toNNFString()
 					<<")"
+					<<LanguageConstants::LINE_END
+					<<"\n";
+	}
+	else if(tree->outputType == OutputType::OUTPUT_TUFFY){
+		std::cout<<B->toNNFString()
 					<<LanguageConstants::LINE_END
 					<<"\n";
 	}
@@ -412,11 +418,19 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 	R = new RuleCompletion;
 	R->isHeadTop = true;
 	
-	if(tree->outputType != OutputType::OUTPUT_ASP){
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
 		std::cout<<N->toString()<<SPACE
 					<<"("
 					<<B->toNNFString()
 					<<")"
+					<<"\n";
+	}
+	else if(tree->outputType == OutputType::OUTPUT_TUFFY){
+
+		std::cout<<N->toString()<<SPACE
+					
+					<<B->toNNFString()
+					
 					<<"\n";
 	}
 	else{

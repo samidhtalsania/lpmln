@@ -91,7 +91,7 @@ void Tree::completeRules(){
 		}
 		
 		
-		int auxCount = 0;
+		// int auxCount = 0;
 		for (std::multimap<std::string,RuleCompletion>::iterator it=ret.first; it!=ret.second; ++it)
 		{
 			r = it->second;
@@ -122,7 +122,7 @@ void Tree::completeRules(){
 				for(auto &constantInner : varMap)
 				{
 					if(constantInner.first == constant.first){
-						strRhs.append(constantInner.second.second).append("=").append(constant.second.second).append(" ^ ");
+						strRhs.append(constantInner.second.second).append("=").append(constant.second.second).append(LanguageConstants::CON);
 					}
 				}
 			}
@@ -249,7 +249,7 @@ void Tree::completeRules(){
 							}
 						}
 					}
-					strRhs.append(" ^ ");
+					strRhs.append(LanguageConstants::CON);
 					continue;
 				}
 
@@ -332,7 +332,7 @@ void Tree::completeRules(){
 				if(pred.getTokens().size() != 0){
 					strRhs.append(")");
 				}
-				strRhs.append(" ^ ");
+				strRhs.append(LanguageConstants::CON);
 				
 				bodyVecCount++;
 			}
@@ -445,17 +445,38 @@ void Tree::completeFacts(){
 		std::string strRhs; 
 		std::pair <std::multimap<std::string,FactCompletion>::iterator, std::multimap<std::string, FactCompletion>::iterator> ret;
 		ret = facts.equal_range(key.first);
-		
-		int count = 0;
+
+		strLhs.append(key.first);
+		int count;
+		std::string auxRhs;
+
 		FactCompletion f;
 		for (std::multimap<std::string,FactCompletion>::iterator it=ret.first; it!=ret.second; ++it){
 			//it.second are FactCompletions
+			
+			std::string auxVar;
+			auxVar.append("aux_").append(key.first).append("_").append(std::to_string(auxCount++));
+			std::string auxLhs(auxVar);
+			
+			std::string auxDecl(auxVar);
+						
+			auxDecl.append("(");
+			auxLhs.append("(");
+
+			std::set<Variable>::iterator itrV = variables.find(key.first);
+
+
 			f = it->second;
 			std::vector<std::string> v = f.getHead().getTokens();
 			count = 0;
 			strRhs.append("(");
 			for(auto &str : v){
 				if(isConstant(str)){
+
+					if (level == OptimizationLevel::ALL_CLAUSES_AUX){
+						auxDecl.append(itrV->getPosMap().at(count).getDomainVar()).append(",");
+						auxLhs.append(uniqueVars[count]).append(",");
+					}
 					strRhs.append(uniqueVars[count++]);
 					strRhs.append("=");
 					strRhs.append(str);
@@ -465,6 +486,15 @@ void Tree::completeFacts(){
 					count++;
 				}
 			}
+
+			auxDecl = auxDecl.substr(0,auxDecl.size()-1);
+			auxLhs = auxLhs.substr(0,auxLhs.size()-1);
+
+			auxDecl.append(")");
+			auxLhs.append(")");
+
+			
+
 			strRhs = strRhs.substr(0,strRhs.size()-3);
 			strRhs.append(")");
 			//if strRhs = "()" it did not find anything
@@ -472,18 +502,30 @@ void Tree::completeFacts(){
 				strRhs.clear();
 			}
 			else{
-				strRhs.append(LanguageConstants::DIS);
+				if(level != OptimizationLevel::ALL_CLAUSES_AUX){
+					strRhs.append(LanguageConstants::DIS);
+				}
 			}
+
+			if(strRhs.size() == 0) continue;
+			
+			if(level == OptimizationLevel::ALL_CLAUSES_AUX){
+				std::cout << auxDecl << "\n";
+				std::cout << auxLhs << " <=> " << strRhs << ".\n";
+				auxRhs.append(auxLhs).append(LanguageConstants::DIS);
+				strRhs.clear();
+			}
+
 		}
 		//if there is no strRhs the this rule was not supposed to be completed
 		//Go to next rule.
+		
+		if(level == OptimizationLevel::ALL_CLAUSES_AUX){
+			strRhs = auxRhs;
+		}
 		if(strRhs.size() == 0) continue;
 		strRhs = strRhs.substr(0,strRhs.size()-3);
-		strLhs.append(key.first);
-
-		std::set<Variable>::iterator itrV = variables.find(key.first);
-		if(itrV != variables.end()) itrV->setCompleted();
-
+		
 		strLhs.append("(");
 		count=0;
 		for(unsigned int i=0;i<f.getHead().getTokens().size();i++)

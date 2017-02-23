@@ -57,6 +57,8 @@ public:
 	OptimizationLevel level;
 	OutputType outputType;
 
+	int auxCount = 0;
+
 	
 	/* Required for MVSM Parsing */
 	// std::set<std::string> sorts;
