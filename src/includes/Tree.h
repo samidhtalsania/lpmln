@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <map>
 #include <unordered_map>
+#include <queue>          // std::queue
+
+#include <boost/algorithm/string.hpp>
 
 #include "Domain.h"
 #include "FactCompletion.h"
@@ -52,12 +55,15 @@ public:
 
 	std::multimap<std::string, RuleCompletion> rules;
 
-	std::string uniqueVars[14] = {"_a","_b","_c","_d","_e","_f","_g","_h","_i","_j","_k","_l","_m","_n"};
+	// std::string uniqueVars[14] = {"_a","_b","_c","_d","_e","_f","_g","_h","_i","_j","_k","_l","_m","_n"};
+	std::string uniqueVars[14] = {"aa","bb","cc","dd","ee","ff","gg","hh","ii","jj","kk","ll","mm","nn"};
 
 	OptimizationLevel level;
 	OutputType outputType;
 
 	int auxCount = 0;
+
+	std::string tuffyAuxHeaders;
 
 	
 	/* Required for MVSM Parsing */
@@ -77,6 +83,10 @@ public:
 				return true;
 		}
 		return false;
+	}
+
+	inline std::string getTuffyAuxHeaders(){
+		return tuffyAuxHeaders;
 	}
 
 	inline bool isConstant(std::string str){
@@ -111,6 +121,11 @@ public:
 			return true;
 		}
 	}
+
+	void printTuffyAux(std::string& LHS, std::string& RHS, std::queue<int>& posVector);
+	void printTuffyAux(std::string& LHS, std::string& RHS);
+
+	void printTuffyExist(const std::string& LHS, std::string& RHS);
 
 	int weak_constraint_counter = 1;
 	/*Required for turning weighted programs into clingo*/

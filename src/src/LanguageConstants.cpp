@@ -12,6 +12,7 @@ std::string LanguageConstants::OBJ_PAREN_OPEN = MLN_OBJ_PAREN_OPEN;
 std::string LanguageConstants::OBJ_PAREN_CLOSE = MLN_OBJ_PAREN_CLOSE;
 std::string LanguageConstants::LINE_END = MLN_LINE_END;
 std::string LanguageConstants::OBJ_LINE_END = MLN_OBJ_LINE_END;
+std::string LanguageConstants::SPLIT_CON = MLN_CON;
 
 void LanguageConstants::init(OutputType type){
 	LanguageConstants::TYPE = type;	
@@ -27,6 +28,7 @@ void LanguageConstants::init(OutputType type){
 			LanguageConstants::OBJ_PAREN_OPEN = MLN_OBJ_PAREN_OPEN;
 			LanguageConstants::OBJ_PAREN_CLOSE = MLN_OBJ_PAREN_CLOSE;
 			LanguageConstants::OBJ_LINE_END = MLN_OBJ_LINE_END;
+			LanguageConstants::SPLIT_CON = MLN_CON;
 			break;
 		case OutputType::OUTPUT_ASP:
 			LanguageConstants::NOT = ASP_NOT;
@@ -39,12 +41,14 @@ void LanguageConstants::init(OutputType type){
 			LanguageConstants::OBJ_PAREN_OPEN = ASP_OBJ_PAREN_OPEN;
 			LanguageConstants::OBJ_PAREN_CLOSE = ASP_OBJ_PAREN_CLOSE;
 			LanguageConstants::OBJ_LINE_END = ASP_OBJ_LINE_END;
+			LanguageConstants::SPLIT_CON = ASP_CON;
 			break;
 		case OutputType::OUTPUT_TUFFY:
 			LanguageConstants::NOT = TUFFY_NOT;
 			LanguageConstants::CON = TUFFY_CON;
 			LanguageConstants::DIS = TUFFY_DIS;
 			LanguageConstants::IMPL = TUFFY_IMPL;
+			LanguageConstants::SPLIT_CON = TUFFY_SPLIT_CON;
 			break;
 		default:
 			break;

@@ -5,6 +5,7 @@
 #include "ParserFactory.h"
 #include "exceptions/undefined_predicate.h"
 #include "exceptions/syntax_exception.h"
+#include "Util.h"
 
 
 #include <iostream>
@@ -33,12 +34,15 @@ ParserWrapper::ParserWrapper(Config c){
   level = c.getLevel();
   outputType = c.getOutputType();
 
+  
+
 	tree = new Tree(level, outputType);
 
   parser = ParserFactory::getParser(c.getParser()); 
   lexer = LexerFactory::getLexer(c.getParser());
   
   parser->ParseAlloc();
+  ofs.open(tuffyOutFile);
   if(c.getParser() == ParserType::FOL){
     isFOLlexer = true;
   }
@@ -47,6 +51,15 @@ ParserWrapper::ParserWrapper(Config c){
 int ParserWrapper::parse(){
 	
 	std::ifstream file(inputFile, std::ios_base::in | std::ios_base::binary);
+
+  //Tuffy related settings
+ 
+  
+  if(outputType == OutputType::OUTPUT_TUFFY){
+    coutbuf = std::cout.rdbuf(); //save old buf
+    std::cout.rdbuf(ofs.rdbuf()); //redirect std::cout to out.txt!
+  }
+  
 	int hTokenId;
 
 	if(debug){
@@ -144,6 +157,7 @@ int ParserWrapper::parse(){
     }
     catch(const syntax_exception& e){
       cout<<str;/*Prints the erroneous line*/
+      std::cout.rdbuf(coutbuf);
       std::cout << e.what();
       std::cout<<"Line:"<<lineCount<<" Column:"<<lexeme.current - lexeme.begin<<"\n";
       throw e;
@@ -166,6 +180,16 @@ void ParserWrapper::parseComplete(){
 	tree->completeFacts();
 	tree->completeRules();
   tree->completeDeclarations();
+  if(outputType == OutputType::OUTPUT_TUFFY){
+    ofstream myfile;
+    myfile.open ("tuffy-out-headers.mln");
+    myfile << tree->getTuffyAuxHeaders();
+    myfile.close();
+    ofs.close();
+    Util::merge(std::string("tuffy-out-headers.mln"), tuffyOutFile, std::string("input.mln"));
+    std::cout.rdbuf(coutbuf);
+
+  }
 }
 
 ParserWrapper::~ParserWrapper(){

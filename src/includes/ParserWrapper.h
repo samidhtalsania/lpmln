@@ -1,5 +1,8 @@
 #include <string>
 #include <memory>
+#include <fstream>
+#include <iostream>
+
 #include "Config.h"
 #include "Tree.h"
 #include "Token.h"
@@ -38,5 +41,8 @@ private:
 	
 	/*TODO fix this*/
 	bool isFOLlexer;
+	std::string tuffyOutFile = "tuffy-out.mln";
+	std::streambuf *coutbuf;
+	std::ofstream ofs;
 	
 };

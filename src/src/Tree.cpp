@@ -2,6 +2,12 @@
 #include "LanguageConstants.h"
 
 #include <stack> 
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+
 
 Tree::Tree(OptimizationLevel _level, OutputType _type){
 	level = _level;
@@ -96,7 +102,11 @@ void Tree::completeRules(){
 		{
 			r = it->second;
 			std::set<std::pair<std::string,std::string>> orphanVarsSet;
-			strRhs.append("(");
+			if(outputType == OutputType::OUTPUT_ALCHEMY){
+				strRhs.append("(");
+			}
+			
+
 			
 			//append exist and associated variables to string.
 			if(r.checkOrphan())
@@ -122,7 +132,7 @@ void Tree::completeRules(){
 				for(auto &constantInner : varMap)
 				{
 					if(constantInner.first == constant.first){
-						strRhs.append(constantInner.second.second).append("=").append(constant.second.second).append(LanguageConstants::CON);
+						strRhs.append(constantInner.second.second).append("=").append(constant.second.second).append(LanguageConstants::SPLIT_CON);
 					}
 				}
 			}
@@ -249,7 +259,7 @@ void Tree::completeRules(){
 							}
 						}
 					}
-					strRhs.append(LanguageConstants::CON);
+					strRhs.append(LanguageConstants::SPLIT_CON);
 					continue;
 				}
 
@@ -332,19 +342,23 @@ void Tree::completeRules(){
 				if(pred.getTokens().size() != 0){
 					strRhs.append(")");
 				}
-				strRhs.append(LanguageConstants::CON);
+				//splits between literals.
+				strRhs.append(LanguageConstants::SPLIT_CON);
 				
 				bodyVecCount++;
 			}
 			
 
 			strRhs = strRhs.substr(0,strRhs.size()-3);
+
 			strRhs.append(")");
 			// if(r.checkOrphan())
 			if(r.checkOrphan())
 			{
 				auxPos.second = strRhs.size()-1;
-				strRhs.append(")");
+				if(outputType == OutputType::OUTPUT_ALCHEMY){
+					strRhs.append(")");
+				}
 			}
 			else{
 				// strRhs.append(")");
@@ -362,13 +376,17 @@ void Tree::completeRules(){
 			Fix aux not working correclty when there are no orphan variables
 			*/
 
+			//Empty queue for printTuffyAux call
+			std::queue<int> emptyQueue;
+
+
 			if(useAux(r.checkOrphan()))
 			{
 				std::string auxVar;
 				std::map<std::string,std::string> auxDeclMap;
 				
 				//First add declaration
-				auxVar.append("aux_").append(key.first).append("_").append(std::to_string(auxCount++));
+				auxVar.append("aux").append(key.first).append("").append(std::to_string(auxCount++));
 				std::string auxLhs(auxVar);
 				std::string auxRhs(auxVar);
 				std::string auxDecl(auxVar);
@@ -406,12 +424,37 @@ void Tree::completeRules(){
 				
 				ar1 = static_cast<size_t>(auxPos.first);
 				ar2 = static_cast<size_t>(auxPos.second-auxPos.first);
-				strRhs.replace(ar1,ar2, auxLhs);
+
+				if(outputType == OutputType::OUTPUT_ALCHEMY){
+					strRhs.replace(ar1,ar2, auxLhs);
+				}
+				//TODO fix this
+				else if(outputType == OutputType::OUTPUT_TUFFY){
+					if(ar1 == 0)
+						strRhs.replace(ar1, ar2+1, auxLhs);
+					else if(strRhs.compare(ar1-1,1,"(") == 0)
+						strRhs.replace(ar1-1, ar2+2, auxLhs);
+					else
+						strRhs.replace(ar1, ar2+1, auxLhs);
+
+				}
 				
-				std::cout << auxDecl << "\n";
-				std::cout << auxLhs << " <=> " << auxRhs << ".\n";
+				if(outputType == OutputType::OUTPUT_ALCHEMY){
+					std::cout << auxDecl << "\n";
+				}
+				else if(outputType == OutputType::OUTPUT_TUFFY){
+					tuffyAuxHeaders += auxDecl + "\n";
+				}
+				if(outputType == OutputType::OUTPUT_ALCHEMY){
+					std::cout << auxLhs << " <=> " << auxRhs << ".\n";
+				}
+
+				else if(outputType == OutputType::OUTPUT_TUFFY){
+					printTuffyAux(auxLhs, auxRhs);
+				}
 			}
 		}
+		
 		
 		strRhs = strRhs.substr(0,strRhs.size()-3);
 		// std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
@@ -455,7 +498,7 @@ void Tree::completeFacts(){
 			//it.second are FactCompletions
 			
 			std::string auxVar;
-			auxVar.append("aux_").append(key.first).append("_").append(std::to_string(auxCount++));
+			auxVar.append("aux").append(key.first).append("").append(std::to_string(auxCount++));
 			std::string auxLhs(auxVar);
 			
 			std::string auxDecl(auxVar);
@@ -469,7 +512,15 @@ void Tree::completeFacts(){
 			f = it->second;
 			std::vector<std::string> v = f.getHead().getTokens();
 			count = 0;
-			strRhs.append("(");
+
+			if(outputType == OutputType::OUTPUT_ALCHEMY){
+				strRhs.append("(");
+			}
+
+			//Keeps track of which variable has equality
+			std::queue<int> posVector;
+			int posVecCount = 0;
+
 			for(auto &str : v){
 				if(isConstant(str)){
 
@@ -477,10 +528,12 @@ void Tree::completeFacts(){
 						auxDecl.append(itrV->getPosMap().at(count).getDomainVar()).append(",");
 						auxLhs.append(uniqueVars[count]).append(",");
 					}
+					/*TODO fix tuffy = */
+					posVector.push(posVecCount++);
 					strRhs.append(uniqueVars[count++]);
 					strRhs.append("=");
 					strRhs.append(str);
-					strRhs.append(LanguageConstants::CON);		
+					strRhs.append(LanguageConstants::SPLIT_CON);		
 				}
 				else{
 					count++;
@@ -496,23 +549,33 @@ void Tree::completeFacts(){
 			
 
 			strRhs = strRhs.substr(0,strRhs.size()-3);
-			strRhs.append(")");
+			if(outputType == OutputType::OUTPUT_ALCHEMY){
+				strRhs.append(")");
+			}
 			//if strRhs = "()" it did not find anything
 			if(strRhs.size() == 2){
 				strRhs.clear();
 			}
 			else{
 				if(level != OptimizationLevel::ALL_CLAUSES_AUX){
-					strRhs.append(LanguageConstants::DIS);
+					strRhs.append(" v ");
 				}
 			}
 
 			if(strRhs.size() == 0) continue;
 			
 			if(level == OptimizationLevel::ALL_CLAUSES_AUX){
-				std::cout << auxDecl << "\n";
-				std::cout << auxLhs << " <=> " << strRhs << ".\n";
-				auxRhs.append(auxLhs).append(LanguageConstants::DIS);
+				if(outputType == OutputType::OUTPUT_ALCHEMY){
+					std::cout << auxDecl << "\n";
+				}
+				else if(outputType == OutputType::OUTPUT_TUFFY){
+					tuffyAuxHeaders += auxDecl + "\n";
+				}
+				if(outputType == OutputType::OUTPUT_ALCHEMY)
+					std::cout << auxLhs << " <=> " << strRhs << ".\n";
+				else
+					printTuffyAux(auxLhs, strRhs, posVector);
+				auxRhs.append(auxLhs).append(" v ");
 				strRhs.clear();
 			}
 
@@ -537,14 +600,22 @@ void Tree::completeFacts(){
 		if(completedStr.empty())
 			completedLiterals[strLhs] = strRhs;
 		else
-			completedLiterals[strLhs] = completedLiterals[strLhs] + LanguageConstants::DIS + strRhs;
+			completedLiterals[strLhs] = completedLiterals[strLhs] + " v " + strRhs;
 		// std::cout<<strLhs<<" => "<<strRhs<<"."<<std::endl;
 	}
 }
 
 void Tree::completeDeclarations(){
-	for(auto itr = completedLiterals.begin(); itr != completedLiterals.end() ; ++itr)
-		std::cout << itr->first << LanguageConstants::IMPL << itr->second << ".\n"; 
+	for(auto itr = completedLiterals.begin(); itr != completedLiterals.end() ; ++itr){
+		if(outputType == OutputType::OUTPUT_ALCHEMY){
+			std::cout << itr->first << LanguageConstants::IMPL << itr->second << ".\n"; 
+		}
+
+		else if(outputType == OutputType::OUTPUT_TUFFY){
+			printTuffyExist(itr->first, itr->second);
+		}
+
+	}
 
 	for(auto itr = variables.begin(); itr != variables.end(); ++itr){
 
@@ -663,3 +734,129 @@ std::set<std::string> Tree::findFreeVariables(const std::string& head,const std:
 	s.insert(s1.begin(), s1.end());
 	return s;
 }
+
+//Prints biimplication in tuffy style syntax
+void Tree::printTuffyAux(std::string& LHS, std::string& RHS, std::queue<int>& posVector){
+
+	std::vector<std::string> strs;
+	int pos = -1;
+	std::string left;
+	std::string OR = " OR ";
+	if(!posVector.empty()){
+		pos = posVector.front();
+		posVector.pop();
+	}
+
+
+	boost::split(strs, RHS, boost::is_any_of(LanguageConstants::SPLIT_CON), boost::token_compress_on);
+
+	int count = 0;
+	for(std::string &s : strs){
+		if(pos != count){
+			std::cout << LHS << " => " << s <<".\n";
+		}
+		//It is a constant. Display it in tuffy syntax.
+		else{
+			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+			pos = posVector.front();
+			posVector.pop();
+			left += s.replace(s.find("="),1,"!=") + OR;
+		}
+		count++;
+	}
+
+	left = "[" + left.substr(0, left.length() - OR.length()) + "]";
+
+	std::replace( RHS.begin(), RHS.end(), '*', ',');
+
+	if(pos != -1)
+		std::cout << LHS << " v " << left <<".\n";
+	else
+		std::cout << RHS << " => " << LHS <<".\n";
+}
+
+
+//Prints biimplication in tuffy style syntax
+void Tree::printTuffyAux(std::string& LHS, std::string& RHS){
+
+	std::vector<std::string> strs;
+	std::string left;
+	std::string leftPart2;
+	std::string OR = " OR ";
+	bool equalFound = false;
+	
+	boost::split(strs, RHS, boost::is_any_of(LanguageConstants::SPLIT_CON), boost::token_compress_on);
+
+	int count = 0;
+	for(std::string &s : strs){
+		if(s.find("=") != std::string::npos){
+			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+			left += s.replace(s.find("="),1,"!=") + OR;
+			equalFound = true;
+		}
+		else{
+			std::cout << LHS << " => " << s <<".\n";
+			leftPart2 += s + " v ";
+		}
+		// if(pos != count){
+		// 	std::cout << LHS << " => " << s <<".\n";
+		// }
+		// //It is a constant. Display it in tuffy syntax.
+		// else{
+		// 	std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+		// 	left += s.replace(s.find("="),1,"!=") + OR;
+		// }
+		// count++;
+	}
+
+	left = "[" + left.substr(0, left.length() - OR.length()) + "]";
+	
+
+	std::replace( RHS.begin(), RHS.end(), '*', ',');
+
+	if(equalFound)
+		std::cout << LHS << " v " << leftPart2 << left <<".\n";
+	else
+		std::cout << RHS << " => " << LHS <<".\n";
+}
+
+
+void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
+	// std::cout << LHS << " => " << RHS << ".\n";
+	std::set<std::string> orphanVars;
+	std::vector<std::string> holder;
+	boost::split(holder, RHS, boost::is_any_of(" "), boost::token_compress_on);
+	
+	std::string newRhs;
+	std::string newRhsPart2;
+
+	bool isOrphanVars = false;
+
+	for(auto it = holder.begin(); it != holder.end(); ++it){
+		std::string s = *it;
+		if (s.compare("EXIST") == 0){
+			isOrphanVars = true;
+		}
+		else if (isOrphanVars){
+			std::vector<std::string> tempVector;
+			boost::split(tempVector,s,boost::is_any_of(","), boost::token_compress_on);
+			std::copy(tempVector.begin(), tempVector.end(), std::inserter(orphanVars, orphanVars.end()));
+			isOrphanVars = false;
+		}
+		else{
+			newRhsPart2 += s + " ";
+		}
+	}
+
+	if(isOrphanVars)
+		newRhs += "EXIST ";
+	for (auto it = orphanVars.begin(); it != orphanVars.end(); ++it){
+		newRhs += *it + ",";
+	}
+	newRhs = newRhs.substr(0, newRhs.length()-1);
+	std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << ".\n";
+
+
+
+}
+

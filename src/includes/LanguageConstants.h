@@ -25,7 +25,8 @@
 #define MLN_LINE_END "."
 #define MLN_OBJ_LINE_END ""
 
-#define TUFFY_CON " , " 
+#define TUFFY_CON " , "
+#define TUFFY_SPLIT_CON " * " 
 #define TUFFY_DIS " v " 
 #define TUFFY_NOT "!"
 #define TUFFY_IMPL " => "
@@ -34,6 +35,7 @@ class LanguageConstants{
 
 public:
 	static std::string CON ;
+	static std::string SPLIT_CON ;
 	static std::string DIS ;
 	static std::string NOT ;
 	static std::string IMPL;

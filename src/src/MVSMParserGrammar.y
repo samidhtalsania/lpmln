@@ -350,7 +350,9 @@ prog ::= prog NEWLINE domain(D). {
 	for(auto& v : D->getVars()){
 		tree->domainList.insert(v);	
 	}
-	cout<<D->toString(false);
+	// domains not printed in tuffy
+	if(tree->outputType != OutputType::OUTPUT_TUFFY)
+		cout<<D->toString(false);
 	delete D;
 }
 prog ::= domain(D). { 
@@ -359,7 +361,9 @@ prog ::= domain(D). {
 	for(auto& v : D->getVars()){
 		tree->domainList.insert(v);	
 	}
-	cout<<D->toString(false);
+	// domains not printed in tuffy
+	if(tree->outputType != OutputType::OUTPUT_TUFFY)
+		cout<<D->toString(false);
 	delete D;
 }
 
@@ -572,7 +576,7 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 		// RULE_COMPLETION_HEAD_DIS_BODY_TOP(H,B)
 		R->isHeadTop = true;
 		RuleCompletion_HD_BC(H,B,true,tree);
-		if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+		if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY)
 			std::cout<<B->toString()
 					<<" => "
 					<<H->toString()
@@ -590,7 +594,7 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 		catch(const std::out_of_range& e){
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 		}
-		if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+		if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY)
 			std::cout<<B->toString()
 					<<" => "
 					<<H->toString()
@@ -616,7 +620,7 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY)
 		std::cout<< N->toString()
 				<<SPACE
 				<<B->toString()
@@ -685,7 +689,7 @@ rule(R) ::= number(N) NEGATION NEGATION LBRACKET head(H) REVERSE_IMPLICATION bod
 	R->isHeadTop = true;	
 	tree->statHasDblNeg = true;
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY)
 		std::cout<< N->toString() 
 				<< SPACE 
 				<<"!!("
@@ -721,7 +725,7 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY)
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY)
 		std::cout<<COMMENT<<B->toString()<<" => "<<H->toString()<<"\n";
 	if(tree->outputType == OutputType::OUTPUT_ASP)
 		std::cout<<H->toString()<<" :- "<<B->toString()<<LanguageConstants::LINE_END<<"\n";
@@ -996,7 +1000,7 @@ predicate(P) ::= literal(L) DOT.{
 	}
 
 	std::string s1,s2;
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY){
 		cout<<P->toString(tree->domainList) + ".\n";
 	}
 
@@ -1036,7 +1040,7 @@ predicate(P) ::= number(N) literal(L).{
 		itr->setCompleted();
 	}
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY){
 		cout<<P->toString(N->toString()+SPACE, false);
 	}
 	if(tree->outputType == OutputType::OUTPUT_ASP){
@@ -1097,7 +1101,7 @@ predicate(P) ::= number(N) NEGATION NEGATION literal(L).{
 	*P = L->getPredicate();
 	P->notToBeCompleted();
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY){
 		tree->statHasDblNeg = true;
 		cout<<P->toString(N->toString()+SPACE, false);	
 	}
@@ -1190,7 +1194,7 @@ predicate(P) ::= number(N) NEGATION literal(L).{
 	*P = L->getPredicate();
 	P->notToBeCompleted();
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY){
 		cout<<P->toString(N->toString()+SPACE, false);
 	}
 	else if(tree->outputType == OutputType::OUTPUT_ASP){
@@ -1277,7 +1281,7 @@ predicate(P) ::= NEGATION NEGATION literal(L) DOT.{
 	tree->statHasDblNeg = true;
 	std::string s1; 
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY){
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY){
 		cout<<P->toString(s1, false);
 	}
 	else if(tree->outputType == OutputType::OUTPUT_ASP){
