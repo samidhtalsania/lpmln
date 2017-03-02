@@ -415,8 +415,14 @@ void Tree::completeRules(){
 				auxDecl = auxDecl.substr(0,auxDecl.size()-1);
 				auxLhs = auxLhs.substr(0,auxLhs.size()-1);
 				
-				auxDecl.append(")");
-				auxLhs.append(")");
+				//If aux has no arguments we need not close it
+				//Since a paren is added by default line 415,416 would inevitable remove it in all cases.
+				if (varMap.size() != 0)
+				{
+					auxDecl.append(")");
+					auxLhs.append(")");
+				}
+				
 				
 				size_t ar1 = static_cast<size_t>(auxPos.first);
 				size_t ar2 = static_cast<size_t>(auxPos.second-auxPos.first);
@@ -760,7 +766,12 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS, std::queue<int>& po
 			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
 			pos = posVector.front();
 			posVector.pop();
-			left += s.replace(s.find("="),1,"!=") + OR;
+			if(s.find("!=") != std::string::npos){
+				left += s.replace(s.find("!="),2,"=") + OR;	
+			}
+			else{
+				left += s.replace(s.find("="),1,"!=") + OR;
+			}
 		}
 		count++;
 	}
@@ -789,8 +800,15 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS){
 
 	int count = 0;
 	for(std::string &s : strs){
-		if(s.find("=") != std::string::npos){
+		if(s.find("!=") != std::string::npos){
 			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+
+			left += s.replace(s.find("!="),2,"=") + OR;
+			equalFound = true;
+		}
+		else if(s.find("=") != std::string::npos){
+			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+
 			left += s.replace(s.find("="),1,"!=") + OR;
 			equalFound = true;
 		}
@@ -831,11 +849,13 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 	std::string newRhsPart2;
 
 	bool isOrphanVars = false;
+	bool preIsOrphanVars = false;
 
 	for(auto it = holder.begin(); it != holder.end(); ++it){
 		std::string s = *it;
 		if (s.compare("EXIST") == 0){
 			isOrphanVars = true;
+			preIsOrphanVars = true;
 		}
 		else if (isOrphanVars){
 			std::vector<std::string> tempVector;
@@ -848,7 +868,7 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 		}
 	}
 
-	if(isOrphanVars)
+	if(preIsOrphanVars)
 		newRhs += "EXIST ";
 	for (auto it = orphanVars.begin(); it != orphanVars.end(); ++it){
 		newRhs += *it + ",";

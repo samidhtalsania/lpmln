@@ -208,7 +208,7 @@ std::string Predicate::toString(const std::string& s, bool period) const{
 		// 	str += ".";
 	}
 
-	if(LanguageConstants::TYPE == OutputType::OUTPUT_ALCHEMY){
+	if(LanguageConstants::TYPE == OutputType::OUTPUT_ALCHEMY || LanguageConstants::TYPE == OutputType::OUTPUT_TUFFY){
 		if(period)
 			str += ".\n";
 		else 
