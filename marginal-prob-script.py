@@ -3,7 +3,6 @@
 import gringo
 import math
 from sympy import *
-import pdb
 
 def main(prg):
     mode = 0
@@ -13,8 +12,17 @@ def main(prg):
     #     mode = 1
     #     var = var.split(",")
 
-    issoft = prg.get_const("issoft") == 'true'
-    isquiet = prg.get_const("quiet") == 'true'
+
+    if(prg.get_const("issoft").__str__() == 'true'):
+        issoft = True
+    else:
+        issoft = False
+
+    if(prg.get_const("quiet").__str__() == 'true'):
+        isquiet = True
+    else:
+        isquiet = False
+
     var = prg.get_const("q").__str__()
     if len(var) != 0:
         mode = 1
@@ -81,7 +89,7 @@ def main(prg):
         else:
             probability = float(limit(expr, sym, oo).evalf())
         if not probability == 0:
-            if isquiet:
+            if not isquiet:
                 print 'Probability of Answer %s : %s' % (key, probability)
             Node.probDict[key] = probability
         else:
