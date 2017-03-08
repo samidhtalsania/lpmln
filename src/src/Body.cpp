@@ -1,5 +1,7 @@
 #include "Body.h"
-#include "LanguageConstants.h"
+
+
+#define langCheck LanguageConstants::TYPE==OutputType::OUTPUT_TUFFY
 
 Body::Body(){}
 Body::~Body(){}
@@ -7,21 +9,41 @@ Body::~Body(){}
 
 void Body::appendStr(Predicate pred, bool trim, bool disjunction, bool conjunction, const std::set<std::string>& domainList){
 
+	int stat = pred.checkEquality();
+
 	if(disjunction){
-		bodyStr += LanguageConstants::DIS;
-		NNFbodyStr += LanguageConstants::CON;
+		if(stat != 0 && langCheck){
+			tuffyEqualityStr += " OR ";
+			tuffyNNFEqualityStr += " AND ";
+		}
+		else{
+			bodyStr += LanguageConstants::DIS;
+			NNFbodyStr += LanguageConstants::CON;
+		}
 	}
 	else if(conjunction){
-		bodyStr += LanguageConstants::CON;
-		NNFbodyStr += LanguageConstants::DIS;
+		if(stat != 0 && langCheck){
+			tuffyEqualityStr += " AND ";
+			tuffyNNFEqualityStr += " OR ";
+		}
+		else{
+			bodyStr += LanguageConstants::CON;
+			NNFbodyStr += LanguageConstants::DIS;
+		}
 	}
 
 	if (pred.isNegated()){
 		bodyNegation = true;
 	}
 
-	bodyStr += pred.toString(domainList);
-	NNFbodyStr += pred.toNNFString();
+	if (stat !=0 && langCheck){
+		tuffyEqualityStr += pred.toString(domainList);
+		tuffyNNFEqualityStr += pred.toNNFString();
+	}
+	else{
+		bodyStr += pred.toString(domainList);
+		NNFbodyStr += pred.toNNFString();
+	}
 	
 	if(trim){
 		bodyStr = bodyStr.substr(0,bodyStr.size()-3); 

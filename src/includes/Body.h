@@ -2,6 +2,9 @@
 #include <set>
 #include "Variable.h"
 #include "Predicate.h"
+#include "LanguageConstants.h"
+
+#define langCheck LanguageConstants::TYPE==OutputType::OUTPUT_TUFFY
 
 class Body
 {
@@ -14,11 +17,27 @@ public:
 		predList.push_back(p);
 	}
 
-	std::string toString() const{
+	std::string toString() {
+		if (langCheck){
+			//5 is size of  " AND "
+			if(tuffyEqualityStr.length() > 0){
+				tuffyEqualityStr = tuffyEqualityStr.substr(5, tuffyEqualityStr.length());
+				bodyStr += " , [" + tuffyEqualityStr + "]";  
+			}
+			return bodyStr;
+		}
 		return bodyStr;
 	}
 
-	std::string toNNFString() const{
+	std::string toNNFString() {
+		if (langCheck){
+			//4 is size of " OR "
+			if(tuffyNNFEqualityStr.length() > 0){
+				tuffyNNFEqualityStr = tuffyNNFEqualityStr.substr(4, tuffyNNFEqualityStr.length());
+				NNFbodyStr += " v [" + tuffyNNFEqualityStr + "]";
+			}
+			return NNFbodyStr ;
+		}
 		return NNFbodyStr;
 	}
 
@@ -45,6 +64,8 @@ private:
 	
 	std::string bodyStr;	
 	std::string NNFbodyStr;
+	std::string tuffyEqualityStr;
+	std::string tuffyNNFEqualityStr;
 
 	bool bodyNegation = false;
 };
