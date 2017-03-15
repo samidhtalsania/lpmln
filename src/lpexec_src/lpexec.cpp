@@ -104,36 +104,35 @@ int main(int argc, char **argv)
    string lpmln = "lpmlncompiler ";
    string alchemy = "infer ";
    string clingo = "clingo ";
-   string tuffy = "tuffy ";
+   string tuffy = " ";
 
    string help = "-h";
    string version = "-v";
 
-   string alch = "-mln";
-   string cli = "-clingo";
-   string tuf = "-tuffy";
+   string alch = "-a";
+   string cli = "-c";
+   string tuf = "-t";
 
 
    map<string, string> loptions ;
    map<string, string> aoptions ;
    map<string, string> coptions ;
 
-   /*
-      LPNMR_Draft related change.
-      Changed default solver to alchemy.
-   */
+  
 
-   bool execute_alch = true;
+   bool execute_alch = false;
    bool execute_cli = false;
    bool execute_tuf = false;
 
    set<string> lpset;
    set<string> alchset;
    set<string> clingoset;
+   set<string> tuffyset;
 
-   try{
-      FileConfig cf;
+ 
+   FileConfig cf;
 
+   if(cf.allGood){
       loptions = cf.getloptions();
       aoptions = cf.getaoptions();
       coptions = cf.getcoptions();
@@ -143,34 +142,22 @@ int main(int argc, char **argv)
       execute_cli = cf.getExecuteCli();
       execute_tuf = false;
    }
-   catch(...){
+   else{
+
       // No solver is specified in the config file. Need to pick it up from command line.
 
       //Default for lpmln: Solver is MLN, Input is MVSM
       loptions.insert(pair<string,string>("input","mvsm"));
       
-
-      //Compile for Clingo
-      /*
-         LPNMR_Draft related change.
-         Changed default solver to alchemy.
-      */
-      loptions.insert(pair<string,string>("solver","alchemy"));
+      //loptions.insert(pair<string,string>("solver","alchemy"));
       //max number of solutions for clingo
       coptions.insert(pair<string,string>("solutions","0"));
 
       pickUpFromCommandLine = true;
 
-      /*
-         LPNMR_Draft related change.
-         Changed default solver to alchemy.
-         Clingo disabled for now.
-      */
-
       execute_cli = false;
-      execute_alch = true;
-
-      
+      execute_alch = false;
+      execute_tuf = false;
    }
 
    uuid_t uuid;
@@ -191,6 +178,7 @@ int main(int argc, char **argv)
    }
 
    string inputFileName;
+   bool inputFileFound = false;
 
    int count = 0;
    for(int i=0 ; i < argc ; i++){
@@ -237,6 +225,7 @@ int main(int argc, char **argv)
       if(arg.compare(tuf) == 0){
          region = TUFFY;
          execute_tuf = true;
+         loptions["solver"] = "tuffy";
          continue;
       }
 
@@ -269,21 +258,11 @@ int main(int argc, char **argv)
                else{
                   // Its the input file
                   inputFileName = string(argv[i]);
-                  /*
-                  LPNMR_Draft related change.
-                  Alchemy is the only solver to be used
-                  and also the default solver.
-                  All options after the input file should default to alchemy.
-                  Also reading of file config is disabled.
-
-                  */
                   //confirm that it is a legit input file.
                   if(!file_exists(inputFileName)){
                      cerr << "Invalid argument at position:" << i;
                      exit(0);
                   }
-                  else
-                     region = ALCH;
                }
             }
             break;
@@ -299,12 +278,41 @@ int main(int argc, char **argv)
                   // isEvidenceUsed = true;
                   alchset.insert("query");
                }
-               alchemy  += SPACE + string(argv[i]) + SPACE;
+               //probably an input file. Check if it an input file.
+               if(file_exists(arg) && !inputFileFound){
+                  inputFileName = arg;
+                  inputFileFound = true;
+                  
+               }
+               else{
+                  alchemy  += SPACE + string(argv[i]) + SPACE;
+               }
             }
             break;
 
          case TUFFY:
-            tuffy  += SPACE + string(argv[i]) + SPACE;
+            {
+               // if(arg.compare("-e") == 0){
+               //    isEvidenceUsed = true;
+               //    // alchemyoptions.insert(argv[i]);
+               //    tuffyset.insert("evidence");
+               // }
+               // if(arg.compare("-queryFile") == 0){
+               //    // isEvidenceUsed = true;
+               //    tuffyset.insert("query");
+               // }
+
+               //probably an input file. Check if it an input file.
+               if(file_exists(arg) && !inputFileFound){
+                  inputFileName = arg;
+                  inputFileFound = true;
+                  
+               }
+               else{
+                  tuffy  += SPACE + string(argv[i]) + SPACE;
+               }
+            }
+            
             break;
 
          case CLINGO:
@@ -335,6 +343,9 @@ int main(int argc, char **argv)
             }
             if(it->second.compare("alchemy") == 0){
                str = "-M";
+            }
+            if(it->second.compare("tuffy") == 0){
+               str = "-T";
             }
          }
          if(it->first.compare("input") == 0){
@@ -399,10 +410,7 @@ int main(int argc, char **argv)
       runProcess(str);
    }
 
-
-
-  
-
+   
    if(execute_alch == true){
       // std::cout<<alchemy;
       std::cout<<"Alchemy Executed with Command:\n"+alchemy+"\n";
@@ -419,7 +427,11 @@ int main(int argc, char **argv)
 
 
    if(execute_tuf == true){
+      tuffy = "java -jar /usr/local/share/lpmln/tuffy.jar -conf /usr/local/share/lpmln/tuffy.conf -i input.mln -r output.txt " + tuffy;
+      std::cout<<"Tuffy Executed with Command:\n"+ tuffy +"\n";
       runProcess(tuffy);
+      string str = "cat output.txt";
+      runProcess(str);
    }
 
    

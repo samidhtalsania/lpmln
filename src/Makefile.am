@@ -2,7 +2,7 @@ INCLUDE = $(PROJECT_ROOT)/src/includes
 AM_CPPFLAGS = -I $(INCLUDE)
 AM_CFLAGS = -I $(INCLUDE)
 AM_CXXFLAGS = -I $(INCLUDE)
-bin_PROGRAMS = ../lpmlncompiler  lpmln2al lpmln2cl
+bin_PROGRAMS = ../lpmlncompiler  lpmln2mln lpmln2cl
 
 ___lpmlncompiler_SOURCES = \
 			main.cpp \
@@ -34,9 +34,9 @@ ___lpmlncompiler_SOURCES = \
 			src/LexerFactory.cpp \
 			src/LanguageConstants.cpp
 
-lpmln2al_LDADD = -luuid
+lpmln2mln_LDADD = -luuid
 
-lpmln2al_SOURCES = \
+lpmln2mln_SOURCES = \
 		lpexec_src/lpexec.cpp \
 		lpexec_src/FileConfig.cpp \
 		lpexec_src/NoLanguageSelectedException.cpp

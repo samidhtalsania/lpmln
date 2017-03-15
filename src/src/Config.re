@@ -76,8 +76,10 @@ Config::Config(int argc, char** argv){
 								}
 
 		"-T"					{
-									if(outputType == OutputType::OUTPUT_NONE)
+									if(outputType == OutputType::OUTPUT_NONE){
 										outputType = OutputType::OUTPUT_TUFFY;
+										optimizationLevel = OptimizationLevel::ALL_CLAUSES_AUX;
+									}
 									else
 										Config::showError(Error::INVALID_OT,i);
 									continue;	
@@ -128,6 +130,7 @@ Config::Config(int argc, char** argv){
 								}
 
 		"-o1"					{
+
 									optimizationLevel = OptimizationLevel::ORPHAN_AUX;
 									continue;
 								}

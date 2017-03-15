@@ -8,8 +8,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <exception>
 
-#include "exceptions/NoLanguageSelectedException.h"
+
+//#include "exceptions/NoLanguageSelectedException.h"
 
 using namespace std;
 
@@ -186,7 +188,10 @@ FileConfig::FileConfig(){
 	}
 
 	if((!execute_alch && !execute_cli) || fileCouldNotBeOpened){
-		throw NoLanguageSelectedException("No language selected from config File. Check to see if config file has the right syntax.");
+		// throw std::runtime_error("No language selected from config File. Check to see if config file has the right syntax.");
+		// throw std::exception();
+		allGood = false;
+		return;
 	}
 
 	//Parsing done

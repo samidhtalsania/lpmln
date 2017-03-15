@@ -32,6 +32,8 @@ public:
       return execute_cli;
    }
 
+   bool allGood = false;
+
 private:
    std::map<std::string, std::string> loptions;
    std::map<std::string, std::string> aoptions;
@@ -40,6 +42,7 @@ private:
    bool execute_alch = false;
    bool execute_cli = false;
    bool execute_tuf = false;
+
 
 
    std::string & rtrim(std::string & str);
