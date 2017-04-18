@@ -335,8 +335,27 @@ int main(int argc, char **argv){
 				vector<string> splitVecSpace;
 				float weight = 0;
 
+				bool isFuncUsed = false;
+				string funcValue = "";
+				string funcVar = "";
 
-				if(splitVec.size() == 1){
+				bool issoft = false;
+				//even if size is 2 it could be possibe that the first one is a function.
+				//check for this condition.
+				// if(splitVec.size() != 1){
+				// 	if (splitVec[0].find("@") == 0){
+				// 		/* code */
+				// 		isFuncUsed = true;
+				// 		// funcValue = splitVec[0];
+				// 		// splitVec.erase(splitVec.begin()); 
+				// 		// funcVar = funcValue.substr(funcValue.find("(")+1, 1);
+				// 		issoft = true;
+				// 	}
+				// }
+
+
+
+				if(splitVec.size() == 1 && !issoft){
 					//process it if its of the form 
 					// W H. or H.
 
@@ -344,10 +363,23 @@ int main(int argc, char **argv){
 					//Process soft rules of form W H.
 					try{
 						std::string::size_type sz;
-						float floatVal = stof(splitVecSpace[0],&sz); 
-						if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) throw std::runtime_error("inf/nan error");
+						float floatVal = 0;
+						//Cnotrols how weight is printed inside unsat atoms.
+						bool weightSwitch = false;
+
+						//Check if it is a function. 
+						if(splitVecSpace[0].find("@") == 0){
+							
+							weightSwitch = true;
+						}
+						else{
+							floatVal = stof(splitVecSpace[0],&sz); 
+							if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) 
+								throw std::runtime_error("inf/nan error");
 						
-						weight = floatVal;
+							weight = floatVal;
+						}
+						
 						
 						string newStr;
 
@@ -370,7 +402,10 @@ int main(int argc, char **argv){
 						newStr.pop_back();
 
 						string oldVars = vars;
-						vars = ",\""+ to_string(weight) + "\"" + vars ;
+						if(weightSwitch)
+							vars = "," + splitVecSpace[0] + vars ;
+						else
+							vars = ",\""+ to_string(weight) + "\"" + vars ;
 
 
 						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-";
@@ -378,8 +413,10 @@ int main(int argc, char **argv){
 						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
 						
 						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
-						tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string((int)(weight*mf)) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
-
+						if(weightSwitch)
+							tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + splitVecSpace[0] + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
+						else
+							tempstr +=  ".\n:~ unsat(" + to_string(unsatcount) + vars +"). [" + to_string((int)(weight*mf)) + "@0,"+ to_string(unsatcount)+ oldVars +"]\n";
 
 						cout<<tempstr;
 						
@@ -389,6 +426,9 @@ int main(int argc, char **argv){
 					catch(const std::exception& ex){
 						// It could be of type H. Process it.
 						
+						//additional check for @ clingo funcitons
+
+
 						if(mode == 1){
 							//Hard facts are untouched in Mode 1
 							cout << str + "\n";
@@ -400,8 +440,12 @@ int main(int argc, char **argv){
 
 						set<string> s = findVariables(str);
 						string vars;
-						for(auto itr = s.begin(); itr!=s.end();++itr)
-							vars += *itr + ",";
+						for(auto itr = s.begin(); itr!=s.end();++itr){
+							if(isFuncUsed && (*itr).compare(funcVar) == 0)
+								vars += funcValue + ",";
+							else
+								vars += *itr + ",";
+						}
 						if(vars.length() != 0){
 							vars.pop_back();
 							vars = "," + vars;
@@ -423,28 +467,43 @@ int main(int argc, char **argv){
 					// cout<<str + "\n";
 				}
 				else{
-					
 					trim(splitVec[0]);
 					split(splitVecSpace, splitVec[0], is_any_of(" "), token_compress_on);
 
 					string newStr;
 
+
+
 					for(unsigned int i=1;i<splitVecSpace.size();i++){
 						newStr += splitVecSpace[i] + " ";
 					}
+
 					string tempstr;
 					string weightString;
 					set<string> s;	
-					bool issoft = false;	
+					issoft = false;	
+					bool weightSwitch = false;
+
 								
 					try{
 						std::string::size_type sz;
-						float floatVal = stof(splitVecSpace[0],&sz); 
-						if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) throw std::runtime_error("inf/nan error");
-						weight = (floatVal);
-						// if(sz != splitVecSpace[0].length())
-						// 	throw std::invalid_argument( "the number is not a weight" );;
-						weightString = to_string((int)(weight*mf)) + "@0";
+						//Cnotrols how weight is printed inside unsat atoms.
+
+						//Check if it is a function. 
+						if(splitVecSpace[0].find("@") == 0){
+							weightSwitch = true;
+							weightString = splitVecSpace[0];
+						}
+						else{
+							float floatVal = stof(splitVecSpace[0],&sz); 
+							if(isinf(floatVal) || isnan(floatVal) || sz != splitVecSpace[0].length()) 
+								throw std::runtime_error("inf/nan error");
+
+							weight = (floatVal);
+							weightString = to_string((int)(weight*mf)) + "@0";
+						}
+						
+						
 						issoft = true;
 						s = findFreeVariables(newStr, splitVec[1]);
 					}
@@ -474,8 +533,12 @@ int main(int argc, char **argv){
 					splitVec[1].pop_back();
 					string probString = "";
 
-					if(issoft) probString += ",\""+to_string(weight)+"\"";
-					else probString += ",\"a\"";
+					if(issoft && !weightSwitch) 
+						probString += ",\""+to_string(weight)+"\"";
+					else if(weightSwitch)
+						probString += "," + splitVecSpace[0];
+					else 
+						probString += ",\"a\"";
 
 					string oldVars = vars;
 					vars = probString + vars;
