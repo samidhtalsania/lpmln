@@ -6,6 +6,7 @@ import os
 from math import exp
 from subprocess import Popen, PIPE
 
+
 def print_error(error, dest):
 	if error is not None:
 		if dest is not None:
@@ -24,14 +25,11 @@ def processOutput(output, mf):
 			
 
 def main():
-
 	parser = argparse.ArgumentParser(description='LPMLN2ASP')
-
 	parser.add_argument('-i', help='input file. [REQUIRED]', nargs=1)
 	parser.add_argument('-e', help='evidence file', nargs=1)
 	parser.add_argument('-r', help='output file. If not provided output would be to STDOUT', nargs=1)
-	parser.add_argument('-q', help='query for conditional probability. Example: fire, in(X), node(1,2)', nargs=1)
-	parser.add_argument('-qm', help='query for marginal probability. Only predicate name required. If -marginal option is used and -qm is not specified probability of all models is displayed. Example: fire, in, node', nargs=1)
+	parser.add_argument('-q', help='query predicate.', nargs=1)
 	parser.add_argument('-clingo', help='clingo options passed as it is to the solver. Pass all clingo options in \'single quotes\'', nargs=1)
 	parser.add_argument('-hr', help='[FALSE] Translate hard rules', action="store_true", default=False)
 	parser.add_argument('-marginal', help='[MAP] Use this option to activate marginal inference. Using -e defaults to MAP', action="store_true", default=False)
@@ -63,10 +61,11 @@ def main():
 	if args.quiet is True:
 		arglist.append('-c quiet=true')
 
-	if args.marginal is True and args.e is None:
+	if args.marginal is True:
 		arglist.append('--infer-type=query')
-		if args.qm is not None:
-			arglist.append('-c q='+args.qm[0])
+		
+	if args.q is not None:
+		arglist.append('-c q='+args.q[0])
 
 	if args.hr is True:
 		arglist.append('--tr-hr=true')
@@ -74,59 +73,14 @@ def main():
 	if args.clingo is not None:
 		arglist.append(args.clingo[0].strip("'"))
 
-	if args.e is not None:
-		#first create a temp file with double negated query.
-		with open('query.lp','w') as evidFile:
-			if args.q is not None:
-				evidFile.write(":- not "+ args.q[0] + ".\n")
-
-		arglist.append('--opt-mode=enum')
-		arglist.append('0')
-
+	if args.e is not None and os.path.isfile(args.e[0]):
 		arglist.append(args.e[0])
 
-
-		process = Popen(arglist, stdout=PIPE)
-		(output, err) = process.communicate()
-		exit_code = process.wait()
-
-
-		print_error(err, args.r)
-
-		if args.d is not None:
-			print_output(output, args.r)
-
-		arglist.append('query.lp')
-
-		val1 = processOutput(output, mf)
-	
-		process = Popen(arglist, stdout=PIPE)
-		(output, err) = process.communicate()
-		exit_code = process.wait()
-		print_error(err, args.r)
-		
-
-
-		if args.d is True:
-			print_output(output, args.r)
-
-		val2 = processOutput(output, mf)
-		
-		try:
-			#empty evidence
-			if args.q[0] is not None:
-				print_output(args.q[0] + " %s\n\n" % (val2/val1), args.r)
-		except ZeroDivisionError:
-			print >> sys.stderr, "Error: Denominator value is 0. Please check input."
-
-
-	else:
-		print "[Log] Evidence file not provided. Running MAP/Marginal inference."
-		process = Popen(arglist, stdout=PIPE)
-		(output, err) = process.communicate()
-		exit_code = process.wait()
-		print_error(err, args.r)
-		print_output(output, args.r)
+	process = Popen(arglist, stdout=PIPE)
+	(output, err) = process.communicate()
+	exit_code = process.wait()
+	print_error(err, args.r)
+	print_output(output, args.r)
 		
 
 def print_output(output, dest):
@@ -135,9 +89,6 @@ def print_output(output, dest):
 				outputFile.write(output)
 	else:
 		print output
-
-
-
 
 if __name__ == "__main__":
     main()
