@@ -499,6 +499,8 @@ void Tree::completeFacts(){
 		int count;
 		std::string auxRhs;
 
+		std::vector<std::string> tuffySingleConst;
+
 		FactCompletion f;
 		for (std::multimap<std::string,FactCompletion>::iterator it=ret.first; it!=ret.second; ++it){
 			//it.second are FactCompletions
@@ -571,6 +573,7 @@ void Tree::completeFacts(){
 			if(strRhs.size() == 0) continue;
 			
 			if(level == OptimizationLevel::ALL_CLAUSES_AUX){
+				bool appendAuxRhs = false;
 				if(outputType == OutputType::OUTPUT_ALCHEMY){
 					std::cout << auxDecl << "\n";
 				}
@@ -579,9 +582,23 @@ void Tree::completeFacts(){
 				}
 				if(outputType == OutputType::OUTPUT_ALCHEMY)
 					std::cout << auxLhs << " <=> " << strRhs << ".\n";
-				else
-					printTuffyAux(auxLhs, strRhs, posVector);
-				auxRhs.append(auxLhs).append(" v ");
+				else{
+					//optimize this
+					//same thing happening in the function call
+					std::vector<std::string> strs;
+					boost::split(strs, strRhs, boost::is_any_of(LanguageConstants::SPLIT_CON), boost::token_compress_on);
+
+					if(strs.size()>1){
+						printTuffyAux(auxLhs, strRhs, posVector);
+					}
+					else{
+						tuffySingleConst.push_back(strRhs);
+						appendAuxRhs = true;
+					}
+
+				}
+				if(!appendAuxRhs)
+					auxRhs.append(auxLhs).append(" v ");
 				strRhs.clear();
 			}
 
@@ -592,7 +609,31 @@ void Tree::completeFacts(){
 		if(level == OptimizationLevel::ALL_CLAUSES_AUX){
 			strRhs = auxRhs;
 		}
+
+		std::string tempStr = "[";
+		if(tuffySingleConst.size() > 0){
+			for(std::string& s: tuffySingleConst)
+				tempStr += s + " OR ";
+		}
+		
+
+		if(tempStr.length() > 1){
+			tempStr = tempStr.substr(0,tempStr.length()-4);
+			tempStr += "]";
+			if(strRhs.length() > 0)
+				strRhs += " v " + tempStr;
+			else
+				strRhs = tempStr;
+
+			strRhs += "   ";
+		}
+
+
+		
 		if(strRhs.size() == 0) continue;
+		
+
+
 		strRhs = strRhs.substr(0,strRhs.size()-3);
 		
 		strLhs.append("(");
@@ -602,6 +643,7 @@ void Tree::completeFacts(){
 		strLhs = strLhs.substr(0,strLhs.size()-1);
 		strLhs.append(")");
 
+		
 		std::string completedStr = completedLiterals[strLhs];
 		if(completedStr.empty())
 			completedLiterals[strLhs] = strRhs;
@@ -756,6 +798,11 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS, std::queue<int>& po
 
 	boost::split(strs, RHS, boost::is_any_of(LanguageConstants::SPLIT_CON), boost::token_compress_on);
 
+	if(strs.size() == 1){
+		LHS = std::string("[") + RHS + std::string("]");
+		return;
+	}
+
 	int count = 0;
 	for(std::string &s : strs){
 		if(pos != count){
@@ -843,13 +890,15 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 	// std::cout << LHS << " => " << RHS << ".\n";
 	std::set<std::string> orphanVars;
 	std::vector<std::string> holder;
-	boost::split(holder, RHS, boost::is_any_of(" "), boost::token_compress_on);
+	boost::split(holder, RHS, boost::is_any_of("v"), boost::token_compress_on);
 	
 	std::string newRhs;
 	std::string newRhsPart2;
+	std::string tuffyConstants;
 
 	bool isOrphanVars = false;
 	bool preIsOrphanVars = false;
+	bool preConstant = false;
 
 	for(auto it = holder.begin(); it != holder.end(); ++it){
 		std::string s = *it;
@@ -864,8 +913,21 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 			isOrphanVars = false;
 		}
 		else{
-			newRhsPart2 += s + " ";
+			// if(preConstant){
+			// 	tuffyConstants += s + " ";
+			// 	preConstant = false;
+			// }
+			if(s.find("[") == 0){
+				tuffyConstants += s;
+				// preConstant = true;
+			}
+			else
+				newRhsPart2 += s + " v ";
 		}
+	}
+
+	if(tuffyConstants.length() == 0){
+		newRhsPart2 = newRhsPart2.substr(0,newRhsPart2.length()-3);
 	}
 
 	if(preIsOrphanVars)
@@ -874,7 +936,7 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 		newRhs += *it + ",";
 	}
 	newRhs = newRhs.substr(0, newRhs.length()-1);
-	std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << ".\n";
+	std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << tuffyConstants <<".\n";
 
 
 
