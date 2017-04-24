@@ -110,7 +110,7 @@ public:
 	}
 
 
-	bool useAux(bool hasOrphan){
+	bool useAux(bool hasOrphan, int vectorCount){
 		if (level == OptimizationLevel::OPTI_NONE){
 			return false;
 		}
@@ -118,7 +118,13 @@ public:
 			return hasOrphan;
 		}
 		else{
-			return true;
+			//This returns true even if there is only a single literal on the right hand side.
+           //This is unnecessary and artificially inflates the number of total atoms
+           if(vectorCount > 1)
+                   return true;
+           else
+                   return hasOrphan;
+
 		}
 	}
 

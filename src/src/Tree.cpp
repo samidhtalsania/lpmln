@@ -1,5 +1,6 @@
 #include "Tree.h"
 #include "LanguageConstants.h"
+#include "Util.h"
 
 #include <stack> 
 #include <sstream>
@@ -101,6 +102,7 @@ void Tree::completeRules(){
 		for (std::multimap<std::string,RuleCompletion>::iterator it=ret.first; it!=ret.second; ++it)
 		{
 			r = it->second;
+			int bodyVecCount = 0;
 			std::set<std::pair<std::string,std::string>> orphanVarsSet;
 			if(outputType == OutputType::OUTPUT_ALCHEMY){
 				strRhs.append("(");
@@ -133,11 +135,12 @@ void Tree::completeRules(){
 				{
 					if(constantInner.first == constant.first){
 						strRhs.append(constantInner.second.second).append("=").append(constant.second.second).append(LanguageConstants::SPLIT_CON);
+						bodyVecCount++;
 					}
 				}
 			}
 			
-			int bodyVecCount = 0;
+			
 			for(auto &pred : r.getBody())
 			{
 				/*		
@@ -351,7 +354,8 @@ void Tree::completeRules(){
 
 			strRhs = strRhs.substr(0,strRhs.size()-3);
 
-			strRhs.append(")");
+			if(outputType == OutputType::OUTPUT_ALCHEMY)
+				strRhs.append(")");
 			// if(r.checkOrphan())
 			if(r.checkOrphan())
 			{
@@ -362,7 +366,11 @@ void Tree::completeRules(){
 			}
 			else{
 				// strRhs.append(")");
-				auxPos.second = strRhs.size()-1;
+				//For tuffy this trimming is not required;
+				if(outputType == OutputType::OUTPUT_ALCHEMY)
+					auxPos.second = strRhs.size()-1;
+				else 
+					auxPos.second = strRhs.size();
 			}
 			strRhs.append(" v ");
 			
@@ -380,7 +388,7 @@ void Tree::completeRules(){
 			std::queue<int> emptyQueue;
 
 
-			if(useAux(r.checkOrphan()))
+			if(useAux(r.checkOrphan(), bodyVecCount))
 			{
 				std::string auxVar;
 				std::map<std::string,std::string> auxDeclMap;
@@ -426,7 +434,12 @@ void Tree::completeRules(){
 				
 				size_t ar1 = static_cast<size_t>(auxPos.first);
 				size_t ar2 = static_cast<size_t>(auxPos.second-auxPos.first);
-				auxRhs = strRhs.substr(ar1, ar2);
+
+				//BAD HACK
+				if(r.checkOrphan() && outputType == OutputType::OUTPUT_TUFFY)
+					auxRhs = strRhs.substr(ar1, ar2+1);	
+				else
+					auxRhs = strRhs.substr(ar1, ar2);
 				
 				ar1 = static_cast<size_t>(auxPos.first);
 				ar2 = static_cast<size_t>(auxPos.second-auxPos.first);
@@ -435,13 +448,14 @@ void Tree::completeRules(){
 					strRhs.replace(ar1,ar2, auxLhs);
 				}
 				//TODO fix this
+				//Change corresponding to line 366
 				else if(outputType == OutputType::OUTPUT_TUFFY){
 					if(ar1 == 0)
-						strRhs.replace(ar1, ar2+1, auxLhs);
+						strRhs.replace(ar1, ar2, auxLhs);
 					else if(strRhs.compare(ar1-1,1,"(") == 0)
 						strRhs.replace(ar1-1, ar2+2, auxLhs);
 					else
-						strRhs.replace(ar1, ar2+1, auxLhs);
+						strRhs.replace(ar1, ar2, auxLhs);
 
 				}
 				
@@ -861,7 +875,7 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS){
 		}
 		else{
 			std::cout << LHS << " => " << s <<".\n";
-			leftPart2 += s + " v ";
+			leftPart2 += "!"+ s + " v ";
 		}
 		// if(pos != count){
 		// 	std::cout << LHS << " => " << s <<".\n";
@@ -878,6 +892,7 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS){
 	
 
 	std::replace( RHS.begin(), RHS.end(), '*', ',');
+	Util::replace( leftPart2, "!!", " ");
 
 	if(equalFound)
 		std::cout << LHS << " v " << leftPart2 << left <<".\n";
@@ -890,7 +905,10 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 	// std::cout << LHS << " => " << RHS << ".\n";
 	std::set<std::string> orphanVars;
 	std::vector<std::string> holder;
-	boost::split(holder, RHS, boost::is_any_of("v"), boost::token_compress_on);
+	boost::split(holder, RHS, boost::is_any_of(" "), boost::token_compress_on);
+
+	holder.erase(std::remove_if(holder.begin(), holder.end(), 
+                       [](std::string s) { return s.compare("v") == 0; }), holder.end());
 	
 	std::string newRhs;
 	std::string newRhsPart2;
@@ -918,8 +936,20 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 			// 	preConstant = false;
 			// }
 			if(s.find("[") == 0){
-				tuffyConstants += s;
+				do{
+					s = *it;
+					tuffyConstants += s + " ";
+					++it;
+
+					if(it == holder.end())
+						break;	
+				}while(s.find("]") == std::string::npos);
+
+				--it;
+				
 				// preConstant = true;
+				if(it == holder.end())
+					break;
 			}
 			else
 				newRhsPart2 += s + " v ";
