@@ -966,8 +966,13 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 		newRhs += *it + ",";
 	}
 	newRhs = newRhs.substr(0, newRhs.length()-1);
-	std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << tuffyConstants <<".\n";
 
+	if(newRhsPart2.length() == 0){
+		std::cout << newRhs << " !" << LHS << " v " << tuffyConstants <<".\n";	
+	}
+	else{
+		std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << tuffyConstants <<".\n";
+	}
 
 
 }
