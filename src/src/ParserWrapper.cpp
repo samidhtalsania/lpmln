@@ -159,11 +159,11 @@ int ParserWrapper::parse(){
       cout<<str;/*Prints the erroneous line*/
       std::cout.rdbuf(coutbuf);
       std::cout << e.what();
-      std::cout<<"Line:"<<lineCount<<" Column:"<<lexeme.current - lexeme.begin<<"\n";
+      std::cerr<<"Line:"<<lineCount<<" Column:"<<lexeme.current - lexeme.begin<<"\n";
       throw e;
     }
     catch(const std::exception& e) {
-      std::cout << e.what() << '\n';
+      std::cerr << e.what() << '\n';
       throw e;
     }
   }

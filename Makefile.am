@@ -9,4 +9,5 @@ install-data-hook:
 ##	cp $(abs_top_srcdir)/tuffy.jar $(pkgdatadir)/tuffy.jar
 ##	cp $(abs_top_srcdir)/tuffy.conf $(pkgdatadir)/tuffy.conf
 	cp $(abs_top_srcdir)/lpmln2asp.py $(bindir)/lpmln2asp
+	cp $(abs_top_srcdir)/lpmln2mln.py $(bindir)/lpmln2mln
 	
