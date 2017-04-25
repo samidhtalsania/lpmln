@@ -96,6 +96,7 @@ std::string Predicate::toString(const std::set<std::string>& domainList) const {
 	if(LanguageConstants::TYPE == OutputType::OUTPUT_ASP){
 		Util::toLower(tempStr);
 	}
+
 	str += tempStr;
 
 	if(tokens.size() != 0){
@@ -115,6 +116,11 @@ std::string Predicate::toString(const std::set<std::string>& domainList) const {
 
 				}
 				
+			}
+
+			if(LanguageConstants::TYPE == OutputType::OUTPUT_ROCKIT){
+				if(constantLocation.find(*i) != constantLocation.end())
+					tempStr = "\"" + tempStr + "\"";
 			}
 			
 			str += tempStr;
@@ -156,7 +162,12 @@ std::string Predicate::toNNFString() const{
 
 		for (auto i = tokens.begin(); i != tokens.end(); ++i)
 		{
-			str += *i;
+			std::string tempStr = *i;
+			if(LanguageConstants::TYPE == OutputType::OUTPUT_ROCKIT){
+				if(constantLocation.find(*i) != constantLocation.end())
+					tempStr = "\"" + tempStr + "\"";
+			}
+			str += tempStr;
 			str += ",";
 		}
 
@@ -194,6 +205,11 @@ std::string Predicate::toString(const std::string& s, bool period) const{
 				}
 			}
 
+			if(LanguageConstants::TYPE == OutputType::OUTPUT_ROCKIT){
+				if(constantLocation.find(*it) != constantLocation.end())
+					tempStr = "\"" + tempStr + "\"";
+			}
+
 			str += tempStr;
 			str += ",";
 		}
@@ -208,12 +224,16 @@ std::string Predicate::toString(const std::string& s, bool period) const{
 		// 	str += ".";
 	}
 
-	if(LanguageConstants::TYPE == OutputType::OUTPUT_ALCHEMY || LanguageConstants::TYPE == OutputType::OUTPUT_TUFFY){
+	if(LanguageConstants::TYPE == OutputType::OUTPUT_ALCHEMY 
+		|| LanguageConstants::TYPE == OutputType::OUTPUT_TUFFY){
+		
 		if(period)
 			str += ".\n";
 		else 
 			str += "\n";	
 	}
+
+
 	
 	return str;
 }

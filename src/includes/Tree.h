@@ -137,8 +137,17 @@ public:
 	/*Required for turning weighted programs into clingo*/
 	// int unsatCount = 0;
 
+	bool isRockit = false;
+
 	void printASPRuleHB(Head*, Body*);
 
 	std::set<std::string> findVariables(const std::string&);
 	std::set<std::string> findFreeVariables(const std::string&, const std::string&);
+
+	std::set<std::string> rockitHeader;
+
+	void switchOpType(){
+		outputType = OutputType::OUTPUT_TUFFY;
+		isRockit = true;
+	}
 };

@@ -350,8 +350,8 @@ prog ::= prog NEWLINE domain(D). {
 	for(auto& v : D->getVars()){
 		tree->domainList.insert(v);	
 	}
-	// domains not printed in tuffy
-	if(tree->outputType != OutputType::OUTPUT_TUFFY)
+	// domains not printed in tuffy, rockit
+	if(tree->outputType != OutputType::OUTPUT_TUFFY && tree->outputType != OutputType::OUTPUT_ROCKIT)
 		cout<<D->toString(false);
 	delete D;
 }
@@ -362,7 +362,7 @@ prog ::= domain(D). {
 		tree->domainList.insert(v);	
 	}
 	// domains not printed in tuffy
-	if(tree->outputType != OutputType::OUTPUT_TUFFY)
+	if(tree->outputType != OutputType::OUTPUT_TUFFY && tree->outputType != OutputType::OUTPUT_ROCKIT)
 		cout<<D->toString(false);
 	delete D;
 }
@@ -403,7 +403,7 @@ rule(R) ::= REVERSE_IMPLICATION body(B) DOT.{
 					<<LanguageConstants::LINE_END
 					<<"\n";
 	}
-	else if(tree->outputType == OutputType::OUTPUT_TUFFY){
+	else if(tree->outputType == OutputType::OUTPUT_TUFFY || tree->outputType == OutputType::OUTPUT_ROCKIT){
 		std::cout<<B->toNNFString()
 					<<LanguageConstants::LINE_END
 					<<"\n";
@@ -429,7 +429,7 @@ rule(R) ::= number(N) REVERSE_IMPLICATION body(B).{
 					<<")"
 					<<"\n";
 	}
-	else if(tree->outputType == OutputType::OUTPUT_TUFFY){
+	else if(tree->outputType == OutputType::OUTPUT_TUFFY || tree->outputType == OutputType::OUTPUT_ROCKIT){
 
 		std::cout<<N->toString()<<SPACE
 					
@@ -584,6 +584,13 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 					<<"\n";
 		if(tree->outputType == OutputType::OUTPUT_ASP)
 			tree->printASPRuleHB(H,B);
+		if(tree->outputType == OutputType::OUTPUT_ROCKIT){
+			std::cout<<B->toNNFString()
+					<<" v "
+					<<H->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n";
+		}
 	}
 	else{
 		// RULE_COMPLETION_BH(B,H);
@@ -602,6 +609,13 @@ rule(R) ::= head(H) REVERSE_IMPLICATION body(B) DOT.{
 					<<"\n";
 		if(tree->outputType == OutputType::OUTPUT_ASP)
 			tree->printASPRuleHB(H,B);
+		if(tree->outputType == OutputType::OUTPUT_ROCKIT){
+			std::cout<<B->toNNFString()
+					<<" v "
+					<<H->toString()
+					<<LanguageConstants::LINE_END
+					<<"\n";
+		}
 	}
 	delete B;
 	delete H;
@@ -672,10 +686,17 @@ rule(R) ::= number(N) head(H) REVERSE_IMPLICATION body(B). {
 					<<"\n";
 
 		tree->weak_constraint_counter++; 
-
-
 	}
 
+	if(tree->outputType == OutputType::OUTPUT_ROCKIT){
+		std::cout<< N->toString()
+				<<SPACE
+				<<B->toNNFString()
+				<<" v "
+				<<H->toString()
+				<<"\n";
+		
+	}
 
 	delete B;
 	delete H;
@@ -705,6 +726,15 @@ rule(R) ::= number(N) NEGATION NEGATION LBRACKET head(H) REVERSE_IMPLICATION bod
 				<<B->toString()
 				<<LanguageConstants::LINE_END
 				<<"\n"; 
+
+	if(tree->outputType == OutputType::OUTPUT_ROCKIT){
+		std::cout<< N->toString() 
+				<< SPACE 
+				<<B->toNNFString()
+				<<" v "
+				<<H->toString()
+				<<"\n"; 
+	}
 	
 	delete B;
 	delete H;
@@ -725,8 +755,9 @@ rule(R) ::= LPAREN head(H) RPAREN REVERSE_IMPLICATION body(B) DOT.{
 			throw syntax_exception("Error : Invalid number of arguments in some literal in the Rule.\n");
 	}
 
-	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY)
+	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY || tree->outputType == OutputType::OUTPUT_ROCKIT)
 		std::cout<<COMMENT<<B->toString()<<" => "<<H->toString()<<"\n";
+	
 	if(tree->outputType == OutputType::OUTPUT_ASP)
 		std::cout<<H->toString()<<" :- "<<B->toString()<<LanguageConstants::LINE_END<<"\n";
 	delete B;
@@ -1042,6 +1073,9 @@ predicate(P) ::= number(N) literal(L).{
 
 	if(tree->outputType == OutputType::OUTPUT_ALCHEMY || tree->outputType == OutputType::OUTPUT_TUFFY){
 		cout<<P->toString(N->toString()+SPACE, false);
+	}
+	if(tree->outputType == OutputType::OUTPUT_ROCKIT){
+		cout<<P->toString(N->toString()+SPACE, false)<<"\n";	
 	}
 	if(tree->outputType == OutputType::OUTPUT_ASP){
 		std::set<std::string> uniqueSet = tree->findVariables(P->toString(tree->domainList));

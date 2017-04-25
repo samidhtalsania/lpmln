@@ -5,6 +5,8 @@
 #include <set>
 
 #include "Variable.h"
+#include "LanguageConstants.h"
+
 
 class Predicate
 {
@@ -121,10 +123,13 @@ private:
 	bool doubleNegation = false; 
 	bool isAggregate = false;
 
-	void checkConstant(std::string str,  const std::set<std::string>& domainList){
+	void checkConstant(std::string& str,  const std::set<std::string>& domainList){
 		auto it = domainList.find(str);
 		if (it != domainList.end()){
 			constantLocation.insert(str);
+			// if(LanguageConstants::TYPE == OutputType::OUTPUT_ROCKIT){
+			// 	str = "\"" + str + "\"";
+			// }
 		}
 	}
 };

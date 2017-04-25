@@ -41,6 +41,7 @@ enum OutputType{
 	OUTPUT_ALCHEMY,
 	OUTPUT_ASP,
 	OUTPUT_TUFFY,
+	OUTPUT_ROCKIT,
 	OUTPUT_NONE
 };
 
@@ -81,5 +82,6 @@ private:
 	bool errors = false;
 	bool help = false;
 	bool debug = true;
+
 	char** args;
 };

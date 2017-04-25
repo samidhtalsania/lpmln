@@ -85,6 +85,16 @@ Config::Config(int argc, char** argv){
 									continue;	
 								}
 
+		"-R"					{
+									if(outputType == OutputType::OUTPUT_NONE){
+										outputType = OutputType::OUTPUT_TUFFY;
+										optimizationLevel = OptimizationLevel::ALL_CLAUSES_AUX;
+									}
+									else
+										Config::showError(Error::INVALID_OT,i);
+									continue;	
+								}
+
 
 
 		"-p"					{

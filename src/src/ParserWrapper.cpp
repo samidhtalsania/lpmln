@@ -55,7 +55,7 @@ int ParserWrapper::parse(){
   //Tuffy related settings
  
   
-  if(outputType == OutputType::OUTPUT_TUFFY){
+  if(outputType == OutputType::OUTPUT_TUFFY || outputType == OutputType::OUTPUT_ROCKIT){
     coutbuf = std::cout.rdbuf(); //save old buf
     std::cout.rdbuf(ofs.rdbuf()); //redirect std::cout to out.txt!
   }
@@ -176,11 +176,17 @@ int ParserWrapper::parse(){
 }
 
 void ParserWrapper::parseComplete(){
+
+  if(outputType == OutputType::OUTPUT_ROCKIT){
+    tree->switchOpType();
+    outputType = OutputType::OUTPUT_TUFFY;
+  }
+
 	//Do completion
 	tree->completeFacts();
 	tree->completeRules();
   tree->completeDeclarations();
-  if(outputType == OutputType::OUTPUT_TUFFY){
+  if(outputType == OutputType::OUTPUT_TUFFY || outputType == OutputType::OUTPUT_ROCKIT){
     ofstream myfile;
     myfile.open ("tuffy-out-headers.mln");
     myfile << tree->getTuffyAuxHeaders();

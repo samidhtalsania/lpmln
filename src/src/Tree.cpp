@@ -13,6 +13,11 @@
 Tree::Tree(OptimizationLevel _level, OutputType _type){
 	level = _level;
 	outputType = _type;
+	// if(_type == OutputType::OUTPUT_ROCKIT){
+	// 	outputType = OutputType::OUTPUT_TUFFY;
+	// 	isRockit = true;
+	// }
+
 	LanguageConstants::init(_type);
 }
 
@@ -295,7 +300,10 @@ void Tree::completeRules(){
 					else
 					{
 						if(domainList.find(vars) != domainList.end()){
-							strRhs.append(vars).append(",");
+							if(isRockit)
+								strRhs.append("\"").append(vars).append("\"").append(",");	
+							else
+								strRhs.append(vars).append(",");
 							pos++;
 							continue;	
 						}
@@ -625,15 +633,33 @@ void Tree::completeFacts(){
 		}
 
 		std::string tempStr = "[";
+		std::string rockitStr;
 		if(tuffySingleConst.size() > 0){
-			for(std::string& s: tuffySingleConst)
+			for(std::string& s: tuffySingleConst){
+				std::string constantName = s.substr(s.find("=")+1, s.length()-1);
+				rockitStr = rockitStr + "L" + constantName + "Pred(\""+ constantName+"\") v "; 
+				
+
+				if(rockitHeader.find("L" + constantName + "Pred(lpmlnConstant)") == rockitHeader.end()){
+					tuffyAuxHeaders += "L" + constantName + "Pred(lpmlnConstant)\n";
+					rockitHeader.insert("L" + constantName + "Pred(lpmlnConstant)");	
+				}
+
+
+				//ADD this t aux file.
 				tempStr += s + " OR ";
+			}
 		}
 		
+		if(isRockit)
+			tempStr = rockitStr;
 
 		if(tempStr.length() > 1){
 			tempStr = tempStr.substr(0,tempStr.length()-4);
-			tempStr += "]";
+			if(!isRockit)
+				tempStr += "]";
+			else
+				tempStr += ")";
 			if(strRhs.length() > 0)
 				strRhs += " v " + tempStr;
 			else
@@ -853,28 +879,66 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS){
 
 	std::vector<std::string> strs;
 	std::string left;
+	std::string rockitLeft;
 	std::string leftPart2;
 	std::string OR = " OR ";
+	std::string rockitOr = " v ";
 	bool equalFound = false;
 	
 	boost::split(strs, RHS, boost::is_any_of(LanguageConstants::SPLIT_CON), boost::token_compress_on);
 
 	int count = 0;
 	for(std::string &s : strs){
-		if(s.find("!=") != std::string::npos){
-			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+		std::string rockitPredConstant;
 
-			left += s.replace(s.find("!="),2,"=") + OR;
+		if(s.find("!=") != std::string::npos){
+			if(isRockit){
+				std::string constantName = s.substr(s.find("!")+2, s.length()-1);
+				rockitPredConstant = "L" + constantName + "Pred(\""+ constantName+"\")";
+
+				rockitLeft += rockitPredConstant + rockitOr; 
+				
+				if(rockitHeader.find("L" + constantName + "Pred(lpmlnConstant)") == rockitHeader.end()){
+					tuffyAuxHeaders += "L" + constantName + "Pred(lpmlnConstant)\n";
+					rockitHeader.insert("L" + constantName + "Pred(lpmlnConstant)");	
+				}
+				std::cout << "!" <<LHS << " v !" << rockitPredConstant <<".\n";		
+			}
+			else {
+				std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+				left += s.replace(s.find("!="),2,"=") + OR;
+			}
+
 			equalFound = true;
 		}
 		else if(s.find("=") != std::string::npos){
-			std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+			if(isRockit){
+				std::string constantName = s.substr(s.find("=")+1, s.length()-1);
+				rockitPredConstant = "L" + constantName + "Pred(\""+ constantName+"\")";
 
-			left += s.replace(s.find("="),1,"!=") + OR;
+				rockitLeft += "!" + rockitPredConstant + rockitOr; 
+				
+				if(rockitHeader.find("L" + constantName + "Pred(lpmlnConstant)") == rockitHeader.end()){
+					tuffyAuxHeaders += "L" + constantName + "Pred(lpmlnConstant)\n";
+					rockitHeader.insert("L" + constantName + "Pred(lpmlnConstant)");	
+				}
+				std::cout << "!" <<LHS << " v " << rockitPredConstant <<".\n";		
+			}
+			else{
+				std::cout << "!" <<LHS << " v [" << s <<"].\n";	
+				left += s.replace(s.find("="),1,"!=") + OR;
+			}
+
+
+			
 			equalFound = true;
 		}
 		else{
-			std::cout << LHS << " => " << s <<".\n";
+			if(isRockit)
+				std::cout <<"!"<< LHS << " v " << s <<".\n";
+			else
+				std::cout << LHS << " => " << s <<".\n";
+
 			leftPart2 += "!"+ s + " v ";
 		}
 		// if(pos != count){
@@ -888,13 +952,23 @@ void Tree::printTuffyAux(std::string& LHS, std::string& RHS){
 		// count++;
 	}
 
-	left = "[" + left.substr(0, left.length() - OR.length()) + "]";
-	
+	if(isRockit)
+		rockitLeft = rockitLeft.substr(0, rockitLeft.length() - rockitOr.length());
+	else
+		left = "[" + left.substr(0, left.length() - OR.length()) + "]";
 
+	
 	std::replace( RHS.begin(), RHS.end(), '*', ',');
 	Util::replace( leftPart2, "!!", " ");
 
-	if(equalFound)
+
+	if(isRockit){
+		if (rockitLeft.length() == 0){
+			leftPart2 = leftPart2.substr(0,leftPart2.length()-3);
+		}
+		std::cout << LHS << " v " << leftPart2 << rockitLeft <<".\n";
+	}
+	else if(equalFound)
 		std::cout << LHS << " v " << leftPart2 << left <<".\n";
 	else
 		std::cout << RHS << " => " << LHS <<".\n";
@@ -960,20 +1034,29 @@ void Tree::printTuffyExist(const std::string& LHS, std::string& RHS){
 		newRhsPart2 = newRhsPart2.substr(0,newRhsPart2.length()-3);
 	}
 
-	if(preIsOrphanVars)
+	if(preIsOrphanVars && !isRockit)
 		newRhs += "EXIST ";
+	else if(preIsOrphanVars && isRockit)
+		newRhs += "|";
+	
 	for (auto it = orphanVars.begin(); it != orphanVars.end(); ++it){
 		newRhs += *it + ",";
 	}
 	newRhs = newRhs.substr(0, newRhs.length()-1);
 
+	if(isRockit && preIsOrphanVars)
+		newRhs += "|";
+
 	if(newRhsPart2.length() == 0){
 		std::cout << newRhs << " !" << LHS << " v " << tuffyConstants <<".\n";	
 	}
 	else{
-		std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << tuffyConstants <<".\n";
+		if(isRockit && preIsOrphanVars)
+			std::cout << newRhs << " !" << LHS << " v " << newRhsPart2 << tuffyConstants <<" >= 1\n";
+		else if(isRockit)
+			std::cout << newRhs << " !" << LHS << " v " << newRhsPart2 << tuffyConstants <<".\n";
+		else	
+			std::cout << newRhs << " " << LHS << " => " << newRhsPart2 << tuffyConstants <<".\n";
 	}
-
-
 }
 
