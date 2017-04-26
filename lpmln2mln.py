@@ -109,8 +109,8 @@ def main():
 
 
 
-		if args.extra is not None:
-			inferarglist.append(args.extra[0])
+		if args.mln is not None:
+			inferarglist.append(args.mln[0])
 
 		temp = " ".join(x for x in inferarglist)
 		print '[LOG] Alchemy executed with: \n'+ temp 
@@ -152,8 +152,8 @@ def main():
 			print_error("Query required.", None)
 			sys.exit(0)
 
-		if args.extra is not None:
-			tuffyarglist.append(args.extra[0])
+		if args.mln is not None:
+			tuffyarglist.append(args.mln[0])
 
 		print "Execute the following line in the location of tuffy jar file:\n"
 		print " ".join(x for x in tuffyarglist)
