@@ -15,14 +15,14 @@ def print_error(error, dest):
 			print >> sys.stderr, error
 	
 			
-
+#-alchemy instead of -alch
 def main():
 	parser = argparse.ArgumentParser(description='LPMLN2MLN')
 	parser.add_argument('-i', help='input file. [REQUIRED]', nargs=1)
 	parser.add_argument('-e', help='evidence file', nargs=1)
 	parser.add_argument('-r', help='output file. [REQUIRED]',  nargs=1)
 	parser.add_argument('-q', help='query predicate.', nargs=1)
-	parser.add_argument('-a','-alch', help='[DEFAULT] Compile for Alchemy', action="store_true", default=False)
+	parser.add_argument('-a','-alchemy', help='[DEFAULT] Compile for Alchemy', action="store_true", default=False)
 	parser.add_argument('-t', '-tuffy' ,help='Compile for Tuffy', action="store_true", default=False)
 	parser.add_argument('-ro','-rockit', help='Compile for rockit', action="store_true", default=False)
 	parser.add_argument('-mln', help='Extra options for the respective solvers. Passed as it is.', nargs='*')
