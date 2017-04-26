@@ -5,8 +5,6 @@ import sys
 import os
 from math import exp
 from subprocess import Popen, PIPE
-import ipdb
-
 
 def print_error(error, dest):
 	if error is not None:
@@ -24,10 +22,10 @@ def main():
 	parser.add_argument('-e', help='evidence file', nargs=1)
 	parser.add_argument('-r', help='output file. [REQUIRED]',  nargs=1)
 	parser.add_argument('-q', help='query predicate.', nargs=1)
-	parser.add_argument('-a', help='[DEFAULT] Compile for Alchemy', action="store_true", default=False)
-	parser.add_argument('-t', help='Compile for Tuffy', action="store_true", default=False)
-	parser.add_argument('-ro', help='Compile for rockit', action="store_true", default=False)
-	parser.add_argument('-extra', help='Extra options for the respective solvers. Passed as it is.', nargs='*')
+	parser.add_argument('-a','-alch', help='[DEFAULT] Compile for Alchemy', action="store_true", default=False)
+	parser.add_argument('-t', '-tuffy' ,help='Compile for Tuffy', action="store_true", default=False)
+	parser.add_argument('-ro','-rockit', help='Compile for rockit', action="store_true", default=False)
+	parser.add_argument('-mln', help='Extra options for the respective solvers. Passed as it is.', nargs='*')
 	
 
 
