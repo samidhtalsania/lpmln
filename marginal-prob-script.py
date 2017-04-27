@@ -26,7 +26,7 @@ def main(prg):
     var = prg.get_const("q").__str__()
     if len(var) != 0:
         mode = 1
-        var = var.split(",")
+        var = var.split("__LP__")
 
 
     def on_model(m):

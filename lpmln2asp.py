@@ -5,7 +5,7 @@ import sys
 import os
 from math import exp
 from subprocess import Popen, PIPE
-
+# import ipdb
 
 def print_error(error, dest):
 	if error is not None:
@@ -41,7 +41,7 @@ def main():
 	mf = 1000
 
 	args = parser.parse_args()
-
+	# ipdb.set_trace()
 	arglist = []
 	arglist.append('lpmln2cl')
 
@@ -65,7 +65,7 @@ def main():
 		arglist.append('--infer-type=query')
 		
 	if args.q is not None:
-		arglist.append('-c q='+args.q[0])
+		arglist.append('-c q='+args.q[0].replace(',','__LP__'))
 
 	if args.hr is True:
 		arglist.append('--tr-hr=true')
