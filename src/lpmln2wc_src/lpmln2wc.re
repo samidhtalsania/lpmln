@@ -21,12 +21,15 @@
 #include <sys/param.h>
 #include <sys/stat.h>
 
+#include "Util.h"
+
 using namespace std;
 using namespace boost;
 namespace io = boost::iostreams; 
 
 #define global 0
 #define local 1
+
 
 //build
 //g++ -g -std=c++11 lpmln2wc.cpp -o lpmln2wc -L /usr/lib -lboost_regex
@@ -38,6 +41,16 @@ set<string> findFreeVariables(const string&, const string&);
 void runProcess(const string&);
 void printHelp();
 string getcwd();
+
+
+
+float GetFloatPrecision(float& x){
+    //return (floor((value * pow(10, precision) + 0.5)) / pow(10, precision)); 
+    x = x + 2;
+    x = ceilf(x * 10000) / 10000;
+    x = x - 2;
+    return x;
+}
 
 set<string> findVariables(const string& head){
 	
@@ -370,7 +383,15 @@ int main(int argc, char **argv){
 						//Check if it is a function. 
 						if(splitVecSpace[0].find("@") == 0){
 							
-							weightSwitch = true;
+							// weightSwitch = true;
+							std::string temp = splitVecSpace[0].substr(1, splitVecSpace[0].length()-1);
+							float floatTemp  = Util::getValue(temp);
+							if(isinf(floatTemp) || isnan(floatTemp)) {
+								std::cerr<< "resulting value infinity or NAN for rule number " << unsatcount + 1<< "\n.";
+								exit(1);
+							}
+							weight = GetFloatPrecision(floatTemp);
+
 						}
 						else{
 							floatVal = stof(splitVecSpace[0],&sz); 
@@ -491,8 +512,18 @@ int main(int argc, char **argv){
 
 						//Check if it is a function. 
 						if(splitVecSpace[0].find("@") == 0){
-							weightSwitch = true;
-							weightString = splitVecSpace[0];
+							// weightSwitch = true;
+
+							// weightString = splitVecSpace[0];
+
+							std::string temp = splitVecSpace[0].substr(1, splitVecSpace[0].length()-1);
+							float floatTemp  = Util::getValue(temp);
+							if(isinf(floatTemp) || isnan(floatTemp)) {
+								std::cerr<< "resulting value infinity or NAN for rule number " << unsatcount + 1<< "\n.";
+								exit(1);
+							}
+							weight = GetFloatPrecision(floatTemp);
+							
 						}
 						else{
 							float floatVal = stof(splitVecSpace[0],&sz); 
@@ -500,8 +531,10 @@ int main(int argc, char **argv){
 								throw std::runtime_error("inf/nan error");
 
 							weight = (floatVal);
-							weightString = to_string((int)(weight*mf)) + "@0";
+							// weightString = to_string((int)(weight*mf)) + "@0";
 						}
+
+						weightString = to_string((int) (weight * mf)) + "@0" ;
 						
 						
 						issoft = true;

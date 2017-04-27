@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "exptrk.h"
+
 class Util
 {
 public:
@@ -32,4 +34,24 @@ public:
 		    start_pos = str.find(from);
 		}
 	}
+
+	static float getValue(std::string str){
+	   typedef exprtk::symbol_table<float> symbol_table_t;
+	   typedef exprtk::expression<float>     expression_t;
+	   typedef exprtk::parser<float>             parser_t;
+
+	   symbol_table_t symbol_table;
+	   symbol_table.add_constants();
+
+	   expression_t expression;
+	   expression.register_symbol_table(symbol_table);
+
+	   parser_t parser;
+	   parser.compile(str,expression);
+
+	   float y = expression.value();
+	   return y;
+	}
+
+
 };
