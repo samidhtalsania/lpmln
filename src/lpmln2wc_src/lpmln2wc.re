@@ -142,6 +142,35 @@ set<string> findVariables(const string& head){
 	return result;
 }
 
+set<string> separateHeadDisjunction(const string& head){
+	int posStart = 0;
+	int posEnd = -1;
+
+	set<string> returnSet;
+	unsigned int i = 0;
+
+	for(i=0;i<head.length();i++){
+		if(head.at(i) == '{'){
+			while(head.at(i) != '}')
+				i++;
+		}
+
+		else if(head.at(i) == '('){
+			while(head.at(i) != ')')
+				i++;
+		}
+
+		else if(head.at(i) == ';'){
+			
+			returnSet.insert(head.substr(posStart, i-posStart == 0? 1 : i-posStart));
+			posStart = i+1;
+		}
+	}
+
+	returnSet.insert(head.substr(posStart, i-posStart == 0? 1 : i-posStart));
+	return returnSet;
+}
+
 
 
 set<string> findFreeVariables(const string& head,const string& body){
@@ -431,7 +460,20 @@ int main(int argc, char **argv){
 
 						tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-";
 						
-						tempstr +=  "not " + newStr + ".\n" + newStr + ":-" ;
+						set<string> headStr = separateHeadDisjunction(newStr);
+						string newHeadStr;
+						if(headStr.size() > 0){
+							for(auto itr = headStr.begin(); itr != headStr.end(); ++itr){
+								if((*itr).length() > 0){
+									newHeadStr += "not " + *itr + ",";
+								}
+							}
+						}
+
+						if(newHeadStr.length() > 0)
+							newHeadStr = newHeadStr.substr(0, newHeadStr.length() - 1);
+
+						tempstr +=  newHeadStr + ".\n" + newStr + ":-" ;
 						
 						tempstr += "not unsat(" + to_string(unsatcount) + vars + ")";
 						if(weightSwitch)
@@ -475,7 +517,20 @@ int main(int argc, char **argv){
 						string oldVars = vars;
 						vars = ",\"a\"" + vars ;
 
-						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- not " + str + ".\n" +
+						set<string> headStr = separateHeadDisjunction(str);
+						string newHeadStr;
+						if(headStr.size() > 0){
+							for(auto itr = headStr.begin(); itr != headStr.end(); ++itr){
+								if((*itr).length() > 0){
+									newHeadStr += "not " + *itr + ",";
+								}
+							}
+						}
+
+						if(newHeadStr.length() > 0)
+							newHeadStr = newHeadStr.substr(0, newHeadStr.length() - 1);
+
+						string tempstr = "unsat("+to_string(unsatcount)+vars+") :- "+ newHeadStr + ".\n" +
 											str + " :- not unsat(" + to_string(unsatcount) +vars+ ").\n" +
 											":~ unsat(" + to_string(unsatcount) +vars+"). [1@1," + to_string(unsatcount) + oldVars + "]";
 								unsatcount++;
@@ -615,7 +670,21 @@ int main(int argc, char **argv){
 						else if(issoft || (!issoft && mode == 0)){
 							//Soft rules are translated irespective of the mode
 							//Hard rules are translated only in mode 0
-							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + ",not " + newStr + ".\n" 
+							set<string> headStr = separateHeadDisjunction(newStr);
+							string newHeadStr;
+							if(headStr.size() > 0){
+								for(auto itr = headStr.begin(); itr != headStr.end(); ++itr){
+									if((*itr).length() > 0){
+										newHeadStr += "not " + *itr + ",";
+									}
+								}
+							}
+
+							if(newHeadStr.length() > 0)
+								newHeadStr = newHeadStr.substr(0, newHeadStr.length() - 1);
+
+
+							tempstr = "unsat(" + to_string(unsatcount) + vars + ") :-" + splitVec[1] + "," + newHeadStr + ".\n" 
 							+ newStr + ":-" + splitVec[1] + ", " + "not unsat(" + to_string(unsatcount) + vars + ")" + ".\n"
 							+":~" + "unsat(" + to_string(unsatcount) + vars +")." + " [" + weightString + ","+ to_string(unsatcount)+ oldVars +"]\n";
 						}
