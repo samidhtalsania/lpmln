@@ -33,7 +33,7 @@ def main():
 	parser.add_argument('-clingo', help='clingo options passed as it is to the solver. Pass all clingo options in \'single quotes\'', nargs=1)
 	parser.add_argument('-hr', help='[FALSE] Translate hard rules', action="store_true", default=False)
 	parser.add_argument('-prob', help='[MAP] Use this option to activate marginal inference. Using -e defaults to MAP', action="store_true", default=False)
-	parser.add_argument('-quiet',help='Quiet mode for computation. Supresses output of probability of all models.', action="store_true", default=False)
+	parser.add_argument('-v',help='Verbose mode for computation. Supresses output of probability of all models.', action="store_true", default=False)
 	parser.add_argument('-mf', help='[1000] Multiplying factor for weak constraints value', nargs=1)
 	parser.add_argument('-d', help='[FALSE] Debug. Print all debug information', action="store_true", default=False)
 
@@ -58,8 +58,9 @@ def main():
 	else:
 		arglist.append('--mf=1000')
 
-	if args.quiet is True:
+	if args.v is False:
 		arglist.append('-c quiet=true')
+		arglist.append('--quiet')
 
 	if args.prob is True:
 		arglist.append('--infer-type=query')
