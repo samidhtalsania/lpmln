@@ -58,7 +58,7 @@ def main():
 	else:
 		arglist.append('--mf=1000')
 
-	if args.v is False:
+	if args.v is False and args.prob is True:
 		arglist.append('-c quiet=true')
 		arglist.append('--quiet')
 
