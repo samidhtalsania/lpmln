@@ -44,7 +44,7 @@ def main():
 	# ipdb.set_trace()
 	arglist = []
 	arglist.append('lpmln2cl')
-	arglist.append('--c5=true')
+	
 
 	if args.i is None or not os.path.isfile(args.i[0]):
 		print_error("Check input file.", None)
@@ -81,6 +81,8 @@ def main():
 
 	if args.e is not None and os.path.isfile(args.e[0]):
 		arglist.append(args.e[0])
+
+	arglist.append('--c5=true')
 
 	process = Popen(arglist, stdout=PIPE)
 	(output, err) = process.communicate()
