@@ -38,22 +38,22 @@ def main(prg):
             
             #ipdb.set_trace()
             if val.name in var:
-                args = val.args()
+                args = val.arguments
                 t = tuple(args)
-                if Node.parentDict.has_key(val.name()):
-                    literalDict = Node.parentDict[val.name()].getDict()
+                if Node.parentDict.has_key(val.name):
+                    literalDict = Node.parentDict[val.name].getDict()
                     if literalDict.has_key(t):
                         literalDict[t].append(Node.modelCount)
                     else:
                         literalDict[t] = [Node.modelCount]
                 else:
-                    Node.parentDict[val.name()] = Query()
-                    Node.parentDict[val.name()].getDict()[t] = [Node.modelCount]
+                    Node.parentDict[val.name] = Query()
+                    Node.parentDict[val.name].getDict()[t] = [Node.modelCount]
 
             
             if val.name == 'unsat':
                 #ipdb.set_trace()
-		args = val.arguments
+                args = val.arguments
                 # Process soft Rules
                 # Unsat for this atom was false
                 # calculate its weight
