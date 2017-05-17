@@ -250,6 +250,9 @@ int main(int argc, char **argv){
 	//Type 1 is marginal inference
 	int inferType = 0;
 
+	//Check whether clingo5 is to be used or not.
+	bool c5 = false;
+
 	string clingoOptions;
 
 	#define YYFILL(n)	{}
@@ -303,6 +306,11 @@ int main(int argc, char **argv){
 
 			"--mf=" dec				{
 										mf = atoi(argv[i]+5);
+										continue;
+									}
+
+			"--c5=true"				{
+										c5 = true;
 										continue;
 									}
 
@@ -728,14 +736,23 @@ int main(int argc, char **argv){
 	string clingoCommand;
     //Map inference
     if(inferType == 0){
-    	clingoCommand = "clingo "+ getcwd() +"/out.txt " + clingoOptions;
+    	if(c5)
+    		clingoCommand = "clingo5 "+ getcwd() +"/out.txt " + clingoOptions;	
+    	else
+    		clingoCommand = "clingo "+ getcwd() +"/out.txt " + clingoOptions;
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
 	}
     else{
     	if(mode == 1)
-    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum -c issoft=true --warn=no-atom-undefined "+ clingoOptions;
+    		if (c5)
+    			clingoCommand = "clingo5 "+ getcwd() +"/out.txt /usr/local/share/lpmln/c5-marginal-prob-script.py 0 --opt-mode=enum -c issoft=true --warn=no-atom-undefined "+ clingoOptions;
+    		else
+    			clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum -c issoft=true --warn=no-atom-undefined "+ clingoOptions;
     	else
-    		clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum --warn=no-atom-undefined "+ clingoOptions;
+    		if (c5)
+    			clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/c5-marginal-prob-script.py 0 --opt-mode=enum --warn=no-atom-undefined "+ clingoOptions;
+    		else
+    			clingoCommand = "clingo "+ getcwd() +"/out.txt /usr/local/share/lpmln/marginal-prob-script.py 0 --opt-mode=enum --warn=no-atom-undefined "+ clingoOptions;
     	cout << "Clingo executed with command:\n" << clingoCommand << endl;
     }
     runProcess(clingoCommand);
