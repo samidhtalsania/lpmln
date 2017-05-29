@@ -239,7 +239,7 @@ int main(int argc, char **argv){
 	// if(argc == 3)
 	// 	mode = *argv[2] - '0';
 
-	int unsatcount = 0;
+	int unsatcount = 1;
 	string str;
 
 	//Default mode is 1, which translates only soft rules.
